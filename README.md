@@ -69,14 +69,85 @@ Makefile               make test = the whole verification loop
 Every unit of work — new feature, change to shipped behavior, incident
 fix — is a numbered chain in `features/`. Never skip a stage.
 
-**Stage 1 — Intent.** Copy `templates/intent-template.md` to
-`features/NNN-short-name/intent.md`. State the problem and outcome,
-not the solution. Product owner accepts it.
+Each stage has a slash command in Claude Code. Every command
+interviews you *before* generating its artifact — the questions are
+the point: the artifact only has value if a human thought through the
+problem, and the answers (evidence, alternatives rejected, exclusions)
+are recorded in it.
 
-**Stage 2 — Spec.** Draft `spec.md` from the template with Claude,
-attaching the intent + relevant `product/capabilities/` docs. Mocks
-are exported into the feature's `design/` folder and referenced from
-the spec. Product owner resolves flags, accepts.
+| Command | Stage | Produces |
+|---------|-------|----------|
+| `/intent <name>` | 1 | `features/NNN-name/intent.md` |
+| `/spec NNN` | 2 | `spec.md` |
+| `/plan NNN` | 3 | `plan.md` (first commit on the branch) |
+| `/capability NNN` | 5 | updated `product/capabilities/` doc, same PR |
+| `/feature [NNN]` | — | status: where every chain is, next gate |
+
+### One feature end to end (worked example)
+
+Say customers keep emailing support to undo an order. In Claude Code,
+on `main`:
+
+```
+> /intent refund-requests
+```
+
+Claude checks no existing chain or capability already covers refunds,
+then interviews you — what's broken and for whom, what evidence
+(support tickets? metrics? a hunch?), why now, what's observably true
+after shipping — and writes `features/007-refund-requests/intent.md`.
+You edit until it's right, flip its status to `accepted`. Gate passed.
+
+```
+> /spec 007
+```
+
+Refuses to run if the intent is still `draft`. Then turns your answers
+into numbered, testable rules ("S1 A customer can request a refund
+while the order is `delivered` and within 14 days"), confronts you
+with conflicting capability rules, and forces a real "out of scope"
+list. Accept `spec.md` the same way.
+
+```bash
+git worktree add ../wt-007 -b feature/007-refund-requests
+```
+
+```
+> /plan 007        # in the worktree, in plan mode
+```
+
+Stops if you're on `main`. Offers 2–3 implementation approaches and
+records why the losers lost, lists every file the work will touch
+(checked against other in-flight plans for collisions), then commits
+`plan.md` as the first commit on the branch. Build follows in the
+same worktree until `make test` is green.
+
+```
+> /capability 007  # on the feature branch, before opening the PR
+```
+
+Converts the *shipped* S-rules — and only those — into present-tense
+R-rules in `product/capabilities/refunds.md`, in the same PR (review
+blocks behavior changes without this).
+
+```
+> /feature
+```
+
+Any time you come back cold: one line per chain — number, stage,
+next gate — and flags anything unhealthy (code on a branch with no
+committed plan, spec questions still open at plan stage).
+
+**Stage 1 — Intent.** Run `/intent <short-name>`. The interview makes
+you state the problem and outcome, not the solution, and records the
+evidence; the result is `features/NNN-short-name/intent.md` (manual
+path: copy `templates/intent-template.md`). Product owner accepts it.
+
+**Stage 2 — Spec.** Run `/spec NNN` with the intent accepted. The
+interview extracts testable S-rules and collisions with current
+capabilities into `spec.md`. Mocks are exported into the feature's
+`design/` folder and referenced from the spec. Product owner resolves
+flags, accepts.
 
 **Stage 3 — Plan, then build.**
 
@@ -84,7 +155,7 @@ the spec. Product owner resolves flags, accepts.
 git worktree add ../wt-NNN -b feature/NNN-short-name
 ```
 
-Open Claude Code there **in plan mode** with `spec.md` attached.
+Open Claude Code there **in plan mode** and run `/plan NNN`.
 Iterate until the plan is right — including the exact list of files it
 will touch (checked against other in-flight plans for collisions).
 Commit `plan.md` as the **first commit on the branch**, then implement.
@@ -98,7 +169,8 @@ failing test *first*, and never edit an existing test to make it pass.
 directory. AI review runs `REVIEW.md` (correctness, security, spec
 compliance — undeclared file changes are blocking). If your change
 alters behavior, the same PR must update the matching
-`product/capabilities/` doc — review blocks it otherwise. A human
+`product/capabilities/` doc (run `/capability NNN`) — review blocks
+it otherwise. A human
 approves; merge deletes the branch; remove the worktree.
 
 **Stage 6 — Maintain.** Monitoring findings and incidents re-enter the

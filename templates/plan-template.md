@@ -19,7 +19,9 @@ blocking review finding.
 ## Steps
 
 Ordered, verifiable steps. Each ends in a state where `make test`
-passes.
+passes. Prefer tracer-bullet slices — narrow vertical cuts through
+every layer, each demoable — over layer-by-layer sequencing; put the
+riskiest slice first.
 
 1. …
 2. …
