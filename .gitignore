@@ -1,0 +1,7 @@
+# local, per-machine agent settings — never committed
+.claude/settings.local.json
+
+node_modules/
+dist/
+.env
+.env.*
