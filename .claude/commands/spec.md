@@ -62,6 +62,10 @@ more narrowly.
 
 ## Step 2 — write the artifact
 
+- Write in plain everyday language per `.claude/writing-style.md` —
+  read it first. S-rules name the actor and use concrete numbers and
+  states ("within 14 days", "while the order is `delivered`"), never
+  "appropriate" or "timely". Plain but still testable as written.
 - Follow `templates/spec-template.md` exactly, in
   `features/NNN-*/spec.md`, status `draft`.
 - Acceptance criteria are keyed to S-numbers — every S-rule gets at

@@ -44,6 +44,9 @@ description already answered it explicitly.
 
 ## Step 2 — write the artifact
 
+- Write in plain everyday language per `.claude/writing-style.md` —
+  read it first. Keep the owner's own words for the problem; if you
+  wouldn't say a sentence out loud to a teammate, rewrite it.
 - Allocate the next feature number: highest `NNN` in `features/` + 1,
   zero-padded (numbers never reuse).
 - Copy the structure of `templates/intent-template.md` into

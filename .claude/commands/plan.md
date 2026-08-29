@@ -66,6 +66,10 @@ looked up rather than asked.
 
 ## Step 2 — write and commit
 
+- Write in plain everyday language per `.claude/writing-style.md` —
+  read it first. The Approach section should read like you're
+  explaining the decision to a teammate at a whiteboard: what we're
+  doing, why, and what we turned down.
 - Follow `templates/plan-template.md` in `features/NNN-*/plan.md`,
   status `approved` only after the user approves it in review.
 - Once approved, commit it as the FIRST commit on the branch (nothing

@@ -45,8 +45,11 @@ in this worktree):
 
 ## Step 2 — write
 
-Edit/create the capability doc(s). Every statement present tense,
-every rule testable as written. No history, no future — history lives
+Edit/create the capability doc(s) in plain everyday language per
+`.claude/writing-style.md` — read it first. Every statement present
+tense, every rule testable as written, every rule a sentence you
+could say out loud ("A customer can cancel an order until it
+ships"). No history, no future — history lives
 in `features/`, future lives in open intents.
 
 ## Step 3 — close

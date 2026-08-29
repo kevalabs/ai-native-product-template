@@ -24,6 +24,9 @@ without an approved `plan.md` in that feature's directory.
   the same PR.
 - New domain vocabulary is added to `product/glossary.md` in the PR
   that introduces it.
+- All artifacts (intent, spec, plan, capability docs) are written in
+  plain everyday language — see `.claude/writing-style.md`. Glossary
+  terms used exactly; everything else in words you'd say out loud.
 
 ## Code rules (product-specific — bootstrap fills this)
 
