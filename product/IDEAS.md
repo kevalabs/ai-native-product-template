@@ -1,4 +1,4 @@
-# Backlog — the idea inbox
+# Ideas — the inbox
 
 Dump raw ideas here (say `/idea <one line>` in Claude Code, or edit
 this file directly). Any product thought belongs: a feature, a
