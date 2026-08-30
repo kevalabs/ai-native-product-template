@@ -26,6 +26,11 @@ You need, minimally:
    Ledger for financial truth).
 7. **Deployables** — web/mobile/API; mobile implies the additive-
    contracts rule and a separate release lane.
+8. **Non-functional baselines** — how available ("down for an hour on
+   Sunday night — who cares?"), how fast (a latency budget users
+   would notice breaking), accessibility standard, data retention.
+   Each answer needs a number in it; each becomes a standing rule in
+   `product/architecture.md` so specs only state deviations.
 
 Don't interrogate past usefulness: draft with explicit `[ASSUMED]`
 markers where answers are thin — the owner corrects drafts faster

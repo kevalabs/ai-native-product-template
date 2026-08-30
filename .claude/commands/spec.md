@@ -50,9 +50,17 @@ more narrowly.
 6. **Region variance.** Anything that differs per region? Variance
    goes through the regions registry — never region branches in logic.
    (Skip if single-region.)
-7. **Out of scope.** What will people assume is included that is NOT?
+7. **Non-functional needs.** Where does this feature differ from the
+   product-wide baselines in `product/architecture.md` standing
+   rules? Probe: how fast (latency budget), how many (expected volume
+   and peak), what when it breaks (degraded mode, retry, data loss
+   tolerance), who may see it (privacy/permissions beyond the
+   obvious). Each answer becomes a testable S-rule with a number in
+   it — "under 300ms at 10k products", never "fast". Baseline is
+   fine as an answer; only deviations go in the spec.
+8. **Out of scope.** What will people assume is included that is NOT?
    Force at least one real exclusion; "nothing" is rarely true.
-8. **Vocabulary.** Any new domain terms? They must be added to
+9. **Vocabulary.** Any new domain terms? They must be added to
    `product/glossary.md` in the PR that introduces them. Actively
    model, don't just record: when the user's language conflicts with
    the glossary, surface it ("the glossary says X, you seem to mean

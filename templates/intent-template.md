@@ -3,6 +3,9 @@
 **Status:** draft | accepted
 **Originator:** <who>
 **Date:** <yyyy-mm-dd>
+**Due:** <yyyy-mm-dd only if someone committed to a date and can say
+why (contract, regulation, event) — otherwise "—". A wish is not a
+due date.>
 
 ## Problem
 

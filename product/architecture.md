@@ -35,7 +35,12 @@ layout is a destination, not commit one.
 ## Standing rules
 
 <!-- template: candidates proven on prior products — keep, adapt, or
-     delete with reasons. Numbered so PRs and reviews can cite them. -->
+     delete with reasons. Numbered so PRs and reviews can cite them.
+     Product-wide non-functional baselines belong here too —
+     availability target, latency budget, accessibility standard,
+     data retention — each with a number in it, so specs only state
+     deviations and reviews can cite the rule. Bootstrap asks for
+     these. -->
 
 1. **Single language inside this repo** unless an intent chain states
    the forcing problem. (AI removes the cost of writing a second

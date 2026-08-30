@@ -84,7 +84,8 @@ are recorded in it.
 | `/spec NNN` | 2 | `spec.md` |
 | `/plan NNN` | 3 | `plan.md` (first commit on the branch) |
 | `/capability NNN` | 5 | updated `product/capabilities/` doc, same PR |
-| `/feature [NNN]` | — | status: where every chain is, next gate |
+| `/feature [NNN]` | — | the product board: done / promised / proposed / ideas |
+| `/product-status [save]` | — | stakeholder report: every feature with status, dates, dependencies, open questions |
 
 ### One feature end to end (worked example)
 
@@ -144,9 +145,27 @@ blocks behavior changes without this).
 > /feature
 ```
 
-Any time you come back cold: one line per chain — number, stage,
-next gate — and flags anything unhealthy (code on a branch with no
-committed plan, spec questions still open at plan stage).
+Any time you come back cold, or anyone asks "what does the product
+do, and what's coming?": one board, four sections — ✅ done (from
+`product/capabilities/`), 🔨 promised (accepted chains in flight),
+🤔 proposed (draft intents), 💡 ideas (backlog). It also flags
+anything unhealthy (code on a branch with no committed plan, spec
+questions still open at plan stage).
+
+```
+> /product-status
+```
+
+The same facts, written for people *outside* the repo: one table with
+every feature's status (Proposed / Committed / In build / In review /
+Shipped), started, due, and completed dates, dependencies, and open
+questions — plus a "needs a decision" list naming who owes which
+answer. Everything is computed from the artifacts and git history, so
+it is never stale: started = the intent's date, completed = the merge
+that shipped it, due = the intent's `Due:` field (set only when
+someone committed to a real date — a chain past its due date is
+flagged in the opening summary). `/product-status save` also writes
+the report to `reports/status-YYYY-MM-DD.md` for sharing.
 
 **Stage 1 — Intent.** Run `/intent <short-name>`. The interview makes
 you state the problem and outcome, not the solution, and records the

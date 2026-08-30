@@ -8,7 +8,11 @@ create or change>
 
 ## Requirements
 
-Numbered, testable rules (these become capability rules on shipping):
+Numbered, testable rules (these become capability rules on shipping).
+Non-functional needs go here too, as rules with numbers in them —
+"S5 search returns in under 300ms with 10k products", never "fast".
+Only where this feature differs from the product-wide baselines in
+`product/architecture.md`.
 
 - S1 <actor> can <action> when <condition>.
 - S2 …

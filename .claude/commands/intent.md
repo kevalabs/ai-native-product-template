@@ -43,7 +43,12 @@ description already answered it explicitly.
    multiple independent outcomes, propose splitting into separate
    chains now.
 6. **Blast radius & constraints.** Which deployables/regions it
-   touches; deadlines, compliance, dependencies on other chains.
+   touches; compliance, dependencies on other chains.
+7. **Due date — real or wish?** If a deadline comes up, ask what
+   makes it real: a contract, a regulation, a launch event? A real
+   date goes in the intent's `Due:` field with its reason in
+   Constraints. "As soon as possible" is a wish — the field stays
+   "—" and nobody gets a fake date to miss.
 
 ## Step 2 — write the artifact
 
