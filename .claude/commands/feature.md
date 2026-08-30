@@ -29,6 +29,10 @@ For each chain in scope, inspect `features/NNN-*/` and report:
    between in-flight plans; a shipped chain whose capability doc was
    never updated.
 
+When listing all chains, start with one line for the backlog: how
+many ideas are waiting in `features/BACKLOG.md` (with the oldest
+one's date — a stale inbox is worth noticing).
+
 Output one line per chain — number, name, stage, next gate — then
 detail only the chains with health flags. With a specific NNN, give
 the full picture of that chain including its open questions.
