@@ -37,12 +37,19 @@ file is your map; read it top to bottom once.
 | 7 | `REVIEW.md` | What every PR is judged against (blocking checks included) |
 
 `product/` is the **constitution** — slow-changing, always true.
-Don't skip it: agents load these files as context, and so should you.
+(One deliberate exception: `product/BACKLOG.md`, the fast-changing
+idea inbox — see the map below.) Don't skip it: agents load these
+files as context, and so should you.
 
 ## 2. Repository map
 
 ```
 product/               the constitution (files above)
+product/BACKLOG.md     the idea inbox — any raw product thought, not
+                       just features. The ONE fast-changing file in
+                       product/: ideas wait here until /intent
+                       graduates them to a chain (or a commit deletes
+                       them, with the why in the message).
 product/capabilities/  CURRENT shipped behavior, one file per capability.
                        Present tense only. Updated ONLY by the PR that
                        changes the behavior. Start here to learn what
@@ -50,8 +57,6 @@ product/capabilities/  CURRENT shipped behavior, one file per capability.
 features/              append-only ledger of change chains:
                        NNN-name/{intent,spec,plan}.md + design/ (mocks).
                        Immutable once shipped — this is the history.
-                       BACKLOG.md is the idea inbox: raw ideas wait
-                       there until /intent graduates them to a chain.
 templates/             copy these to start any artifact:
                        intent, spec, plan, capability
 .claude/               skills (advisory knowledge) + hooks (hard blocks)
@@ -79,7 +84,7 @@ are recorded in it.
 
 | Command | Stage | Produces |
 |---------|-------|----------|
-| `/idea <one line>` | 0 | a line in `features/BACKLOG.md` — no interview, ten-second capture |
+| `/idea <one line>` | 0 | a line in `product/BACKLOG.md` — no interview, ten-second capture |
 | `/intent <name>` | 1 | `features/NNN-name/intent.md` |
 | `/spec NNN` | 2 | `spec.md` |
 | `/plan NNN` | 3 | `plan.md` (first commit on the branch) |
@@ -96,7 +101,7 @@ thought occurs, park it — no interview, no number:
 > /idea customers keep emailing support to undo orders — some way to refund?
 ```
 
-That's one line in `features/BACKLOG.md`. Days later, when it's worth
+That's one line in `product/BACKLOG.md`. Days later, when it's worth
 doing, graduate it. In Claude Code, on `main`:
 
 ```
@@ -237,7 +242,7 @@ the regions sentence if single-region.}}
 
 `product/capabilities/` — always current, rule-numbered (R1, R10…) so
 specs, tests, and reviews cite them. History: `features/` + git log.
-Future: raw ideas in `features/BACKLOG.md`, vetted work in open
+Future: raw ideas in `product/BACKLOG.md`, vetted work in open
 intents. Never trust memory over these files — and if you
 learn a fact the files don't state, adding it is part of your PR.
 

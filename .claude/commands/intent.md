@@ -16,7 +16,7 @@ a sharp question now is cheaper than a wrong feature.
 
 - Read `product/intent.md`, `product/personas.md`, and skim
   `product/capabilities/` and existing `features/*/intent.md`.
-- Check `features/BACKLOG.md`: if this graduates a backlog idea, note
+- Check `product/BACKLOG.md`: if this graduates a backlog idea, note
   which line — you'll delete it in Step 2. Nearby backlog ideas that
   might belong to the same chain are worth mentioning to the user.
 - If an existing chain or capability already covers this, say so and
@@ -66,7 +66,7 @@ description already answered it explicitly.
   dropped, each with a named owner. If an owner isn't in this session,
   offer the questionnaire from the interview method.
 - If this graduates a backlog idea, delete its line from
-  `features/BACKLOG.md` now — the chain replaces it.
+  `product/BACKLOG.md` now — the chain replaces it.
 
 ## Step 3 — close
 

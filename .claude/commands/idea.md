@@ -14,7 +14,7 @@ questions, or start a chain.
    there — that's the only question allowed.
 2. Compress it to one plain-language line if needed (keep the user's
    words as much as possible). Add it to the top of the **Ideas**
-   list in `features/BACKLOG.md`:
+   list in `product/BACKLOG.md`:
 
    `- YYYY-MM-DD <idea> (from: <user>)`
 

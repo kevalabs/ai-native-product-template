@@ -8,7 +8,7 @@ Report product status for: $ARGUMENTS (the whole board if empty).
 This is a read-only status command — it never creates or edits
 artifacts. It computes everything live from the files, so it is
 always current: `product/capabilities/` for what's done, `features/`
-for what's promised, `features/BACKLOG.md` for what's just an idea.
+for what's promised, `product/BACKLOG.md` for what's just an idea.
 
 For each chain in scope, inspect `features/NNN-*/` and report:
 
@@ -41,7 +41,7 @@ because "what does the product do today" is the most common question:
    intent is a commitment; this is what the system will provide.
 3. **🤔 Proposed (draft)** — chains whose intent is still `draft`:
    someone is thinking about it, nothing is promised yet.
-4. **💡 Ideas** — how many lines wait in `features/BACKLOG.md`, with
+4. **💡 Ideas** — how many lines wait in `product/BACKLOG.md`, with
    the oldest one's date (a stale inbox is worth noticing). List the
    lines themselves only if there are ten or fewer.
 
