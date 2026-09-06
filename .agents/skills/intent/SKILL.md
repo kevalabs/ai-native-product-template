@@ -20,6 +20,10 @@ a sharp question now is cheaper than a wrong feature.
 
 - Read `product/intent.md`, `product/personas.md`, and skim
   `product/capabilities/` and existing `features/*/intent.md`.
+- Allocate the next number from the latest default branch. Create or
+  use `artifact/NNN-short-name` in its own worktree before writing.
+  If the current worktree holds unrelated edits, leave them there and
+  use a separate worktree. Never write the chain on main.
 - Check `product/IDEAS.md`: if this graduates a parked idea, note
   which line — you'll delete it in Step 2. Nearby ideas that might
   belong to the same chain are worth mentioning to the user.
@@ -76,8 +80,11 @@ description already answered it explicitly.
 - Write in plain everyday language per `.agents/writing-style.md` —
   read it first. Keep the owner's own words for the problem; if you
   wouldn't say a sentence out loud to a teammate, rewrite it.
-- Allocate the next feature number: highest `NNN` in `features/` + 1,
-  zero-padded (numbers never reuse).
+- Use the number allocated in Step 0: highest `NNN` in the latest
+  default branch's `features/` + 1, zero-padded. Check for a collision
+  before the artifact PR lands; numbers never reuse.
+- Keep `Kind: change` unless this is a dedicated contracts chain; use
+  `Kind: contracts` for work that changes `packages/`.
 - Copy the structure of `templates/intent-template.md` into
   `features/NNN-short-name/intent.md`.
 - Status: `draft`. Originator: the user. Date: today.
@@ -102,6 +109,7 @@ description already answered it explicitly.
 Show the draft, remind the owner that accepting it (flipping status to
 `accepted`) is the Stage 1 gate — it also fixes the phase split — and
 that the next step is `/spec NNN` (or `/spec NNN P1` for the first
-phase).
+phase), in the same artifact worktree. Accepted intent and spec land
+through a reviewed artifact PR before the implementation branch starts.
 Do NOT proceed to spec or code — that is a different stage with its own
 gate.

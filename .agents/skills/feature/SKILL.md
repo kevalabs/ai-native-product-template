@@ -20,8 +20,8 @@ For each chain in scope, inspect `features/NNN-*/` and report:
    - intent `draft` → Stage 1 open; gate: owner accepts intent.
    - intent `accepted`, no/`draft` spec → Stage 2; gate: owner accepts
      spec (`/spec NNN` to draft or revise).
-   - spec `accepted`, no plan → Stage 3; gate: worktree +
-     `/plan NNN`.
+   - spec `accepted`, no plan → Stage 3; gate: reviewed artifact PR
+     merged, then implementation worktree + `/plan NNN`.
    - plan committed → building/in review; gate: `make test` green,
      PR merged with capability docs updated.
    - Shipped (check: does a `product/capabilities/` doc reflect the

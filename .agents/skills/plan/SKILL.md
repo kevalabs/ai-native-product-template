@@ -25,6 +25,10 @@ alternatives.
   at `features/NNN-*/plan.md`; phase `Pn` plans at
   `features/NNN-*/Pn-short-name/plan.md`. If the intent lists phases
   and no `Pn` was given, ask which and stop.
+- The reviewed artifact PR must have landed the accepted intent and
+  this directory's accepted spec on the default branch. Check committed
+  objects, not just local files. If they have not landed, prepare that
+  artifact PR before starting the implementation branch.
 - That directory's `spec.md` must exist with status `accepted`; if
   not, stop — Stage 2 gate not passed. Multi-phase: if this phase
   depends on a phase that hasn't shipped, say so — planning may
@@ -32,9 +36,10 @@ alternatives.
   the plan must say which.
 - Check the current branch: work must happen on
   `feature/NNN-short-name` (or `feature/NNN-Pn-short-name`) in its
-  own worktree, never `main`. If on `main`, give the user the
-  `git worktree add ../wt-NNN[-Pn] -b feature/NNN[-Pn]-short-name`
-  command and stop until they're in the worktree.
+  own worktree, never `main`. If needed, create the worktree from the
+  updated default branch with
+  `git worktree add ../wt-NNN[-Pn] -b feature/NNN[-Pn]-short-name main`
+  and continue there. Preserve unrelated local edits.
 - Read the spec, the intent (outcome and success criteria — the plan
   serves those, not just the S-rules), `product/architecture.md`
   (standing rules), and every OTHER in-flight plan (chains or phases
@@ -60,9 +65,10 @@ looked up rather than asked.
    (i18n files, capability doc, glossary, migrations, test files).
    The merged diff must match this list — undeclared changes are a
    blocking review finding.
-   - If anything lands in `packages/`, stop: contracts are frozen to
-     feature branches and need their own chain. Make the user decide —
-     split a contract chain out, or redesign to avoid it.
+   - If anything lands in `packages/`, this must be its own contracts
+     chain with `Kind: contracts` in the accepted intent, and the plan
+     must declare `packages/` under Touched surface. Otherwise split
+     the contract work into its own chain or avoid the contract change.
    - Report overlaps with other in-flight plans' touched surfaces and
      ask how to sequence around them. Sibling phases running in
      parallel that touch the same files are a sign the intent's

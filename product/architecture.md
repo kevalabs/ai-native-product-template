@@ -55,8 +55,9 @@ layout is a destination, not commit one.
 3. **BFF belongs to its frontend** — one consumer, changes as a unit
    with its UI. The only multi-consumer contract lives in `packages/`.
 4. **Contracts change serially, features in parallel.** `packages/`
-   is frozen to feature branches (enforced by `.githooks/pre-commit`
-   and CI).
+   changes need their own intent with `Kind: contracts` and a plan
+   that declares `packages/` in Touched surface. The hook and CI
+   check those declarations; reviewers check the actual boundary.
 5. **Critical invariants are database guarantees** (unique
    constraints, transactions) — not application-level checks.
 6. **Client-facing contracts are additive** while old client versions
@@ -65,7 +66,9 @@ layout is a destination, not commit one.
    reviewed source; `apps/docs` renders manual (capabilities) +
    changelog (features).
 8. **One agent, one worktree, one branch.** No direct commits to
-   main; plan.md is the first commit; merged diff matches the plan.
+   main. An artifact PR lands accepted intent/spec files first;
+   plan.md is the first commit on the implementation branch. Review
+   checks that the merged diff matches the plan.
 9. **Apps are named by audience.** Adding an audience adds a
    directory, never a restructure. `core` stays singular.
 10. **The repo is the unit of truth, never the unit of deployment.**

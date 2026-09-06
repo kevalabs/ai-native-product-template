@@ -15,15 +15,21 @@ file is your map; read it top to bottom once.
 
 ## How to instantiate (template only — delete after bootstrap)
 
-1. Create a new repo from this template ("Use this template" on
-   GitHub, or copy the tree and `git init`).
-2. Open your coding agent in the new repo — Claude Code, Codex,
+1. Create a new repo with GitHub's "Use this template", then clone it.
+   Keep its initial template commit as the base for the bootstrap PR.
+2. Run `make setup`, then create a bootstrap worktree:
+   `git worktree add ../wt-bootstrap -b artifact/bootstrap`.
+   Open your coding agent there — Claude Code, Codex,
    Antigravity, or Gemini CLI — and say: **"bootstrap this
    product"** — the bootstrap skill interviews the product owner,
    generates the constitution (`product/`), fills every
    `{{PLACEHOLDER}}`, and deletes itself.
-3. Review the drafts, correct the `[ASSUMED]` sections, and make the
-   first commit. That commit closes Stage 1.
+3. Review the drafts, correct the `[ASSUMED]` sections, and land them
+   through a reviewed bootstrap PR. That closes the founding intent.
+4. Require `SDLC history`, `Template verification`, and human review
+   in branch protection. Git, Make, and Python 3.9+ run the template
+   checks. Extend `make test` with the product's tests, lint, and build
+   when introducing its stack. The template checks remain in place.
 
 ## 1. Read this first (in this order)
 
@@ -72,14 +78,18 @@ AGENTS.md              agent conventions — the one file every coding
                        + the interview and writing-style method docs.
                        Read natively by Codex, Antigravity, Gemini
                        CLI; .claude/skills is a symlink to it
-.githooks/             git hooks that enforce the hard rules for every
-                       agent and human (git config core.hooksPath)
+.githooks/             git hooks that check branches, artifact scope,
+                       and committed plans for every agent and human
 apps/                  one directory per AUDIENCE — a singular domain
                        core plus one frontend (+ bff/) per audience,
                        and docs/ generated from product/ + features/
 packages/              shared contracts, domain types, region registry —
-                       FROZEN to feature branches (see standing rules)
-Makefile               make test = the whole verification loop
+                       changed through dedicated contracts chains
+Makefile               make setup installs hooks; make test verifies
+                       the template (extend for the product's stack)
+scripts/               shared SDLC validator and template verification
+tests/                 workflow regression tests in temporary Git repos
+.github/workflows/     template verification and PR history checks
 ```
 
 <!-- template: bootstrap replaces the apps/ line with the product's
@@ -159,7 +169,14 @@ thought occurs, park it — no interview, no number:
 ```
 
 That's one line in `product/IDEAS.md`. Days later, when it's worth
-doing, graduate it. In your agent, on `main`:
+doing, graduate it. Allocate the next number from the latest default
+branch, then create an artifact worktree:
+
+```bash
+git worktree add ../wt-007-artifacts -b artifact/007-refund-requests main
+```
+
+In your agent, in that worktree:
 
 ```
 > /intent refund-requests
@@ -191,17 +208,24 @@ rules ("S1 A customer can request a refund while the order is
 `delivered` and within 14 days"), confronts you with conflicting
 capability rules, and forces a real "out of scope" list. Nothing
 about tables or endpoints — anyone who knows the product can read
-it. Accept `spec.md` the same way.
+it. Accept `spec.md` the same way. Commit the accepted intent and
+spec on the artifact branch and open its PR. Once reviewed and merged,
+update your default branch and create the implementation worktree:
 
 ```bash
-git worktree add ../wt-007 -b feature/007-refund-requests
+git worktree add ../wt-007 -b feature/007-refund-requests main
 ```
+
+Both accepted files are now committed in the new worktree. For a later
+phase, land that phase's accepted spec in another artifact PR first.
+Uncommitted files in one worktree never transfer to another.
 
 ```
 > /plan 007        # in the worktree, before any code
 ```
 
-Stops if you're on `main`. Offers 2–3 implementation approaches and
+Uses an implementation worktree with the accepted artifacts committed.
+Offers 2–3 implementation approaches and
 records why the losers lost, lists every file the work will touch
 (checked against other in-flight plans for collisions), then commits
 `plan.md` as the first commit on the branch. Build follows in the
@@ -241,7 +265,8 @@ someone committed to a real date — a chain past its due date is
 flagged in the opening summary). `/product-status save` also writes
 the report to `reports/status-YYYY-MM-DD.md` for sharing.
 
-**Stage 1 — Intent (why).** Run `/intent <short-name>`. The
+**Stage 1 — Intent (why).** Start in an `artifact/NNN-short-name`
+worktree and run `/intent <short-name>`. The
 interview makes you state the problem and outcome, not the solution,
 records the evidence, names the actors and success criteria, and
 proposes phases if the outcome is too big for one PR; the result is
@@ -255,14 +280,16 @@ states, permissions, error paths, testable S-rules, and collisions
 with current capabilities into `spec.md`. Mocks are exported into the
 feature's `design/` folder and referenced from the spec. No
 implementation detail — that is the plan's job. Product owner
-resolves flags, accepts.
+resolves flags, accepts. Commit and merge the reviewed artifact PR
+before starting the implementation worktree.
 
 **Stage 3 — Plan (how), then build.**
 
 ```bash
-git worktree add ../wt-NNN -b feature/NNN-short-name
+# From an updated main containing the reviewed intent and spec:
+git worktree add ../wt-NNN -b feature/NNN-short-name main
 # or, for one phase:
-git worktree add ../wt-NNN-P1 -b feature/NNN-P1-short-name
+git worktree add ../wt-NNN-P1 -b feature/NNN-P1-short-name main
 ```
 
 Open your agent there — in its **read-only planning mode** if it has
@@ -271,10 +298,16 @@ Iterate until the plan is right — including the exact list of files it
 will touch (checked against other in-flight plans, sibling phases
 included, for collisions). If the plan won't fit one reviewable PR,
 go back and split the phase. Commit `plan.md` as the **first commit
-on the branch**, then implement. No code before a committed plan.
+on the branch**, containing only that approved file, then implement.
+No code before a committed plan. Keep the branch history linear and
+rebase onto the target branch when updating it. CI checks every PR
+commit; a later correction cannot erase an earlier gate violation.
 
-**Stage 4 — Prove.** `make test` (tests, lint, build) must pass
-before handoff — the agent fixes its own failures. Bug fixes write the
+**Stage 4 — Prove.** `make test` must pass
+before handoff — the agent fixes its own failures. The template target
+runs workflow tests, whitespace and shell checks, and Python syntax
+and entry-point checks. Product repos add their actual tests, lint,
+and build to this same command. Bug fixes write the
 failing test *first*, and never edit an existing test to make it pass.
 Green tests are not the bar: the agent then walks the spec's
 acceptance criteria and says which S-rule each test proves, and
@@ -307,10 +340,11 @@ The full numbered list with reasons is in `product/architecture.md` —
 these are the ones that bite newcomers:
 
 - Never commit to `main` — everything lands by reviewed PR. Run
-  `git config core.hooksPath .githooks` once so the hook stops you
-  (and your agent) before you try.
-- Don't edit `packages/` from a feature branch — contracts change
-  through their own chain.
+  `make setup` once per clone. Use artifact branches for requirements
+  and feature branches for implementation. See `.githooks/README.md`
+  for allowed paths and the exact automated checks.
+- Contract changes use their own `Kind: contracts` intent and declare
+  `packages/` in the plan's Touched surface section.
 - Money = integer minor units + currency code; never floats. Domain
   times carry an explicit IANA timezone (see `AGENTS.md`).
 - No region branching in business logic — variance lives in the
