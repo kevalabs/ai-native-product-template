@@ -1,6 +1,7 @@
 # Review linked outcomes and merge each stage before advancing — Intent
 
-**Status:** draft
+**Status:** accepted
+**Accepted by:** Suraj Chhetry, confirmed in the owner conversation on 2026-09-06.
 **Kind:** change
 **Originator:** Suraj Chhetry
 **Date:** 2026-09-06
@@ -111,9 +112,6 @@ dependencies, and project tracking are also affected.
 
 ## Open questions
 
-- Owner: confirm separate Build and Test + Review PRs when accepting
-  this intent. This draft follows the requested stage-by-stage sequence;
-  ordinary checks and human review still precede the Build merge.
 - Owner, during spec: define the evidence that closes Test + Review
   and Ship, including how Ship completion is recorded when there is
   no deployment. Ship is the final stage, so it has no next-stage gate.
