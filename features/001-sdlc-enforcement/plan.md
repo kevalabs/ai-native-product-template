@@ -90,3 +90,29 @@ Run make setup per clone. Repository administrators require the SDLC
 and template verification jobs plus human review on the default branch.
 Future product bootstraps extend make test with their tests, lint, and
 build. No remote settings are changed by this implementation.
+
+## Verification evidence
+
+- Before changing enforcement, the original hook failed 20 of the 30
+  initial workflow tests, including all five bypasses from the review.
+- After the changes, make test passes all 33 regression tests, shell
+  syntax, whitespace checks, and Python syntax/entry-point checks.
+- S1: artifact scope, idea scope, and bootstrap scope tests pass.
+- S2: draft, untracked, staged approval, missing spec, and exact/sibling
+  phase tests pass.
+- S3: first-plan-only, bundled code, and late approval history tests pass.
+- S4: unsupported/default/detached branches, deletion, rename, and
+  newline-filename tests pass.
+- S5: valid history and bypass-then-revert history tests pass. Both
+  local branches validate against their intended predecessor.
+- S6: make setup installs a hook that blocks an actual invalid commit
+  in a disposable repository. Missing Git history fails explicitly.
+- S7: conventions, README, skills, hook guide, and capability rules were
+  checked against the validator. The workflow YAML parses successfully.
+- The touched-file list covers the complete implementation diff.
+
+The requirements branch is artifact/001-sdlc-enforcement; implementation
+is stacked on its accepted requirements commit. Review and merge that
+artifact PR first, then rebase the implementation commits onto main if
+needed. Remote Actions runs and branch-protection settings have not been
+verified. No application build is claimed by the template checks.
