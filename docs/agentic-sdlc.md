@@ -11,12 +11,13 @@
 >
 > | Reference | Here |
 > |-----------|------|
-> | Intent (WHY) | `features/NNN-name/intent.md` — `/intent` |
+> | Intent (WHY) | `features/NNN-name/intent.md` — `/intent` on `artifact/NNN-name` |
+> | Artifact handoff | reviewed artifact PR lands accepted intent/spec files before the implementation worktree starts |
 > | Phases | `## Phases` in the intent; multi-phase chains put each phase in `features/NNN-name/Pn-name/` |
 > | Spec (WHAT) | `spec.md` per chain or per phase — `/spec NNN [Pn]` |
 > | Plan (HOW) | `plan.md`, first commit on the branch — `/plan NNN [Pn]` |
 > | Implement | one worktree, one branch, one agent per phase |
-> | Prove | `make test` + `REVIEW.md` (spec compliance and outcome check) |
+> | Prove | `make test` + PR commit-history validation + `REVIEW.md` (spec compliance and outcome check); product repos extend the template checks with their build/tests |
 > | Ship | reviewed PR merges; `/capability` updates `product/capabilities/` in the same PR |
 > | Human gates | intent `accepted` (includes the phase split), spec `accepted`, plan `approved`, PR approved |
 > | GitHub structure | one issue per intent, one sub-issue per phase, one PR per plan — see README section 3 |

@@ -28,6 +28,17 @@ severity. Do not review formatting or style — linters own that.
 
 ## Process checks (generic — keep)
 
+- Verify actual owner approval of intent, spec, and plan. Markdown
+  status values alone are not approval evidence.
+- Confirm the accepted intent/spec artifact PR landed before the
+  implementation branch. `SDLC history` and `Template verification`
+  must pass. Inspect changes to the workflow, validator, and tests:
+  a PR can change its own checks, so a green job is not enough.
+- For artifact PRs, review only the permitted planning scope and the
+  relevant human gates; there is no implementation plan yet.
+- Require these jobs and human review through branch protection.
+  The repository files cannot install or attest remote settings.
+
 - Behavior change without a matching update to the capability doc in
   `product/capabilities/`.
 - Changes under `packages/` without a linked contracts intent in the

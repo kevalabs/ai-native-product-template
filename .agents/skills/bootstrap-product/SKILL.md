@@ -9,6 +9,10 @@ You are running Stage 1 of the AI-native SDLC for a brand-new product.
 The repo was created from the Kevalabs product template; files contain
 `{{PLACEHOLDER}}` markers and `<!-- template: … -->` instructions.
 
+Start in an `artifact/bootstrap` worktree from the default branch.
+Create it if needed before editing; never commit the constitution on
+main. This branch allows founding documents only, not code or CI.
+
 ## 1. Interview the product owner
 
 Ask conversationally (not as a form), and follow up on what they say.
@@ -72,12 +76,18 @@ inline `<!-- template -->` instructions, in this order:
   anywhere (grep for `{{` and `template:`).
 - Delete `.agents/skills/bootstrap-product/` — the instance doesn't
   carry the bootstrap skill; it lives only in the template.
-- Tell the owner to run `git config core.hooksPath .githooks` once
-  per clone (and to add it to `make setup` when the Makefile exists)
-  so the pre-commit rules apply to every agent and human.
+- Run `make setup` to install the hook and `make test` to verify the
+  template. Keep the existing Makefile, validator, tests, and CI.
+- Record that the first implementation chain introducing the stack
+  must extend `make test` with product tests, lint, and build. Bootstrap
+  does not silently treat the template checks as an application build.
+- Tell the owner to require `SDLC history`, `Template verification`,
+  and human review in default-branch protection. These remote settings
+  are not installed by `make setup`.
 - Check for an inherited `LICENSE` file: the template's license does
   NOT apply to the product. Delete it (proprietary default) or replace
   it with the product's own license — ask the owner.
-- Tell the owner: review the `[ASSUMED]` sections, then make the
-  first commit — that commit closes Stage 1. The first feature chain
-  (`features/001-…`) starts Stage 2.
+- Tell the owner: review the `[ASSUMED]` sections, then land the
+  constitution through a reviewed bootstrap PR. Each product feature
+  starts its own intent/spec artifact PR, then its implementation branch.
+  Preserve existing feature numbers; allocate the next unused number.

@@ -22,7 +22,9 @@ For every chain in `features/NNN-*/` plus every shipped capability:
   - `Proposed` — intent exists but is still draft.
   - `Committed` — intent accepted, spec being worked or accepted.
   - `In build` — plan committed on a feature branch.
-  - `In review` — PR open (check `gh pr list` if a remote exists).
+  - `In review` — implementation PR open (check `gh pr list` if a
+    remote exists). An artifact PR is requirements review and stays
+    Proposed or Committed according to the intent's acceptance.
   - `Shipped` — branch merged and the capability doc updated.
   - Multi-phase intents get ONE row (stakeholders care about the
     outcome, not the cut): status is the furthest-along open phase,

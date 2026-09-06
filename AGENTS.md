@@ -16,15 +16,20 @@ write feature code without an approved `plan.md` in that feature's
 
 ## Workflow rules (generic — keep)
 
-- Never commit directly to `main`. All work happens on a
-  `feature/NNN-name` branch (or `feature/NNN-Pn-name` for one phase
-  of a multi-phase intent) in its own worktree; changes land via
-  reviewed PR only.
+- Never commit directly to the default branch. Prepare intent and
+  spec on `artifact/NNN-name` in its own worktree; merge their reviewed
+  PR before creating `feature/NNN-name` (or `feature/NNN-Pn-name`)
+  from the updated default branch. Artifact branches carry only that
+  chain's planning files and any graduated idea. Implementation uses
+  a feature worktree; all changes land via reviewed PR.
+- `artifact/bootstrap` is limited to the founding constitution and
+  its governance documents. `artifact/ideas` only changes the idea
+  inbox. Neither allows application code, hooks, or CI changes.
 - Work is cut by outcome, never by page or task. An intent too big
   for one reviewable PR is split into phases in its `intent.md`;
   each phase has its own `spec.md`, `plan.md`, branch, and PR under
   `features/NNN-name/Pn-name/`.
-- Start every feature session with the feature's `spec.md` in
+- Start every implementation session with the feature's `spec.md` in
   context, in your agent's read-only planning mode if it has one.
   `plan.md` (including the list of files/apps it will touch) is the
   first commit on the branch; edit no code before it is committed.
@@ -42,9 +47,19 @@ write feature code without an approved `plan.md` in that feature's
 - All artifacts (intent, spec, plan, capability docs) are written in
   plain everyday language — see `.agents/writing-style.md`. Glossary
   terms used exactly; everything else in words you'd say out loud.
-- The hard rules above are enforced by `.githooks/pre-commit` and CI,
-  not by any one agent's hook system. Run
-  `git config core.hooksPath .githooks` once per clone.
+- The hook checks staged paths, branch names, committed acceptance
+  markers, and the exact phase's approved plan. CI also checks every
+  PR commit and requires the plan-only commit to come first. Keep PR
+  history linear: rebase onto the target branch instead of merging it.
+- Run `make setup` once per clone. `make test` verifies this template;
+  extend it with product tests, lint, and build before feature code.
+  Require `SDLC history`, `Template verification`, and human approval
+  in the default branch's protection settings. These settings are not
+  installed by a clone or a Make target.
+- Status markers record approval; they do not prove a human gave it.
+  Human gates, spec compliance, capability updates, and touched-file
+  review remain required by `REVIEW.md`. See `.githooks/README.md`
+  for the exact automated checks and their limits.
 
 ## Code rules (product-specific — bootstrap fills this)
 
@@ -58,6 +73,7 @@ write feature code without an approved `plan.md` in that feature's
 - Region variance goes through the regions registry and provider
   interfaces only — business logic must not branch on region codes.
   (Delete if single-region.)
-- `packages/` is contract territory: changes there require their own
-  intent chain, not drive-by edits from feature branches.
+- `packages/` is contract territory: changes require their own intent
+  with `Kind: contracts` and `packages/` declared in the approved
+  plan's Touched surface section. No drive-by contract edits.
 - {{PRODUCT_SPECIFIC_RULES}}

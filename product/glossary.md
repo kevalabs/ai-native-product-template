@@ -25,6 +25,9 @@ of that feature's PR.
 
 ## Process (AI-native SDLC — generic, keep as-is)
 
+- **Artifact branch** — a branch for reviewing a chain's intent and
+  spec before implementation. Its accepted requirements land before
+  the feature branch starts.
 - **Intent** — problem + desired outcome for one unit of work
   (Stage 1 artifact).
 - **Spec** — requirements and design for one feature (Stage 2).

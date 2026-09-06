@@ -36,7 +36,12 @@ features/NNN-short-name/
   A shipped phase is immutable even while later phases are open.
 - Incidents and maintenance findings (Stage 6) re-enter as new
   entries here.
-- Branch naming: `feature/NNN-short-name`, or
+- Draft intent and spec on `artifact/NNN-short-name` in a worktree.
+  Accept each before its next stage. Merge the reviewed artifact PR,
+  then create the implementation worktree from the updated default
+  branch. For later phases, another artifact PR adds the phase's spec.
+  A plan never lands in an artifact PR.
+- Implementation branch naming: `feature/NNN-short-name`, or
   `feature/NNN-Pn-short-name` per phase — one branch, one worktree,
   one agent per chain or phase. Independent phases may run in
   parallel once the intent's shared ground (state names, terms, data

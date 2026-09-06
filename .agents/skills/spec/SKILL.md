@@ -18,7 +18,9 @@ Do not draft `spec.md` until the interview is done.
 
 ## Step 0 — gates and context
 
-- Resolve `features/NNN-*/`. Its `intent.md` must exist with status
+- Work on `artifact/NNN-short-name` in its own worktree. For a later
+  phase, create a fresh artifact branch from the updated default branch.
+  Resolve `features/NNN-*/`. Its `intent.md` must exist with status
   `accepted`. If it is still `draft`, stop and say the Stage 1 gate is
   not passed (the owner can accept it right now if they mean to).
 - Read the intent's `## Phases`. If it lists phases and no `Pn` was
@@ -133,5 +135,7 @@ for `/plan`.
 
 Show the draft and the list of affected capability docs (the shipping
 PR must update them). The owner accepting the spec is the Stage 2
-gate; next is a worktree + the `plan` skill (`/plan NNN [Pn]`). Do
-not start planning or coding now.
+gate. Commit the accepted intent and spec on the artifact branch and
+land their reviewed PR. Then create the implementation worktree from
+the updated default branch and use `plan` (`/plan NNN [Pn]`). A plan
+never belongs in the artifact PR. Do not start coding at this stage.

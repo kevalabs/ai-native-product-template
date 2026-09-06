@@ -1,7 +1,9 @@
 # <Feature name> — Plan
 
-**Status:** approved (this file is the first commit on the feature
-branch — no code before it)
+**Status:** draft
+<!-- Change to exactly "approved" only after owner approval. Keep the
+     status on its own line. Commit this file alone as the first commit
+     on the feature branch, before any implementation changes. -->
 **Spec:** link to this feature's spec.md
 **Phase:** <Pn short-name, or "single phase">
 **Branch:** feature/NNN[-Pn]-short-name
