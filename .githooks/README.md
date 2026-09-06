@@ -28,8 +28,7 @@ onto the updated main; do not replay the old artifact commit too.
 
 | Branch | Allowed changes |
 |--------|-----------------|
-| `artifact/NNN-name` | This chain's intent, specs, design exports (`md`, `png`, `jpg`, `jpeg`, `webp`, `svg`, `pdf`), `questions-for-<role>.md`, and the idea inbox |
-| `artifact/ideas` | `product/IDEAS.md` only |
+| `artifact/NNN-name` | This chain's intent, specs, design exports (`md`, `png`, `jpg`, `jpeg`, `webp`, `svg`, `pdf`), and `questions-for-<role>.md` |
 | `artifact/bootstrap` | Founding product intent, glossary, personas, regions, architecture; root AGENTS, REVIEW, README, LICENSE; bootstrap skill document |
 | `feature/NNN-name` | Implementation after that chain's committed approved plan |
 | `feature/NNN-Pn-name` | Implementation after that exact phase's committed approved plan |

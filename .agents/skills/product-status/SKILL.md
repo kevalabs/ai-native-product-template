@@ -69,9 +69,6 @@ intent's problem line, not the directory slug.
 chain naming the question and who owes the answer. This is the
 section stakeholders can actually act on.
 
-**Ideas waiting** — one line: N ideas in `product/IDEAS.md`, oldest
-from
-<date>.
 ```
 
 ## Delivery

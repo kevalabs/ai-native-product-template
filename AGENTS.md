@@ -20,11 +20,14 @@ write feature code without an approved `plan.md` in that feature's
   spec on `artifact/NNN-name` in its own worktree; merge their reviewed
   PR before creating `feature/NNN-name` (or `feature/NNN-Pn-name`)
   from the updated default branch. Artifact branches carry only that
-  chain's planning files and any graduated idea. Implementation uses
+  chain's planning files. Implementation uses
   a feature worktree; all changes land via reviewed PR.
 - `artifact/bootstrap` is limited to the founding constitution and
-  its governance documents. `artifact/ideas` only changes the idea
-  inbox. Neither allows application code, hooks, or CI changes.
+  its governance documents. It allows no application code, hooks,
+  or CI changes.
+- Every proposal starts with a draft intent stating the problem,
+  why it matters, and the desired outcome. Acceptance is still the
+  gate to the spec stage.
 - Work is cut by outcome, never by page or task. An intent too big
   for one reviewable PR is split into phases in its `intent.md`;
   each phase has its own `spec.md`, `plan.md`, branch, and PR under
