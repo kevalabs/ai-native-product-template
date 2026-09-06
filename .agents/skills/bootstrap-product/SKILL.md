@@ -47,15 +47,16 @@ inline `<!-- template -->` instructions, in this order:
    canonical term per concept). Keep the Process section verbatim.
 3. `product/personas.md` — one per audience; deferred personas noted.
 4. `product/regions.md` — fill per region, or DELETE if single-region
-   (also remove region rules from CLAUDE.md and REVIEW.md).
+   (also remove region rules from AGENTS.md and REVIEW.md).
 5. `product/architecture.md` — layout with real audience names; keep,
    adapt, or delete each candidate standing rule WITH the reason.
 
 ## 3. Fill the governance files
 
-- `CLAUDE.md` — replace `{{PRODUCT_NAME}}`; keep generic workflow
+- `AGENTS.md` — replace `{{PRODUCT_NAME}}`; keep generic workflow
   rules verbatim; keep/adapt/delete candidate code rules; add rules
-  specific to this product's constraints.
+  specific to this product's constraints. Leave `CLAUDE.md`,
+  `GEMINI.md`, and `.agents/rules/` alone — they only point here.
 - `REVIEW.md` — same; derive the product-specific blocking checks
   from the constitution (every hard constraint should have a matching
   review check).
@@ -69,8 +70,11 @@ inline `<!-- template -->` instructions, in this order:
 
 - Verify no `{{PLACEHOLDER}}` or `<!-- template -->` markers remain
   anywhere (grep for `{{` and `template:`).
-- Delete `.claude/skills/bootstrap-product/` — the instance doesn't
+- Delete `.agents/skills/bootstrap-product/` — the instance doesn't
   carry the bootstrap skill; it lives only in the template.
+- Tell the owner to run `git config core.hooksPath .githooks` once
+  per clone (and to add it to `make setup` when the Makefile exists)
+  so the pre-commit rules apply to every agent and human.
 - Check for an inherited `LICENSE` file: the template's license does
   NOT apply to the product. Delete it (proprietary default) or replace
   it with the product's own license — ask the owner.

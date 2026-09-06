@@ -1,7 +1,7 @@
 # Regions — market strategy
 
 **Status:** TEMPLATE. Delete this file if the product is
-single-region — and remove region rules from CLAUDE.md/REVIEW.md.
+single-region — and remove region rules from AGENTS.md/REVIEW.md.
 
 ## Model
 

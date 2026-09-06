@@ -10,8 +10,14 @@ severity. Do not review formatting or style — linters own that.
 2. **Security** — injection, authorization gaps, secrets in the diff,
    unsafe handling of personal data.
 3. **Spec compliance** — does the diff match this feature's committed
-   `plan.md` and `spec.md`? Flag files touched that the plan never
-   declared.
+   `plan.md` and `spec.md`? Walk the spec's acceptance criteria: each
+   S-rule has a test in the diff that proves it, or the finding says
+   which does not. Flag files touched that the plan never declared.
+4. **Outcome** — does the PR deliver the phase's outcome as stated in
+   the intent's `## Phases` (or, single phase, the intent's
+   `## Outcome`)? On the last phase of an intent, walk the intent's
+   `## Success criteria` and say which are now true. Code that passes
+   its tests but leaves the outcome unmet is a finding.
 
 ## Severity (generic — keep)
 
@@ -27,6 +33,9 @@ severity. Do not review formatting or style — linters own that.
 - Changes under `packages/` without a linked contracts intent in the
   PR description.
 - Test files modified in a bug-fix PR — flag for human attention.
+- PR too large to review meaningfully in one sitting, or touching
+  several unrelated areas — flag for human attention: the phase
+  needs splitting, not a longer review.
 - Breaking (non-additive) change to a client-facing contract while
   old client versions hold traffic (mobile apps especially).
 

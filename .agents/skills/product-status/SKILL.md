@@ -1,13 +1,16 @@
 ---
-description: "Stakeholder report — every feature with status, dates, dependencies, and open questions"
-argument-hint: "[optional: 'save' to also write the report to a file]"
+name: product-status
+description: Stakeholder status report — every feature with status, started/due/completed dates, dependencies, and open questions, computed from the artifacts and git history. Read-only. Use when the user asks for a status report, an update for stakeholders, or what is overdue or blocked.
 ---
 
-Build the stakeholder status report. Argument: $ARGUMENTS
+Build the stakeholder status report.
+
+**Arguments:** optionally the word `save`, given when this skill is
+invoked, to also write the report to a file.
 
 The audience is stakeholders, not the team: people who want to know
 where things are without learning the repo. Plain everyday language
-per `.claude/writing-style.md` — no stage numbers, no gate jargon,
+per `.agents/writing-style.md` — no stage numbers, no gate jargon,
 no file paths in the report body. Read-only: computes everything from
 files and git history; never asks anyone to maintain a status file.
 
@@ -21,6 +24,10 @@ For every chain in `features/NNN-*/` plus every shipped capability:
   - `In build` — plan committed on a feature branch.
   - `In review` — PR open (check `gh pr list` if a remote exists).
   - `Shipped` — branch merged and the capability doc updated.
+  - Multi-phase intents get ONE row (stakeholders care about the
+    outcome, not the cut): status is the furthest-along open phase,
+    with the count in words — "In build (2 of 5 shipped)". Shipped
+    only when every phase is.
 - **Started** — the intent's Date field; fall back to the first git
   commit that touched the feature directory
   (`git log --reverse --format=%as -- features/NNN-*` | first line).
