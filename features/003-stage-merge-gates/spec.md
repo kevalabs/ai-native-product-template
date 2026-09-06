@@ -1,6 +1,8 @@
 # Review linked outcomes and merge each stage before advancing — Spec
 
-**Status:** draft
+**Status:** accepted
+**Accepted by:** Suraj Chhetry, through PR #7's merge, confirmed in the owner conversation on 2026-09-06.
+**Spec PR:** [#7](https://github.com/kevalabs/ai-native-product-template/pull/7), merged
 **Intent:** [intent.md](intent.md)
 **Intent PR:** [#6](https://github.com/kevalabs/ai-native-product-template/pull/6), merged
 **Phase:** single phase
@@ -79,7 +81,7 @@
   for every spec requirement, the intent's success criteria, test and
   build results, human review evidence, and unresolved findings. It
   passes only when every requirement has evidence and no blocking
-  finding remains. [ASSUMED: completion policy pending owner review.]
+  finding remains.
 - S12 Failed proof keeps Ship blocked. A code correction lands through
   a reviewed Build correction PR under the approved scope, then proof
   is repeated for the corrected version. A changed intent, spec, or
@@ -90,8 +92,7 @@
   result, and completion evidence. Failed delivery leaves Ship and the
   parent open. For a template with no deployment, delivery means the
   approved version is available on the default branch and the shipment
-  evidence PR has merged; a release tag is optional. [ASSUMED: completion
-  policy pending owner review.]
+  evidence PR has merged; a release tag is optional.
 - S14 A Build merge alone never marks an outcome shipped or closes its
   parent. The parent closes only after all required phase shipments and
   the final intent success check. Ship is the last stage; its own PR
@@ -125,16 +126,13 @@
   `intent` label fallback only when the owner chooses and records that
   mode. All artifact, approval, and merge gates still apply. Insufficient
   permission is reported; setup does not silently change modes.
-  [ASSUMED: fallback policy pending owner review.]
 - S21 Shipped feature history remains unchanged. Active chains adopt
   the gates at their next unfinished stage, with existing evidence
   reviewed and any missing prerequisite recorded before advancement.
-  No past approval or merge is fabricated. [ASSUMED: transition policy
-  pending owner review.]
+  No past approval or merge is fabricated.
 - S22 Bootstrap remains a separate reviewed constitution PR, with its
   existing narrow document scope and no application, hook, or CI changes.
-  The six-stage feature sequence applies after bootstrap. [ASSUMED:
-  bootstrap policy pending owner review.]
+  The six-stage feature sequence applies after bootstrap.
 - S23 Feature 003 follows the accepted stage sequence itself. Its
   accepted Intent PR #6 precedes this Spec PR, and its Plan PR must merge
   before Build starts. If existing checks conflict with that handoff,
@@ -201,7 +199,7 @@ links become part of the review record. No `packages/` changes are needed.
 New tracking records retain parent and stage relationships, owners,
 artifact links, approval evidence, merged PRs, exact approved versions,
 and proof and shipment results. Existing shipped records are preserved.
-Active records follow the proposed transition in S21. Existing unrelated
+Active records follow the transition in S21. Existing unrelated
 GitHub issues and organization issue types are not renamed or deleted.
 
 ## Region variance
@@ -254,10 +252,6 @@ This Spec PR does not implement checks or modify organization settings.
 
 ## Open questions
 
-- Owner: accept or change the proposed completion evidence in S11 and
-  S13, transition and bootstrap policy in S21–S22, and explicit fallback
-  in S20. The three interview questions remain pending; these rules are
-  marked assumptions until answered or accepted in review.
 - Plan author and owner: decide how feature 003's separate Plan and
   Build PRs can pass the old check that requires a new plan as the first
   commit of every implementation PR. The plan must include a concrete,
