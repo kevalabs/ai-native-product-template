@@ -1,0 +1,44 @@
+#!/bin/sh
+# Pre-commit rules that apply to every coding agent and every human.
+# Install once per clone:  git config core.hooksPath .githooks
+# Skills advise; this hook enforces. CI and branch protection should
+# repeat these checks so --no-verify never lands anything.
+
+branch=$(git symbolic-ref --short HEAD 2>/dev/null)
+default=$(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null | sed 's|^origin/||')
+[ -n "$default" ] || default=main
+
+fail() {
+  echo "pre-commit: $1" >&2
+  echo "pre-commit: see AGENTS.md (workflow rules)." >&2
+  exit 1
+}
+
+# 1. Never commit directly to the default branch.
+if [ "$branch" = "$default" ]; then
+  fail "direct commits to '$default' are blocked. Work on feature/NNN-name in a worktree; land via PR."
+fi
+
+staged=$(git diff --cached --name-only --diff-filter=ACMR)
+[ -n "$staged" ] || exit 0
+
+# Feature branches: feature/NNN-name or feature/NNN-Pn-name.
+nnn=$(printf '%s\n' "$branch" | sed -n 's|^feature/\([0-9][0-9]*\)-.*|\1|p')
+[ -n "$nnn" ] || exit 0
+
+plans=$(ls "features/${nnn}"-*/plan.md "features/${nnn}"-*/P*/plan.md 2>/dev/null)
+
+# 2. No code before a committed plan. Artifacts and docs are exempt.
+code=$(printf '%s\n' "$staged" | grep -v -e '^features/' -e '^product/' -e '^docs/' -e '^\.agents/' -e '^\.githooks/' -e '\.md$')
+if [ -n "$code" ] && [ -z "$plans" ]; then
+  fail "no plan.md found for feature ${nnn}. plan.md is the first commit on a feature branch; no code before it."
+fi
+
+# 3. packages/ is frozen to feature branches unless this chain's plan declares it.
+if printf '%s\n' "$staged" | grep -q '^packages/'; then
+  if [ -z "$plans" ] || ! grep -l 'packages/' $plans >/dev/null 2>&1; then
+    fail "packages/ is frozen to feature branches. Contract changes need their own chain whose plan.md declares packages/ in its touched surface."
+  fi
+fi
+
+exit 0

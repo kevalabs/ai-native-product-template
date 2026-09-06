@@ -1,8 +1,9 @@
-# Interview method (shared by /intent, /spec, /plan)
+# Interview method (shared by the intent, spec, and plan skills)
 
-How to run the interview step of any stage command. The stage command
-supplies the question themes; this file supplies the technique.
-(Adapted from mattpocock/skills "grilling".)
+How to run the interview step of any stage skill, whichever coding
+agent is running it. The stage skill supplies the question themes;
+this file supplies the technique. (Adapted from mattpocock/skills
+"grilling".)
 
 ## Frontier rounds
 
@@ -12,10 +13,11 @@ which later questions exist. Work in rounds:
 1. Present only the **frontier**: questions whose prerequisites are
    already settled. Number them, one line of context each.
 2. For every question, state your **recommended answer** and why —
-   via AskUserQuestion when options are enumerable (recommended option
-   first, labeled "(Recommended)"), free-form otherwise. A question
-   with no recommendation usually means you haven't done Step 0's
-   reading.
+   as a multiple-choice question when options are enumerable
+   (recommended option first, labeled "(Recommended)"; use your
+   agent's structured question tool if it has one, a numbered list
+   otherwise), free-form otherwise. A question with no
+   recommendation usually means you haven't done Step 0's reading.
 3. Wait for the answers, then compute the next frontier. Never ask a
    question whose premise depends on an unanswered one.
 

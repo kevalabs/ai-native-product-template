@@ -3,6 +3,12 @@
 **Status:** approved (this file is the first commit on the feature
 branch — no code before it)
 **Spec:** link to this feature's spec.md
+**Phase:** <Pn short-name, or "single phase">
+**Branch:** feature/NNN[-Pn]-short-name
+
+The plan answers HOW. This is where tables, endpoints, components,
+and services belong. The whole plan must fit one PR a human can
+review in one sitting; if it doesn't, go back and split the phase.
 
 ## Approach
 
@@ -12,9 +18,9 @@ and why, alternatives rejected.
 ## Touched surface (collision check)
 
 Exhaustive list of apps/packages/files this plan will create or
-modify. Reviewed against other in-flight plans before build starts.
-The merged diff must match this list — undeclared changes are a
-blocking review finding.
+modify. Reviewed against other in-flight plans before build starts —
+including sibling phases of the same intent. The merged diff must
+match this list — undeclared changes are a blocking review finding.
 
 ## Steps
 

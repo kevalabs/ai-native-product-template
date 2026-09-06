@@ -1,7 +1,8 @@
 # Ideas — the inbox
 
-Dump raw ideas here (say `/idea <one line>` in Claude Code, or edit
-this file directly). Any product thought belongs: a feature, a
+Dump raw ideas here (run the `idea` skill — `/idea <one line>` in
+Claude Code, `$idea` in Codex, or just "idea: …" in any agent — or
+edit this file directly). Any product thought belongs: a feature, a
 pricing change, an ops improvement, a market to enter. One line
 each, newest on top. No gate, no format police — capturing an idea
 should take ten seconds.

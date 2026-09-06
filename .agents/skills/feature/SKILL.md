@@ -1,9 +1,12 @@
 ---
-description: "The product board — what's shipped, what's promised, what's an idea — plus per-chain status"
-argument-hint: "[NNN — omit to see the whole board]"
+name: feature
+description: The product board — reports what is shipped, promised, proposed, and just an idea, plus the stage and health of each feature chain. Read-only. Use when the user asks what the product does, what is in flight, where feature NNN stands, or what the next step for a chain is.
 ---
 
-Report product status for: $ARGUMENTS (the whole board if empty).
+Report product status.
+
+**Arguments:** optionally a feature number `NNN`, given when this
+skill is invoked. With no argument, show the whole board.
 
 This is a read-only status command — it never creates or edits
 artifacts. It computes everything live from the files, so it is
@@ -18,17 +21,25 @@ For each chain in scope, inspect `features/NNN-*/` and report:
    - intent `accepted`, no/`draft` spec → Stage 2; gate: owner accepts
      spec (`/spec NNN` to draft or revise).
    - spec `accepted`, no plan → Stage 3; gate: worktree +
-     `/plan NNN` in plan mode.
+     `/plan NNN`.
    - plan committed → building/in review; gate: `make test` green,
      PR merged with capability docs updated.
    - Shipped (check: does a `product/capabilities/` doc reflect the
      spec's rules, and is the branch merged in `git log`?) →
      immutable. Any further change is a NEW chain that links back.
+
+   Multi-phase intents (the intent's `## Phases` lists `Pn` entries):
+   apply the same ladder to each `features/NNN-*/Pn-*/` directory and
+   report the chain as "phase k of n shipped, Pm at <stage>". A phase
+   with no directory yet is "not started". The chain is shipped only
+   when every phase is.
 2. **Health flags**, if any: spec open questions still unresolved at
    plan stage; a branch `feature/NNN-*` existing with code commits but
    no committed plan.md (rule violation); touched-surface overlaps
-   between in-flight plans; a shipped chain whose capability doc was
-   never updated.
+   between in-flight plans (sibling phases included); a shipped chain
+   whose capability doc was never updated; a phase being built while
+   a phase it depends on has no accepted spec; an intent accepted
+   more than a month ago with phases still not started.
 
 With no argument, output the board in four sections — done first,
 because "what does the product do today" is the most common question:

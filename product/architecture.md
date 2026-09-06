@@ -11,12 +11,17 @@ layout is a destination, not commit one.
 
 ```
 {{repo}}/
-├── CLAUDE.md               # agent conventions (root)
+├── AGENTS.md               # agent conventions, read by every agent
+│                           # (CLAUDE.md / GEMINI.md point here)
 ├── REVIEW.md               # PR review policy
 ├── product/                # constitution + capabilities/
 ├── features/               # append-only ledger of change chains
 ├── templates/              # artifact templates
-├── .claude/                # skills (advisory) + hooks (enforced)
+├── docs/                   # process reference (agentic-sdlc.md)
+├── .agents/                # skills + method docs (advisory),
+│                           # read natively by Codex/Antigravity/
+│                           # Gemini; .claude/skills symlinks here
+├── .githooks/              # git hooks (enforced, every agent)
 ├── apps/                   # one directory per AUDIENCE
 │   ├── core/               # the one domain API
 │   ├── {{audience}}/       # frontend (+ bff/ when extracted)
@@ -50,7 +55,8 @@ layout is a destination, not commit one.
 3. **BFF belongs to its frontend** — one consumer, changes as a unit
    with its UI. The only multi-consumer contract lives in `packages/`.
 4. **Contracts change serially, features in parallel.** `packages/`
-   is frozen to feature branches (hook-enforced).
+   is frozen to feature branches (enforced by `.githooks/pre-commit`
+   and CI).
 5. **Critical invariants are database guarantees** (unique
    constraints, transactions) — not application-level checks.
 6. **Client-facing contracts are additive** while old client versions

@@ -1,9 +1,12 @@
 ---
-description: "Dump a raw idea into product/IDEAS.md — ten-second capture, no interview"
-argument-hint: "<the idea, in one line>"
+name: idea
+description: Captures a raw product idea as one line in product/IDEAS.md — ten-second capture, no interview, no evaluation. Use when the user says "idea:", "park this", "note for later", or wants to jot a thought without starting a feature chain.
 ---
 
-Capture this idea in `product/IDEAS.md`: $ARGUMENTS
+Capture an idea in `product/IDEAS.md`.
+
+**Arguments:** the idea, in one line, given when this skill is
+invoked.
 
 This is the ONE command with no interview. Capture must be
 frictionless — the thinking happens later, at `/intent`, and only for
