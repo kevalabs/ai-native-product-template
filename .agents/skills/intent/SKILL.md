@@ -1,9 +1,12 @@
 ---
 name: intent
-description: Stage 1 of the feature loop — interviews the product owner about a problem, then starts a new feature chain by writing features/NNN-name/intent.md (why, outcome, actors, success criteria, phases). Use when the user wants to start a feature, open an intent, or graduate an idea from product/IDEAS.md.
+description: Stage 1 of the feature loop — interviews the product owner about a problem, then starts a new feature chain by writing features/NNN-name/intent.md (why, outcome, actors, success criteria, phases). Use when the user proposes new work, wants to start a feature, or asks to open an intent.
 ---
 
 Start a new feature chain (Stage 1 — Intent).
+
+Every proposal starts here. A draft intent records why the work matters;
+it remains proposed until the owner accepts it.
 
 **Arguments:** a short name, or a one-line description of the
 problem, given when this skill is invoked. If none was given, ask
@@ -24,9 +27,6 @@ a sharp question now is cheaper than a wrong feature.
   use `artifact/NNN-short-name` in its own worktree before writing.
   If the current worktree holds unrelated edits, leave them there and
   use a separate worktree. Never write the chain on main.
-- Check `product/IDEAS.md`: if this graduates a parked idea, note
-  which line — you'll delete it in Step 2. Nearby ideas that might
-  belong to the same chain are worth mentioning to the user.
 - If an existing chain or capability already covers this, say so and
   stop — don't create a duplicate chain.
 
@@ -101,8 +101,6 @@ description already answered it explicitly.
 - Unresolved themes go under **Open questions** — never silently
   dropped, each with a named owner. If an owner isn't in this session,
   offer the questionnaire from the interview method.
-- If this graduates a parked idea, delete its line from
-  `product/IDEAS.md` now — the chain replaces it.
 
 ## Step 3 — close
 

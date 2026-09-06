@@ -54,14 +54,12 @@ def branch_kind(branch):
         raise Violation("direct or detached commits are blocked; use a named worktree branch")
     if FEATURE.fullmatch(branch):
         return "feature"
-    if ARTIFACT.fullmatch(branch) or branch in {"artifact/ideas", "artifact/bootstrap"}:
+    if ARTIFACT.fullmatch(branch) or branch == "artifact/bootstrap":
         return "artifact"
     raise Violation("use feature/NNN[-Pn]-name or artifact/NNN-name; unsupported branch: " + repr(branch))
 
 
 def artifact_allowed(branch, path):
-    if branch == "artifact/ideas":
-        return path == "product/IDEAS.md"
     if branch == "artifact/bootstrap":
         return path in {
             "AGENTS.md", "REVIEW.md", "README.md", "LICENSE", "product/intent.md",
@@ -70,8 +68,6 @@ def artifact_allowed(branch, path):
         }
     match = ARTIFACT.fullmatch(branch)
     root = f"features/{match[1]}-{match[2]}/"
-    if path == "product/IDEAS.md":
-        return True
     if not path.startswith(root):
         return False
     relative = path[len(root):]

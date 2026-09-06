@@ -45,19 +45,12 @@ file is your map; read it top to bottom once.
 | 8 | `docs/agentic-sdlc.md` | The process model behind section 3 — why → what → how → build → prove → ship, phases, human gates |
 
 `product/` is the **constitution** — slow-changing, always true.
-(One deliberate exception: `product/IDEAS.md`, the fast-changing
-idea inbox — see the map below.) Don't skip it: agents load these
-files as context, and so should you.
+Don't skip it: agents load these files as context, and so should you.
 
 ## 2. Repository map
 
 ```
 product/               the constitution (files above)
-product/IDEAS.md       the idea inbox — any raw product thought, not
-                       just features. The ONE fast-changing file in
-                       product/: ideas wait here until /intent
-                       graduates them to a chain (or a commit deletes
-                       them, with the why in the message).
 product/capabilities/  CURRENT shipped behavior, one file per capability.
                        Present tense only. Updated ONLY by the PR that
                        changes the behavior. Start here to learn what
@@ -151,26 +144,20 @@ value if a human thought through the problem, and the answers
 
 | Skill | Stage | Produces |
 |-------|-------|----------|
-| `/idea <one line>` | 0 | a line in `product/IDEAS.md` — no interview, ten-second capture |
 | `/intent <name>` | 1 | `features/NNN-name/intent.md` — outcome, actors, success criteria, phases |
 | `/spec NNN [Pn]` | 2 | `spec.md` (per chain, or per phase) |
 | `/plan NNN [Pn]` | 3 | `plan.md` (first commit on the branch) |
 | `/capability NNN [Pn]` | 5 | updated `product/capabilities/` doc, same PR |
-| `/feature [NNN]` | — | the product board: done / promised / proposed / ideas |
+| `/feature [NNN]` | — | the product board: done / promised / proposed |
 | `/product-status [save]` | — | stakeholder report: every feature with status, dates, dependencies, open questions |
 
 ### One feature end to end (worked example)
 
-Say customers keep emailing support to undo an order. The moment the
-thought occurs, park it — no interview, no number:
-
-```
-> /idea customers keep emailing support to undo orders — some way to refund?
-```
-
-That's one line in `product/IDEAS.md`. Days later, when it's worth
-doing, graduate it. Allocate the next number from the latest default
-branch, then create an artifact worktree:
+Say customers keep emailing support to undo an order. Start with an
+intent: what is broken, why it matters, and what outcome would help?
+A draft intent records the proposal; owner acceptance is the gate to
+specification. Allocate the next number from the latest default branch,
+then create an artifact worktree:
 
 ```bash
 git worktree add ../wt-007-artifacts -b artifact/007-refund-requests main
@@ -244,9 +231,9 @@ blocks behavior changes without this).
 ```
 
 Any time you come back cold, or anyone asks "what does the product
-do, and what's coming?": one board, four sections — ✅ done (from
+do, and what's coming?": one board, three sections — ✅ done (from
 `product/capabilities/`), 🔨 promised (accepted chains in flight),
-🤔 proposed (draft intents), 💡 ideas (the inbox). It also flags
+and 🤔 proposed (draft intents). It also flags
 anything unhealthy (code on a branch with no committed plan, spec
 questions still open at plan stage).
 
@@ -369,8 +356,8 @@ the regions sentence if single-region.}}
 
 `product/capabilities/` — always current, rule-numbered (R1, R10…) so
 specs, tests, and reviews cite them. History: `features/` + git log.
-Future: raw ideas in `product/IDEAS.md`, vetted work in open
-intents. Never trust memory over these files — and if you
+Future: draft intents describe proposed work; accepted intents describe
+committed work. Never trust memory over these files — and if you
 learn a fact the files don't state, adding it is part of your PR.
 
 ## Status

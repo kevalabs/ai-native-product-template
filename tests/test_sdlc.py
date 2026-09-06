@@ -199,13 +199,22 @@ class WorkflowTests(unittest.TestCase):
         self.git("add", PLAN)
         self.hook(False)
 
-    def test_idea_branch_is_scoped(self):
+    def test_removed_idea_branch_is_rejected(self):
         self.git("branch", "-m", "artifact/ideas")
         self.write("product/IDEAS.md", "- A new thought\n")
         self.git("add", "product/IDEAS.md")
-        self.hook(True)
-        self.change_code()
         self.hook(False)
+        self.commit("Try the removed entry point")
+        self.history(False, "artifact/ideas")
+
+    def test_artifact_branch_rejects_removed_inbox_exception(self):
+        self.git("branch", "-m", "artifact/001-demo")
+        self.write(f"{CHAIN}/spec.md", "**Status:** accepted\nA clarified rule.\n")
+        self.write("product/IDEAS.md", "- A new thought\n")
+        self.git("add", f"{CHAIN}/spec.md", "product/IDEAS.md")
+        self.hook(False)
+        self.commit("Try an inbox change with accepted requirements")
+        self.history(False, "artifact/001-demo")
 
     def test_bootstrap_branch_cannot_change_enforcement(self):
         self.git("branch", "-m", "artifact/bootstrap")

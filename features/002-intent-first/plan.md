@@ -62,3 +62,16 @@ S5: run the complete make test suite, retaining all unrelated assertions.
 Review the artifact PR first, then the implementation PR. No remote
 settings or new dependencies are needed. Update the existing SDLC
 capability doc in the implementation PR.
+
+## Verification evidence
+
+- Both new rejection tests failed against the old permissions before
+  changing the validator.
+- make test passes all 34 tests plus the template syntax and whitespace
+  checks. Local and PR validation reject the removed entry points.
+- Active guidance has no command, inbox, branch, or graduation references.
+  The skill is also absent through the Claude skills symlink.
+- All 12 implementation files match the touched-surface list. Shipped
+  feature 001 is unchanged; its references remain part of the history.
+- The artifact history and plan-only implementation history validate
+  against their intended bases.

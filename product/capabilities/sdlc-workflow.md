@@ -5,8 +5,10 @@ to the contributor workflow; they describe the template, not a product UI.
 
 ## Actors & permissions
 
-- R1 Contributors prepare a chain's intent and spec on an artifact
-  branch, then land them through a reviewed PR before implementation.
+- R1 Contributors start each proposal with a draft intent that states
+  the problem, why it matters, and the desired outcome. They prepare
+  intent and spec on an artifact branch and land accepted requirements
+  through a reviewed PR before implementation.
 - R2 Owners approve intent, spec, and plan; reviewers approve PRs.
   Status markers record these decisions but do not prove human approval.
 
@@ -21,7 +23,7 @@ to the contributor workflow; they describe the template, not a product UI.
 - R13 Unsupported branches, default-branch commits, detached local
   commits, and deletions or renames cannot skip plan checks.
 - R14 Artifact branches only carry their allowed planning documents.
-  Bootstrap and idea branches have separate, narrow document scopes.
+  The bootstrap branch has its own narrow document scope.
 - R15 PR validation checks each commit since the merge base and requires
   a plan-only first implementation commit. PR history stays linear.
 - R16 make test runs the template regression suite and syntax checks.
