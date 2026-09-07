@@ -127,6 +127,77 @@ class EvidenceTests(unittest.TestCase):
         with self.assertRaisesRegex(local.Violation, "dependency"):
             self.validate()
 
+    def extra_dependency(self):
+        path = "features/002-other/plan.md"
+        self.data["/issues/99"] = {
+            "number": 99, "state": "closed", "state_reason": "completed",
+            "body": ("**Status:** Done\n**Outcome:** 002-other\n"
+                     "**Stage:** plan\n**Phase:** single\n"
+                     f"**Review PR:** {URL}/pull/30\n"
+                     f"**Approved artifact:** {URL}/blob/{BASE}/{path}\n"),
+        }
+        self.data["/issues/4/dependencies/blocked_by"].append({"number": 99})
+        self.data["/pulls/30"] = copy.deepcopy(self.pr)
+        self.data["/pulls/30/reviews"] = []
+        self.data["/pulls/30/files"] = [{"filename": path}]
+        self.files[path] = "**Status:** approved\n"
+        return path
+
+    def test_extra_closed_dependency_requires_merge_evidence(self):
+        self.extra_dependency()
+        self.data["/issues/99"]["body"] = self.data["/issues/99"]["body"].replace(
+            f"**Review PR:** {URL}/pull/30\n", "")
+        with self.assertRaisesRegex(local.Violation, "Review PR"):
+            self.validate()
+
+    def test_extra_dependency_unmerged_pr_is_blocked(self):
+        self.extra_dependency()
+        self.data["/pulls/30"]["merged"] = False
+        with self.assertRaisesRegex(local.Violation, "must merge"):
+            self.validate()
+
+    def test_extra_dependency_wrong_artifact_is_blocked(self):
+        self.extra_dependency()
+        self.data["/issues/99"]["body"] = self.data["/issues/99"]["body"].replace(
+            "features/002-other/plan.md", ROOT + "/plan.md")
+        with self.assertRaisesRegex(local.Violation, "permalink"):
+            self.validate()
+
+    def test_extra_dependency_stale_artifact_is_blocked(self):
+        path = self.extra_dependency()
+        merge = "c" * 40
+        self.data["/pulls/30"]["merge_commit_sha"] = merge
+        self.data["/issues/99"]["body"] = self.data["/issues/99"]["body"].replace(BASE, merge)
+        with patch.object(local, "content", side_effect=lambda ref, name:
+                          "**Status:** approved\nchanged" if ref == BASE and name == path else self.files.get(name, "")):
+            with self.assertRaisesRegex(local.Violation, "dependency.*changed"):
+                self.validate()
+
+    def test_extra_dependency_unavailable_evidence_is_blocked(self):
+        self.extra_dependency()
+        original = self.evidence.api
+
+        def unavailable(endpoint, pages=False):
+            if endpoint.endswith("/pulls/30"):
+                raise local.Violation("GitHub evidence unavailable")
+            return original(endpoint, pages)
+
+        self.evidence.api = unavailable
+        with self.assertRaisesRegex(local.Violation, "unavailable"):
+            self.validate()
+
+    def test_verified_extra_dependency_passes_both_gates(self):
+        self.extra_dependency()
+        self.validate()
+        self.evidence.handoff(4, BASE)
+
+    def test_handoff_extra_dependency_wrong_artifact_is_blocked(self):
+        self.extra_dependency()
+        self.data["/issues/99"]["body"] = self.data["/issues/99"]["body"].replace(
+            "features/002-other/plan.md", ROOT + "/plan.md")
+        with self.assertRaisesRegex(local.Violation, "permalink"):
+            self.evidence.handoff(4, BASE)
+
     def test_cancelled_dependency_is_blocked(self):
         self.data["/issues/3"]["state_reason"] = "not_planned"
         with self.assertRaisesRegex(local.Violation, "dependency"):

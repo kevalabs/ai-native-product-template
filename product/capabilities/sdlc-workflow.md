@@ -49,7 +49,10 @@ Proof and Ship evidence lands and its success criteria hold.
   reports classic protection and ruleset evidence without installing it.
 - R23 Stage and work status are separate. The parent stays open until
   all phases ship and success criteria hold. Cancellation does not
-  unlock dependent work. Reopened tasks require renewed evidence checks.
+  unlock dependent work. Both handoff and PR checks verify every
+  dependency's merged stage PR and current approved artifact for its
+  declared outcome and phase. A closed task alone cannot unlock work.
+  Reopened tasks require renewed evidence checks.
 - R24 Stage skills look up existing identities before mutations and
   verify unknown write results before retrying. There is no background
   issue/PR lifecycle automation or automatic human approval.
