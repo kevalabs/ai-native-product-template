@@ -23,18 +23,20 @@ of that feature's PR.
 <!-- template: internal operator roles; one named surface per audience
      (e.g. System console = apps/system, Customer app = apps/customer). -->
 
-## Process (AI-native SDLC — generic, keep as-is)
+## Process (AI-native SDLC — generic)
 
-- **Artifact branch** — a branch for reviewing a chain's intent and
-  spec before implementation. Its accepted requirements land before
-  the feature branch starts.
-- **Intent** — problem + desired outcome for one unit of work
-  (Stage 1 artifact).
-- **Spec** — requirements and design for one feature (Stage 2).
-- **Plan** — implementation plan incl. files/apps touched (Stage 3;
-  first commit on the feature branch).
-- **Feature** — a unit of *change*: one numbered directory in
-  `features/`, immutable once shipped.
-- **Capability** — a unit of *being*: current shipped behavior, one
-  file in `product/capabilities/`, present tense only, updated only by
-  shipping PRs.
+- **Intent** — the problem and desired outcome. Its parent GitHub issue
+  has type Intent and stays open until the whole outcome ships.
+- **Spec** — testable behavior requirements for one outcome or phase.
+- **Plan** — approved implementation approach and touched files. It
+  lands in a Plan-only PR before Build starts.
+- **Build** — implementation and its verification under a merged Plan.
+- **Proof** — Test + Review of the exact merged Build against the Spec
+  and Intent, recorded in its own artifact and PR.
+- **Ship** — delivery of the proved version and merged delivery evidence.
+- **Stage task** — a Task sub-issue tracking one stage, its artifact,
+  owner, dependencies, approval, and merged PR.
+- **Artifact branch** — a branch reviewing one Intent or exact-phase Spec.
+- **Feature** — one numbered outcome directory, immutable after Ship.
+- **Capability** — current implemented behavior, updated with the Build
+  that changes it and stating any remaining release restrictions.

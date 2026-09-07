@@ -23,3 +23,6 @@ only inside the PR that changes the behavior.
 ## Region availability
 
 Flags currently off in any region, if any.
+
+<!-- Update with Build changes. State remaining release restrictions;
+     Build availability alone does not mark the outcome shipped. -->

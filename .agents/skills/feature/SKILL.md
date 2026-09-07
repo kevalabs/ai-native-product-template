@@ -1,62 +1,34 @@
 ---
 name: feature
-description: The product board — reports what is shipped, promised, and proposed, plus the stage and health of each feature chain. Read-only. Use when the user asks what the product does, what is in flight, where feature NNN stands, or what the next step for a chain is.
+description: Read-only product board showing shipped, accepted, and proposed outcomes, their current stage, and the next verified gate.
 ---
 
-Report product status.
+Read product/capabilities/ and the outcome artifacts under features/.
+With an NNN argument, report that chain; otherwise show the product board.
+Read `.githooks/README.md` for stage tasks and evidence fields.
 
-**Arguments:** optionally a feature number `NNN`, given when this
-skill is invoked. With no argument, show the whole board.
+For each chain or phase, inspect both artifacts and their linked GitHub
+issues/PRs. Distinguish stage from status. Intent, Spec, Plan, Build,
+Test + Review, and Ship each require their own approved merged PR.
+A file's existence, accepted marker, local Plan commit, or closed task
+alone does not unlock the next stage. Name missing approvals, merges,
+links, inaccessible evidence, stale proof, and unmet phase dependencies.
+Use the read-only handoff check where appropriate; do not mutate records.
 
-This is a read-only status command — it never creates or edits
-artifacts. It computes everything live from the files, so it is
-always current: `product/capabilities/` for what's done, `features/`
-for accepted work and draft intents.
+Show Proposed for draft intents, Accepted for accepted outcomes before
+Build, In build after the Plan merge, and In review/proof/delivery as
+supported by current work. Show Shipped only after successful delivery
+and merged Ship evidence, with all phases and success criteria complete.
+A Build merge or capability update alone is not shipment. Keep cancelled
+outcomes separate and do not treat their dependencies as complete.
 
-For each chain in scope, inspect `features/NNN-*/` and report:
+Older shipped chains retain their actual historical completion evidence;
+do not retroactively require artifacts that did not exist under their
+workflow. Report missing evidence explicitly for active-chain adoption.
+If GitHub is unavailable, mark the result unverified rather than infer
+remote success. Current capability text may state release restrictions.
 
-1. **Stage reached.**
-   - `intent.md` missing → not a chain yet.
-   - intent `draft` → Stage 1 open; gate: owner accepts intent.
-   - intent `accepted`, no/`draft` spec → Stage 2; gate: owner accepts
-     spec (`/spec NNN` to draft or revise).
-   - spec `accepted`, no plan → Stage 3; gate: reviewed artifact PR
-     merged, then implementation worktree + `/plan NNN`.
-   - plan committed → building/in review; gate: `make test` green,
-     PR merged with capability docs updated.
-   - Shipped (check: does a `product/capabilities/` doc reflect the
-     spec's rules, and is the branch merged in `git log`?) →
-     immutable. Any further change is a NEW chain that links back.
-
-   Multi-phase intents (the intent's `## Phases` lists `Pn` entries):
-   apply the same ladder to each `features/NNN-*/Pn-*/` directory and
-   report the chain as "phase k of n shipped, Pm at <stage>". A phase
-   with no directory yet is "not started". The chain is shipped only
-   when every phase is.
-2. **Health flags**, if any: spec open questions still unresolved at
-   plan stage; a branch `feature/NNN-*` existing with code commits but
-   no committed plan.md (rule violation); touched-surface overlaps
-   between in-flight plans (sibling phases included); a shipped chain
-   whose capability doc was never updated; a phase being built while
-   a phase it depends on has no accepted spec; an intent accepted
-   more than a month ago with phases still not started.
-
-With no argument, output the board in three sections — done first,
-because "what does the product do today" is the most common question:
-
-1. **✅ Done (shipped)** — one line per `product/capabilities/` doc:
-   capability name + a one-sentence plain-language summary of what it
-   does. This is what the system provides today.
-2. **🔨 Promised (in flight)** — chains with an accepted intent that
-   haven't shipped: number, name, stage, next gate. An accepted
-   intent is a commitment; this is what the system will provide.
-3. **🤔 Proposed (draft)** — chains whose intent is still `draft`:
-   someone is thinking about it, nothing is promised yet.
-
-After the board, detail only the chains with health flags. With a
-specific NNN, skip the board and give the full picture of that chain
-including its open questions.
-
-Point the user at the right next command (`/intent`, `/spec NNN`,
-`/plan NNN`, `/capability NNN`) instead of offering to do the next
-stage's work here.
+For the whole board, show shipped, accepted/in-flight, then proposed
+outcomes. Detail only relevant health issues. For one chain, show phase
+progress and its next command/gate. This is read-only; never advance a
+stage, close an issue, or rewrite an artifact to make a report look green.

@@ -7,6 +7,9 @@ on:
 
 permissions:
   contents: read
+  issues: read
+  pull-requests: read
+  checks: read
 
 jobs:
   template:
@@ -34,4 +37,16 @@ jobs:
           PR_BRANCH: ${{ github.head_ref }}
         run: >-
           python3 scripts/check_sdlc.py
+          --base "$PR_BASE" --head "$PR_HEAD" --branch "$PR_BRANCH"
+
+      - name: Verify predecessor merges and artifact links
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+          PR_BRANCH: ${{ github.head_ref }}
+        run: >-
+          python3 scripts/check_github.py --repo "$PR_REPO" --pr "$PR_NUMBER"
           --base "$PR_BASE" --head "$PR_HEAD" --branch "$PR_BRANCH"

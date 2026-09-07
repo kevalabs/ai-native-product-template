@@ -1,5 +1,11 @@
 # <Feature name> — Intent
 
+**Stage:** intent
+**Outcome:** <NNN-name>
+**Phase:** <single or Pn-name>
+**Parent issue:** <GitHub Intent issue URL>
+**Stage issue:** <GitHub stage Task URL>
+
 **Status:** draft | accepted
 **Kind:** change
 <!-- Use exactly "contracts" for a dedicated packages/ contract chain. -->
@@ -49,7 +55,8 @@ Most intents are one phase; write "Single phase" and stop. When
 there are several, list them in order with their actor and what each
 depends on. Accepting this intent also accepts this split.
 
-- Single phase — this intent ships as one spec, one plan, one PR.
+- Single phase — this outcome follows one Spec-through-Ship sequence,
+  with a separate reviewed PR at each stage.
 
 <!-- multi-phase form:
 - P1 <short-name> — <actor> can <outcome>. Depends on: —
@@ -77,3 +84,5 @@ chains.
 ## Open questions
 
 What must be resolved before or during spec.
+
+<!-- On owner approval, add **Accepted by:** with the person and actual approval source. -->

@@ -31,7 +31,7 @@ class WorkflowTests(unittest.TestCase):
         self.git("config", "user.email", "test@example.invalid")
         self.write("app.py", "print('before')\n")
         self.write(f"{CHAIN}/intent.md", "**Status:** accepted\n**Kind:** change\n")
-        self.write(f"{CHAIN}/spec.md", "**Status:** accepted\n")
+        self.write(f"{CHAIN}/spec.md", "**Status:** accepted\n- S1 A checkable outcome.\n")
         if CHECK.exists():
             self.write("scripts/check_sdlc.py", CHECK.read_text())
         self.commit("Fixture base")
@@ -56,6 +56,37 @@ class WorkflowTests(unittest.TestCase):
     def plan(self, text=APPROVED, path=PLAN):
         self.write(path, text)
         self.commit("Approved plan")
+
+    def land_plan(self, path=PLAN):
+        self.base = self.git("rev-parse", "HEAD").stdout.strip()
+        self.git("branch", "-f", "main", "HEAD")
+        directory = path.rsplit("/", 1)[0]
+        phase = "single" if directory == CHAIN else directory.rsplit("/", 1)[1]
+        self.write(f"{directory}/build.md", self.record("build", phase) +
+                   "**Plan commit:** " + self.base + "\n**Verification:** make test passed\n")
+        self.git("add", f"{directory}/build.md")
+
+    def record(self, stage, phase="single"):
+        status = {"build": "ready", "proof": "passed", "ship": "delivered"}[stage]
+        return (f"**Status:** {status}\n**Stage:** {stage}\n**Outcome:** 001-demo\n"
+                f"**Phase:** {phase}\n**Parent issue:** https://github.com/example/repo/issues/1\n"
+                "**Stage issue:** https://github.com/example/repo/issues/5\n"
+                "**Predecessor PR:** https://github.com/example/repo/pull/4\n")
+
+    def land_build(self):
+        self.plan()
+        self.land_plan()
+        self.change_code()
+        self.commit("Build")
+        self.base = self.git("rev-parse", "HEAD").stdout.strip()
+        self.git("branch", "-f", "main", "HEAD")
+        self.git("checkout", "-b", "proof/001-demo")
+        self.write(f"{CHAIN}/proof.md", self.record("proof") +
+                   f"**Build commit:** {self.base}\n**Blocking findings:** none\n"
+                   "## Requirement results\n- S1: PASS — test_outcome\n"
+                   "## Verification\nmake test passed\n## Human review\nOwner review recorded\n"
+                   "## Intent results\nAll success criteria met\n")
+        self.git("add", f"{CHAIN}/proof.md")
 
     def change_code(self, path="app.py"):
         self.write(path, "print('after')\n")
@@ -139,6 +170,7 @@ class WorkflowTests(unittest.TestCase):
 
     def test_committed_approved_plan_allows_code(self):
         self.plan()
+        self.land_plan()
         self.change_code()
         self.hook(True)
 
@@ -149,6 +181,7 @@ class WorkflowTests(unittest.TestCase):
 
     def test_unstaged_plan_edit_does_not_affect_committed_approval(self):
         self.plan()
+        self.land_plan()
         self.write(PLAN, "**Status:** draft\n")
         self.change_code()
         self.hook(True)
@@ -169,6 +202,7 @@ class WorkflowTests(unittest.TestCase):
         self.base = self.git("rev-parse", "HEAD").stdout.strip()
         self.git("checkout", "-B", "feature/001-P2-next")
         self.plan(path=f"{CHAIN}/P2-next/plan.md")
+        self.land_plan(path=f"{CHAIN}/P2-next/plan.md")
         self.change_code()
         self.hook(True)
         self.commit("Implementation")
@@ -235,6 +269,7 @@ class WorkflowTests(unittest.TestCase):
 
     def test_valid_history_passes(self):
         self.plan()
+        self.land_plan()
         self.change_code()
         self.commit("Implementation")
         self.history(True)
@@ -267,6 +302,7 @@ class WorkflowTests(unittest.TestCase):
 
     def test_contract_change_requires_its_own_chain(self):
         self.plan(APPROVED + "- packages/types.py\n")
+        self.land_plan()
         self.change_code("packages/types.py")
         self.hook(False)
 
@@ -276,6 +312,7 @@ class WorkflowTests(unittest.TestCase):
         self.commit("Accepted contract intent")
         self.git("checkout", "-B", "feature/001-demo")
         self.plan(APPROVED + "- packages/types.py\n")
+        self.land_plan()
         self.change_code("packages/types.py")
         self.hook(True)
 
@@ -302,6 +339,109 @@ class WorkflowTests(unittest.TestCase):
         )
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("sdlc:", result.stderr)
+
+    def test_build_history_accepts_plan_already_on_base(self):
+        self.plan()
+        self.base = self.git("rev-parse", "HEAD").stdout.strip()
+        self.write(f"{CHAIN}/build.md", "**Status:** ready\n**Stage:** build\n"
+                   "**Outcome:** 001-demo\n**Phase:** single\n"
+                   "**Parent issue:** https://github.com/example/repo/issues/1\n"
+                   "**Stage issue:** https://github.com/example/repo/issues/5\n"
+                   "**Predecessor PR:** https://github.com/example/repo/pull/4\n"
+                   "**Plan commit:** " + self.base + "\n"
+                   "**Verification:** make test passed\n")
+        self.change_code()
+        self.commit("Build after merged plan")
+        self.history(True)
+
+    def test_artifact_history_rejects_bundled_intent_and_spec(self):
+        self.git("branch", "-m", "artifact/001-demo")
+        self.write(f"{CHAIN}/intent.md", "**Status:** accepted\nChanged intent\n")
+        self.write(f"{CHAIN}/spec.md", "**Status:** accepted\nChanged spec\n")
+        self.commit("Bundle two stages")
+        self.history(False, "artifact/001-demo")
+
+    def test_build_rejects_unmerged_plan(self):
+        self.plan()
+        self.change_code()
+        self.hook(False)
+        self.commit("Code on unmerged plan")
+        self.history(False)
+
+    def test_build_rejects_undeclared_file(self):
+        self.plan()
+        self.land_plan()
+        self.change_code("undeclared.py")
+        self.hook(False)
+
+    def test_build_cannot_edit_its_plan(self):
+        self.plan()
+        self.land_plan()
+        self.write(PLAN, APPROVED + "- extra.py\n")
+        self.git("add", PLAN)
+        self.change_code()
+        self.hook(False)
+
+    def test_proof_allows_complete_evidence(self):
+        self.land_build()
+        self.hook(True)
+        self.commit("Proof")
+        self.history(True, "proof/001-demo")
+
+    def test_proof_rejects_missing_requirement_result(self):
+        self.land_build()
+        text = (self.repo / f"{CHAIN}/proof.md").read_text()
+        self.write(f"{CHAIN}/proof.md", text.replace("- S1: PASS — test_outcome", ""))
+        self.git("add", f"{CHAIN}/proof.md")
+        self.hook(False)
+
+    def test_proof_rejects_code_changes(self):
+        self.land_build()
+        self.change_code("extra.py")
+        self.hook(False)
+
+    def test_ship_requires_current_proof_and_success(self):
+        self.land_build()
+        build = self.base
+        self.commit("Proof")
+        self.base = self.git("rev-parse", "HEAD").stdout.strip()
+        self.git("branch", "-f", "main", "HEAD")
+        self.git("checkout", "-b", "ship/001-demo")
+        self.write(f"{CHAIN}/ship.md", self.record("ship") +
+                   f"**Build commit:** {build}\n**Proof commit:** {self.base}\n"
+                   "**Destination:** main\n**Delivery evidence:** verified version\n**Result:** success\n")
+        self.git("add", f"{CHAIN}/ship.md")
+        self.hook(True)
+        self.commit("Ship")
+        self.history(True, "ship/001-demo")
+
+    def test_proof_rejects_stale_build(self):
+        self.land_build()
+        self.git("reset")
+        self.write("app.py", "print('changed after test')\n")
+        self.git("add", "app.py")
+        self.git("commit", "-m", "Changed code")
+        self.base = self.git("rev-parse", "HEAD").stdout.strip()
+        self.git("branch", "-f", "main", "HEAD")
+        self.git("add", f"{CHAIN}/proof.md")
+        self.hook(False)
+
+    def test_spec_requires_accepted_intent_on_base(self):
+        self.git("checkout", "main")
+        self.write(f"{CHAIN}/intent.md", "**Status:** draft\n")
+        self.commit("Draft intent")
+        self.base = self.git("rev-parse", "HEAD").stdout.strip()
+        self.git("checkout", "-b", "artifact/001-demo")
+        self.write(f"{CHAIN}/spec.md", "**Status:** draft\n")
+        self.git("add", f"{CHAIN}/spec.md")
+        self.hook(False)
+
+    def test_proof_wrong_phase_is_rejected(self):
+        self.land_build()
+        text = (self.repo / f"{CHAIN}/proof.md").read_text().replace("**Phase:** single", "**Phase:** P2-other")
+        self.write(f"{CHAIN}/proof.md", text)
+        self.git("add", f"{CHAIN}/proof.md")
+        self.hook(False)
 
 
 if __name__ == "__main__":

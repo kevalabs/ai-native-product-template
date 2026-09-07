@@ -30,12 +30,19 @@ severity. Do not review formatting or style — linters own that.
 
 - Verify actual owner approval of intent, spec, and plan. Markdown
   status values alone are not approval evidence.
-- Confirm the accepted intent/spec artifact PR landed before the
-  implementation branch. `SDLC history` and `Template verification`
-  must pass. Inspect changes to the workflow, validator, and tests:
+- Confirm each predecessor stage has its own approved, merged PR
+  before the next stage starts. Plan must already be merged before
+  Build. Verify the exact phase and the approved artifact permalink.
+  `SDLC history` and `Template verification` must pass. Inspect changes to the workflow, validator, and tests:
   a PR can change its own checks, so a green job is not enough.
-- For artifact PRs, review only the permitted planning scope and the
-  relevant human gates; there is no implementation plan yet.
+- For planning PRs, review only the current stage and its human gate.
+  Intent, Spec, and Plan must not share one PR. Check that explicit
+  conversation approval is recorded before merge; do not request it
+  again or confuse a ready-for-review PR with artifact acceptance.
+- Verify issue-to-artifact links and backlinks, exact completed
+  versions, stage dependencies, and the parent staying open until Ship.
+  Check every proof result and shipment evidence; generated PASS text
+  and a human merge alone do not prove independent review or success.
 - Require these jobs and human review through branch protection.
   The repository files cannot install or attest remote settings.
 

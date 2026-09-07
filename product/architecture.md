@@ -65,10 +65,11 @@ layout is a destination, not commit one.
 7. **Docs are generated, never hand-authored HTML.** Markdown is the
    reviewed source; `apps/docs` renders manual (capabilities) +
    changelog (features).
-8. **One agent, one worktree, one branch.** No direct commits to
-   main. An artifact PR lands accepted intent/spec files first;
-   plan.md is the first commit on the implementation branch. Review
-   checks that the merged diff matches the plan.
+8. **One agent, one worktree, one branch.** Every stage starts from
+   the updated default branch after its predecessor PR merges. Intent,
+   Spec, and Plan each land separately; Build requires the merged
+   approved Plan. Proof and Ship have their own evidence PRs. Review
+   checks that the Build diff matches the approved touched surface.
 9. **Apps are named by audience.** Adding an audience adds a
    directory, never a restructure. `core` stays singular.
 10. **The repo is the unit of truth, never the unit of deployment.**

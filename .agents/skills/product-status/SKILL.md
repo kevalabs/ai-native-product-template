@@ -19,17 +19,20 @@ files and git history; never asks anyone to maintain a status file.
 For every chain in `features/NNN-*/` plus every shipped capability:
 
 - **Status**, in stakeholder words:
-  - `Proposed` — intent exists but is still draft.
-  - `Committed` — intent accepted, spec being worked or accepted.
-  - `In build` — plan committed on a feature branch.
-  - `In review` — implementation PR open (check `gh pr list` if a
-    remote exists). An artifact PR is requirements review and stays
-    Proposed or Committed according to the intent's acceptance.
-  - `Shipped` — branch merged and the capability doc updated.
-  - Multi-phase intents get ONE row (stakeholders care about the
-    outcome, not the cut): status is the furthest-along open phase,
-    with the count in words — "In build (2 of 5 shipped)". Shipped
-    only when every phase is.
+  - `Proposed` — intent is draft.
+  - `Committed` — intent accepted, requirements or Plan in progress.
+  - `In build` — approved Plan PR merged; Build underway.
+  - `In review` — Build or Proof being reviewed; identify which.
+  - `In delivery` — passing Proof PR merged; Ship not complete.
+  - `Shipped` — successful delivery and Ship evidence PR merged,
+    every required phase complete, and Intent success criteria checked.
+  - `Cancelled` — explicitly cancelled, never counted as shipment.
+  - Multi-phase: one row per parent outcome, with completed phase count.
+    Keep stage separate from work status. Inspect linked issues and
+    actual merged PRs; markers, task closure, or capability text alone
+    do not prove advancement. Name inaccessible evidence as unverified.
+  - Legacy shipped records keep their real historical evidence; active
+    adoption records missing backlinks rather than inventing old proof.
 - **Started** — the intent's Date field; fall back to the first git
   commit that touched the feature directory
   (`git log --reverse --format=%as -- features/NNN-*` | first line).
@@ -37,9 +40,9 @@ For every chain in `features/NNN-*/` plus every shipped capability:
   invent one. If a due date is past and the chain isn't shipped, mark
   the date `⚠ overdue` in the table and name it in the summary —
   overdue is news, not something to bury in a column.
-- **Completed** — for shipped chains, the date of the merge commit
-  that landed the branch (or the last commit touching the chain's
-  capability doc). Blank otherwise — never estimate a future date.
+- **Completed** — for shipped chains, the verified shipment completion date, after delivery and the Ship
+  evidence merge. Legacy records retain their historical completion
+  date. Blank otherwise — never estimate a future date.
 - **Depends on** — read the intent's Constraints and the plan's
   touched-surface list: named dependencies on other chains, plus
   collisions (two in-flight plans touching the same files means one

@@ -1,6 +1,6 @@
 PYTHON ?= python3
 
-.PHONY: setup test lint build
+.PHONY: setup setup-check handoff test lint build
 
 setup:
 	git config core.hooksPath .githooks
@@ -16,3 +16,13 @@ lint:
 
 build:
 	$(PYTHON) scripts/verify_template.py
+
+# These live checks intentionally stay separate from the offline test suite.
+REPO ?= $(shell gh repo view --json nameWithOwner --jq .nameWithOwner)
+BASE ?= origin/main
+
+setup-check:
+	$(PYTHON) scripts/check_github.py --repo "$(REPO)" --setup-check
+
+handoff:
+	$(PYTHON) scripts/check_github.py --repo "$(REPO)" --handoff --issue "$(ISSUE)" --base "$(BASE)"

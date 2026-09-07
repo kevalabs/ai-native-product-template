@@ -1,0 +1,19 @@
+name: Intent
+description: Track an outcome from proposal through shipment.
+type: Intent
+title: "[NNN] Outcome"
+body:
+  - type: textarea
+    id: record
+    attributes:
+      label: Outcome record
+      description: Fill the headers and link the governing Markdown. Keep full requirements in that artifact.
+      value: |
+        **Outcome:** <NNN-name>
+        **Status:** Proposed
+        **Artifact:** <readable intent.md URL>
+
+        ## Artifact index
+        <Links to the stage artifacts as they become available.>
+    validations:
+      required: true

@@ -1,11 +1,17 @@
 # <Feature name> — Plan
 
+**Stage:** plan
+**Outcome:** <NNN-name>
+**Phase:** <single or Pn-name>
+**Parent issue:** <GitHub Intent issue URL>
+**Stage issue:** <GitHub stage Task URL>
+**Predecessor PR:** <merged previous-stage PR URL>
+
 **Status:** draft
 <!-- Change to exactly "approved" only after owner approval. Keep the
      status on its own line. Commit this file alone as the first commit
      on the feature branch, before any implementation changes. -->
 **Spec:** link to this feature's spec.md
-**Phase:** <Pn short-name, or "single phase">
 **Branch:** feature/NNN[-Pn]-short-name
 
 The plan answers HOW. This is where tables, endpoints, components,
@@ -47,3 +53,5 @@ which are written first (bug-fix rule: failing test precedes fix).
 
 Feature flags, region order, capability-doc update, anything needed
 at deploy time.
+
+<!-- On owner approval, add **Approved by:** with the person and actual approval source. -->

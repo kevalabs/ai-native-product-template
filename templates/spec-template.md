@@ -1,9 +1,14 @@
 # <Feature name> — Spec
 
+**Stage:** spec
+**Outcome:** <NNN-name>
+**Phase:** <single or Pn-name>
+**Parent issue:** <GitHub Intent issue URL>
+**Stage issue:** <GitHub stage Task URL>
+**Predecessor PR:** <merged previous-stage PR URL>
+
 **Status:** draft | accepted
 **Intent:** link to this feature's intent.md
-**Phase:** <Pn short-name, or "single phase"> — the phase of the
-intent this spec covers. One spec per phase.
 **Personas served:** <from product/personas.md>
 **Capabilities affected:** <files in product/capabilities/ this will
 create or change>
@@ -87,3 +92,5 @@ What this feature explicitly does not do.
 ## Open questions
 
 Resolved before or during plan.
+
+<!-- On owner approval, add **Accepted by:** with the person and actual approval source. -->
