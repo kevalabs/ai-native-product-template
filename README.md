@@ -108,218 +108,70 @@ setups), replace it with a copy and keep the two in sync.
 
 ## 3. How a feature gets built (the loop)
 
-Every unit of work — new feature, change to shipped behavior, incident
-fix, refactor, infrastructure — is a numbered chain in `features/`.
-The chain is the same six questions every time, and the model behind
-it is written up in `docs/agentic-sdlc.md`:
+Every unit of work starts with a draft Intent explaining the problem
+and desired outcome. One outcome is one numbered feature directory;
+large outcomes have fixed phases in the accepted Intent.
 
 ```
-WHY        WHAT       HOW        BUILD       PROVE            SHIP
-intent  →  spec   →   plan   →   code    →   make test     →  PR merges,
-                                             + REVIEW.md      capability
-                                                              doc updated
+Intent → Spec → Plan → Build → Test + Review → Ship
+   Each arrow requires approved artifacts committed and a reviewed PR merged.
 ```
 
-Never skip a stage. A human approves each artifact before the next
-begins: the intent (including how it is cut into phases), the spec,
-the plan, and finally the PR. Agents do the drafting, building,
-testing, and self-review in between; humans judge at the gates.
+| Command | Produces | Entry gate |
+|---|---|---|
+| `/intent` | intent.md and Intent parent issue | Proposed outcome |
+| `/spec NNN [Pn]` | spec.md | Accepted Intent PR merged |
+| `/plan NNN [Pn]` | plan.md, alone in its PR | Accepted Spec PR merged |
+| `/build NNN [Pn]` | build.md, code, tests, capabilities | Approved Plan PR merged |
+| `/proof NNN [Pn]` | proof.md | Reviewed Build PR merged |
+| `/ship NNN [Pn]` | ship.md | Passing Proof PR merged |
 
-Chains are cut by **outcome**, never by page, screen, or task. "Add
-staff CRUD" is a task; "a salon owner can add the staff needed to run
-the salon" is an outcome. When one outcome is too big to review in
-one PR, the intent lists **phases** — each phase is one reviewable
-capability with its own spec, plan, branch, and PR under the same
-intent directory. Phases that don't depend on each other can run in
-parallel, one agent per worktree, once the intent's shared ground
-(state names, terms, data ownership, contracts) is settled.
+The parent issue has type Intent; stage sub-issues have type Task. Each
+issue links to its governing Markdown and each new artifact links back.
+Completed tasks record approved commit permalinks and merged PRs, so
+branch deletion never removes the review record. Small implementation
+tasks cite the relevant Spec requirement or Plan section. The parent
+stays open until every phase ships and the Intent success criteria hold.
 
-Each stage is a skill in `.agents/skills/`, invoked by name in
-whichever agent you use (the `/name` form below is Claude Code's;
-Codex uses `$name`, others take the name in plain words — see "Which
-agent reads what"). Every skill interviews you *before* generating
-its artifact — the questions are the point: the artifact only has
-value if a human thought through the problem, and the answers
-(evidence, alternatives rejected, exclusions) are recorded in it.
+Start each stage worktree from the updated default branch. Run the live
+entry gate before drafting or executing the next stage:
 
-| Skill | Stage | Produces |
-|-------|-------|----------|
-| `/intent <name>` | 1 | `features/NNN-name/intent.md` — outcome, actors, success criteria, phases |
-| `/spec NNN [Pn]` | 2 | `spec.md` (per chain, or per phase) |
-| `/plan NNN [Pn]` | 3 | `plan.md` (first commit on the branch) |
-| `/capability NNN [Pn]` | 5 | updated `product/capabilities/` doc, same PR |
-| `/feature [NNN]` | — | the product board: done / promised / proposed |
-| `/product-status [save]` | — | stakeholder report: every feature with status, dates, dependencies, open questions |
-
-### One feature end to end (worked example)
-
-Say customers keep emailing support to undo an order. Start with an
-intent: what is broken, why it matters, and what outcome would help?
-A draft intent records the proposal; owner acceptance is the gate to
-specification. Allocate the next number from the latest default branch,
-then create an artifact worktree:
-
-```bash
-git worktree add ../wt-007-artifacts -b artifact/007-refund-requests main
+```sh
+git fetch --prune origin
+make handoff REPO=owner/repo ISSUE=123 BASE=origin/main
 ```
 
-In your agent, in that worktree:
+Use the real stage task. Its predecessor must be merged and approved;
+a local commit, open PR, closed issue, or board status cannot unlock it.
+Read [.githooks/README.md](.githooks/README.md) for branch names and the
+full tracking record. The stage skills retain their owner interviews.
+Explicit conversation approval is recorded before merge, without asking
+for the same approval again. Plan is approved before its first commit.
 
-```
-> /intent refund-requests
-```
+Build includes tests, lint, and build verification before merge. The
+separate Proof stage names the exact merged Build, tests every Spec
+rule, checks the Intent, and records human review and remaining findings.
+Ship requires merged passing proof and successful delivery evidence.
+For this template, delivery is the approved version on the default
+branch; a release tag is optional. A Build merge alone does not close
+the parent outcome. Cancelled work is never counted as shipped.
 
-The agent checks no existing chain or capability already covers refunds,
-then interviews you — what's broken and for whom, what evidence
-(support tickets? metrics? a hunch?), why now, who acts and who
-benefits, what's observably true after shipping, and whether it fits
-one PR or needs phases — and writes
-`features/007-refund-requests/intent.md`. You edit until it's right,
-flip its status to `accepted`. Gate passed — including the phase
-split, if any.
+`/capability` updates current behavior in the Build PR, stating any
+remaining release restrictions. `/feature` reports stage and the next
+missing gate. `/product-status` gives stakeholder status based on actual
+artifacts, links, merges, and shipment evidence. Neither report advances
+work or treats a status label as proof.
 
-(Had this been bigger — say "a customer can request, a support agent
-can approve, and the money comes back" — the intent would list
-`P1-request`, `P2-approve`, `P3-payout`, and every command below
-would take the phase too: `/spec 007 P1`, `/plan 007 P1`, branch
-`feature/007-P1-request`. Same gates, same files, one directory per
-phase.)
+Run `make setup` once per clone and `make test` before handoff. Run
+`make setup-check REPO=owner/repo` to inspect issue types and required
+remote policy. An administrator configures SDLC history, Template
+verification, human review, and renewed approval after changes. Local
+setup does not install those settings. A recorded, owner-selected
+`intent` label fallback is available where custom types are unavailable.
 
-```
-> /spec 007
-```
+Shipped feature directories are immutable. Incidents and later behavior
+changes start new intents linking back to the original outcome.
 
-Refuses to run if the intent is still `draft`. Then turns your answers
-into flows, states, permissions, error paths, and numbered testable
-rules ("S1 A customer can request a refund while the order is
-`delivered` and within 14 days"), confronts you with conflicting
-capability rules, and forces a real "out of scope" list. Nothing
-about tables or endpoints — anyone who knows the product can read
-it. Accept `spec.md` the same way. Commit the accepted intent and
-spec on the artifact branch and open its PR. Once reviewed and merged,
-update your default branch and create the implementation worktree:
-
-```bash
-git worktree add ../wt-007 -b feature/007-refund-requests main
-```
-
-Both accepted files are now committed in the new worktree. For a later
-phase, land that phase's accepted spec in another artifact PR first.
-Uncommitted files in one worktree never transfer to another.
-
-```
-> /plan 007        # in the worktree, before any code
-```
-
-Uses an implementation worktree with the accepted artifacts committed.
-Offers 2–3 implementation approaches and
-records why the losers lost, lists every file the work will touch
-(checked against other in-flight plans for collisions), then commits
-`plan.md` as the first commit on the branch. Build follows in the
-same worktree until `make test` is green.
-
-```
-> /capability 007  # on the feature branch, before opening the PR
-```
-
-Converts the *shipped* S-rules — and only those — into present-tense
-R-rules in `product/capabilities/refunds.md`, in the same PR (review
-blocks behavior changes without this).
-
-```
-> /feature
-```
-
-Any time you come back cold, or anyone asks "what does the product
-do, and what's coming?": one board, three sections — ✅ done (from
-`product/capabilities/`), 🔨 promised (accepted chains in flight),
-and 🤔 proposed (draft intents). It also flags
-anything unhealthy (code on a branch with no committed plan, spec
-questions still open at plan stage).
-
-```
-> /product-status
-```
-
-The same facts, written for people *outside* the repo: one table with
-every feature's status (Proposed / Committed / In build / In review /
-Shipped), started, due, and completed dates, dependencies, and open
-questions — plus a "needs a decision" list naming who owes which
-answer. Everything is computed from the artifacts and git history, so
-it is never stale: started = the intent's date, completed = the merge
-that shipped it, due = the intent's `Due:` field (set only when
-someone committed to a real date — a chain past its due date is
-flagged in the opening summary). `/product-status save` also writes
-the report to `reports/status-YYYY-MM-DD.md` for sharing.
-
-**Stage 1 — Intent (why).** Start in an `artifact/NNN-short-name`
-worktree and run `/intent <short-name>`. The
-interview makes you state the problem and outcome, not the solution,
-records the evidence, names the actors and success criteria, and
-proposes phases if the outcome is too big for one PR; the result is
-`features/NNN-short-name/intent.md` (manual path: copy
-`templates/intent-template.md`). Product owner accepts it — and with
-it the phase split.
-
-**Stage 2 — Spec (what).** Run `/spec NNN` (or `/spec NNN Pn` for
-one phase) with the intent accepted. The interview extracts flows,
-states, permissions, error paths, testable S-rules, and collisions
-with current capabilities into `spec.md`. Mocks are exported into the
-feature's `design/` folder and referenced from the spec. No
-implementation detail — that is the plan's job. Product owner
-resolves flags, accepts. Commit and merge the reviewed artifact PR
-before starting the implementation worktree.
-
-**Stage 3 — Plan (how), then build.**
-
-```bash
-# From an updated main containing the reviewed intent and spec:
-git worktree add ../wt-NNN -b feature/NNN-short-name main
-# or, for one phase:
-git worktree add ../wt-NNN-P1 -b feature/NNN-P1-short-name main
-```
-
-Open your agent there — in its **read-only planning mode** if it has
-one — and run the `plan` skill (`/plan NNN [Pn]`).
-Iterate until the plan is right — including the exact list of files it
-will touch (checked against other in-flight plans, sibling phases
-included, for collisions). If the plan won't fit one reviewable PR,
-go back and split the phase. Commit `plan.md` as the **first commit
-on the branch**, containing only that approved file, then implement.
-No code before a committed plan. Keep the branch history linear and
-rebase onto the target branch when updating it. CI checks every PR
-commit; a later correction cannot erase an earlier gate violation.
-
-**Stage 4 — Prove.** `make test` must pass
-before handoff — the agent fixes its own failures. The template target
-runs workflow tests, whitespace and shell checks, and Python syntax
-and entry-point checks. Product repos add their actual tests, lint,
-and build to this same command. Bug fixes write the
-failing test *first*, and never edit an existing test to make it pass.
-Green tests are not the bar: the agent then walks the spec's
-acceptance criteria and says which S-rule each test proves, and
-reads the intent's outcome once more to check the work actually
-delivers it.
-
-**Stage 5 — PR and review.** Push, open a PR linking the feature (or
-phase) directory. AI review runs `REVIEW.md` (correctness, security,
-spec compliance, outcome — undeclared file changes are blocking).
-The two review questions, in order: *did we build what the spec
-said?* and, on the last phase, *did this achieve the intent?* If your
-change alters behavior, the same PR must update the matching
-`product/capabilities/` doc (run `/capability NNN [Pn]`) — review
-blocks it otherwise. A human approves; merge deletes the branch;
-remove the worktree.
-
-If you track work in GitHub issues, mirror the chain, not the tasks:
-one issue per intent titled by its outcome ("a salon owner can add
-the staff needed to run the salon", never "add staff CRUD"), one
-sub-issue per phase, and a PR per plan linking its phase directory.
-Milestones group intents by release. Task checklists live inside the
-phase issue, not as issues of their own.
-
-**Stage 6 — Maintain.** Monitoring findings and incidents re-enter the
-loop as *new* intents in `features/`. Shipped chains are never edited.
 
 ## 4. Rules you will hit on day one
 
@@ -327,7 +179,7 @@ The full numbered list with reasons is in `product/architecture.md` —
 these are the ones that bite newcomers:
 
 - Never commit to `main` — everything lands by reviewed PR. Run
-  `make setup` once per clone. Use artifact branches for requirements
+  `make setup` once per clone. Use a separate artifact PR for each requirements stage
   and feature branches for implementation. See `.githooks/README.md`
   for allowed paths and the exact automated checks.
 - Contract changes use their own `Kind: contracts` intent and declare

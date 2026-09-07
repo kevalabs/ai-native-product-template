@@ -21,14 +21,21 @@ alternatives.
 
 ## Step 0 — gates and context
 
+- Read `.githooks/README.md` for the tracking headers and commands.
+  Look up the parent Intent and exact stage Task before creating one;
+  verify unknown write results before retrying. Never create a duplicate
+  because a response timed out. Keep the issue linked to its artifact
+  and the artifact linked back. Use actual sub-issue and dependency
+  relationships; status labels alone do not authorize work.
+
 - Resolve `features/NNN-*/` and the phase: single-phase chains plan
   at `features/NNN-*/plan.md`; phase `Pn` plans at
   `features/NNN-*/Pn-short-name/plan.md`. If the intent lists phases
   and no `Pn` was given, ask which and stop.
-- The reviewed artifact PR must have landed the accepted intent and
-  this directory's accepted spec on the default branch. Check committed
-  objects, not just local files. If they have not landed, prepare that
-  artifact PR before starting the implementation branch.
+- The accepted Intent and exact-phase Spec must each have their own
+  merged PR on the default branch. Run `make handoff` for the Plan Task
+  before drafting. Check committed objects and live predecessor evidence.
+  Missing or inaccessible evidence blocks this stage.
 - That directory's `spec.md` must exist with status `accepted`; if
   not, stop — Stage 2 gate not passed. Multi-phase: if this phase
   depends on a phase that hasn't shipped, say so — planning may
@@ -111,10 +118,16 @@ looked up rather than asked.
 - Once approved, commit it as the FIRST commit on the branch (nothing
   else in that commit).
 
-## Step 3 — close
+## Step 3 — review and merge this stage
 
-After the plan commit, implementation may start — in this same
-session if the user says go. Restate the handoff bar: `make test`
-green, every spec S-rule named against the test that proves it, the
-outcome from the intent checked by hand once more, diff matches the
-touched-surface list, capability docs updated in the same PR.
+Obtain approval of the concrete Plan, record it, and commit only the
+approved plan as the branch's first commit. Explicit approval in the
+working conversation counts. Open the Plan-only PR ready for review.
+Do not publish a draft Plan commit that the validator would reject.
+
+After human review and merge, verify the approved permalink, record
+it and the merged PR on the Plan Task, then mark Done and close the task.
+Only then may `/build NNN [Pn]` start from the updated default branch.
+A committed but unmerged Plan does not authorize Build. The Build
+handoff still requires make test, exact touched-surface review, capability
+updates, and evidence against the Spec and Intent.

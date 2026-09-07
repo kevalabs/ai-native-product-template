@@ -18,11 +18,18 @@ Do not draft `spec.md` until the interview is done.
 
 ## Step 0 — gates and context
 
-- Work on `artifact/NNN-short-name` in its own worktree. For a later
-  phase, create a fresh artifact branch from the updated default branch.
-  Resolve `features/NNN-*/`. Its `intent.md` must exist with status
-  `accepted`. If it is still `draft`, stop and say the Stage 1 gate is
-  not passed (the owner can accept it right now if they mean to).
+- Read `.githooks/README.md` for the tracking headers and commands.
+  Look up the parent Intent and exact stage Task before creating one;
+  verify unknown write results before retrying. Never create a duplicate
+  because a response timed out. Keep the issue linked to its artifact
+  and the artifact linked back. Use actual sub-issue and dependency
+  relationships; status labels alone do not authorize work.
+- Fetch the default branch and verify that this outcome's accepted
+  Intent PR has merged. Run `make handoff REPO=owner/repo ISSUE=<spec-task>
+  BASE=origin/main` before writing the Spec. A missing or inaccessible
+  gate blocks stage work; do not stack it on an open Intent PR.
+- Use a clean artifact worktree from the updated default branch.
+  Resolve the accepted `features/NNN-name/intent.md` there.
 - Read the intent's `## Phases`. If it lists phases and no `Pn` was
   given, ask which phase this spec is for and stop until answered.
   If it says "Single phase" and a `Pn` was given, say so and stop.
@@ -33,7 +40,8 @@ Do not draft `spec.md` until the interview is done.
     ground the intent names (state names, terms, data ownership) is
     defined once, in the phase that introduces it; this spec cites
     it and must not redefine it. Check the phase's dependencies:
-    warn if a phase it depends on has no accepted spec yet.
+    block work until the dependencies in the accepted intent pass their
+    actual handoff gates.
 - Read the intent, `product/glossary.md`, `product/personas.md`,
   `product/regions.md` (if present), and every
   `product/capabilities/` doc the intent could touch. List for the
@@ -131,11 +139,15 @@ for `/plan`.
   an owner isn't in this session, offer the questionnaire from the
   interview method.
 
-## Step 3 — close
+## Step 3 — review and merge this stage
 
-Show the draft and the list of affected capability docs (the shipping
-PR must update them). The owner accepting the spec is the Stage 2
-gate. Commit the accepted intent and spec on the artifact branch and
-land their reviewed PR. Then create the implementation worktree from
-the updated default branch and use `plan` (`/plan NNN [Pn]`). A plan
-never belongs in the artifact PR. Do not start coding at this stage.
+Show the Spec and affected capability docs. Record owner acceptance in
+`spec.md` before merging its own Spec-only PR. Explicit conversation
+approval counts and must not be requested again. The PR may be ready
+for review while the artifact is draft; readiness is not acceptance.
+
+Commit only this Spec and directly related design/review material.
+After human review and merge, update the Task with the approved commit
+permalink and merged PR, mark Done, and close as completed. Keep the
+parent open. `/plan NNN [Pn]` starts only after this handoff is verified,
+from the updated default branch. Do not start Plan or code on an open PR.

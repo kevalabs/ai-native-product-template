@@ -21,6 +21,13 @@ a sharp question now is cheaper than a wrong feature.
 
 ## Step 0 — context (before asking anything)
 
+- Read `.githooks/README.md` for the tracking headers and commands.
+  Look up the parent Intent and exact stage Task before creating one;
+  verify unknown write results before retrying. Never create a duplicate
+  because a response timed out. Keep the issue linked to its artifact
+  and the artifact linked back. Use actual sub-issue and dependency
+  relationships; status labels alone do not authorize work.
+
 - Read `product/intent.md`, `product/personas.md`, and skim
   `product/capabilities/` and existing `features/*/intent.md`.
 - Allocate the next number from the latest default branch. Create or
@@ -102,12 +109,18 @@ description already answered it explicitly.
   dropped, each with a named owner. If an owner isn't in this session,
   offer the questionnaire from the interview method.
 
-## Step 3 — close
+## Step 3 — review and merge this stage
 
-Show the draft, remind the owner that accepting it (flipping status to
-`accepted`) is the Stage 1 gate — it also fixes the phase split — and
-that the next step is `/spec NNN` (or `/spec NNN P1` for the first
-phase), in the same artifact worktree. Accepted intent and spec land
-through a reviewed artifact PR before the implementation branch starts.
-Do NOT proceed to spec or code — that is a different stage with its own
-gate.
+Show the draft Intent and its Task. Record the owner's explicit
+acceptance as `Status: accepted` before merge. Conversation approval
+counts; do not ask for the same acceptance again. Commit only this
+Intent and its directly related review notes on the artifact branch,
+then open its own PR ready for review. Intent and Spec never share a PR.
+
+After review and merge, verify the merged version, set the Intent Task
+to Done, record its approved permalink and merged PR, and close the task
+as completed. Keep the parent open. Only then may `/spec NNN [Pn]` start
+from the updated default branch. Create six stage tasks for a single
+phase; for a phased intent, create one Intent Task plus phase groups
+with Spec-through-Ship tasks. Future tasks may be blocked placeholders
+that link the governing Intent until their own artifacts are available.

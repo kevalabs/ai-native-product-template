@@ -1,16 +1,17 @@
 ---
 name: capability
-description: Stage 5 of the feature loop — drafts or updates the product/capabilities/ doc(s) for a feature that is shipping, converting shipped spec rules into present-tense capability rules. Use inside the feature's PR, on the feature branch, when the user asks to update capabilities or document shipped behavior for feature NNN.
+description: Update product/capabilities/ for behavior implemented in a Build PR, stating any remaining release restrictions. Use when documenting feature behavior under its approved Plan.
 ---
 
-Update capability docs for a shipping feature.
+Update capability docs in the Build PR that changes the behavior.
 
 **Arguments:** the feature number `NNN`, and for multi-phase intents
 the phase `Pn`, given when this skill is invoked. If missing, derive
 it from the current branch name (`feature/NNN[-Pn]-…`) or ask.
 
 Capabilities are units of BEING: current shipped behavior, present
-tense only, updated ONLY inside the PR that changes the behavior. This
+tense only, updated inside the Build PR that changes the behavior; state remaining
+release restrictions until Proof and Ship complete. This
 command runs on the feature branch as part of that PR — never on
 `main` and never for unshipped speculation.
 
@@ -34,7 +35,7 @@ in this worktree):
 1. **Did it actually ship in this PR?** Rules cut during
    implementation must NOT enter the capability doc — flag them as
    spec/plan drift instead, and note they need a follow-up chain or a
-   spec revision before merge.
+   spec revision in its own reviewed PR before dependent implementation.
 2. **Rewrite as being, not becoming.** Convert each shipped S-rule to
    a present-tense R-rule, testable as written. Keep numbering stable:
    never renumber existing R-rules; changed behavior edits the rule
@@ -60,9 +61,8 @@ in `features/`, future lives in open intents.
 
 ## Step 3 — close
 
-Summarize which R-rules were added/changed and remind the user: these
-edits ship in THIS PR (review blocks behavior changes without them),
-and after merge the feature (or phase) directory is immutable —
-subsequent changes start a new chain with `/intent`. If this is the
-last phase of an intent, walk the intent's `## Success criteria` and
-say which are now true; any that aren't are a finding for the PR.
+Summarize changed R-rules and any remaining release restrictions. These
+edits land with Build; they do not close the parent or claim the outcome
+has shipped. Separate Proof and Ship PRs follow their merge gates. The
+feature or phase becomes immutable only after Ship completes. New work
+then starts a new intent linking back to this history.

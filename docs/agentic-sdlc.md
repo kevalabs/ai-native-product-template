@@ -3,7 +3,7 @@
 > **Reference.** This is the working model the loop in `README.md`
 > (section 3) implements. Copied from
 > `belisha-os/agentic-sdlc-intent-driven-development.md` on
-> 2026-09-06; the body below is verbatim. When the process and this
+> 2026-09-06; the repository mapping evolves with our workflow. When the process and this
 > document disagree, fix one of them in the same PR — the process
 > evolves through use, and so does this file.
 >
@@ -12,15 +12,15 @@
 > | Reference | Here |
 > |-----------|------|
 > | Intent (WHY) | `features/NNN-name/intent.md` — `/intent` on `artifact/NNN-name` |
-> | Artifact handoff | reviewed artifact PR lands accepted intent/spec files before the implementation worktree starts |
+> | Artifact handoff | each stage lands its approved artifact through a separate reviewed PR before the next starts |
 > | Phases | `## Phases` in the intent; multi-phase chains put each phase in `features/NNN-name/Pn-name/` |
 > | Spec (WHAT) | `spec.md` per chain or per phase — `/spec NNN [Pn]` |
-> | Plan (HOW) | `plan.md`, first commit on the branch — `/plan NNN [Pn]` |
+> | Plan (HOW) | `plan.md`, approved first commit in its own PR before Build — `/plan NNN [Pn]` |
 > | Implement | one worktree, one branch, one agent per phase |
 > | Prove | `make test` + PR commit-history validation + `REVIEW.md` (spec compliance and outcome check); product repos extend the template checks with their build/tests |
-> | Ship | reviewed PR merges; `/capability` updates `product/capabilities/` in the same PR |
+> | Ship | delivery succeeds and its Ship evidence PR merges, after passing Proof; capability docs land with Build |
 > | Human gates | intent `accepted` (includes the phase split), spec `accepted`, plan `approved`, PR approved |
-> | GitHub structure | one issue per intent, one sub-issue per phase, one PR per plan — see README section 3 |
+> | GitHub structure | one Intent parent, Task sub-issues per stage, optional phase groups, and one reviewed PR per stage |
 
 ## 1. Core principle
 
@@ -474,48 +474,30 @@ That is the core Agentic SDLC loop.
 
 ------------------------------------------------------------------------
 
-## 14. GitHub structure
+## 14. GitHub structure and stage handoffs
 
-GitHub should shift from traditional **task-driven tracking** toward
-**outcome-driven tracking**.
+Track one parent issue of type Intent per outcome. Give every stage a
+Task sub-issue with its owner, governing Markdown, predecessor, review
+PR, and completion criteria. Larger outcomes group Spec-through-Ship
+tasks under phase issues after their shared Intent is accepted.
 
-Instead of creating issues such as:
+The stage sequence is Intent → Spec → Plan → Build → Test + Review →
+Ship. Each stage commits its own outcome artifact and merges its own
+reviewed PR before the next starts. Build includes normal tests and
+human review before its merge; Proof then checks the exact merged
+version against every Spec rule and the Intent's success criteria.
 
-> Add staff CRUD
+Issues link readable draft artifacts. After merge, they retain exact
+approved commit permalinks and merged PRs. Artifacts link back to their
+stage tasks. Task closure, board movement, and local approval markers
+cannot substitute for actual approval and merge evidence. Keep the
+parent open until all required phases ship and its success criteria hold.
 
-create an outcome-oriented issue such as:
-
-> Salon owner can add and manage staff required for salon operations.
-
-The hierarchy can be:
-
-``` text
-Milestone
-   │
-   └── Intent Issue
-          │
-          ├── Phase / Sub-Issue
-          │      ├── Task
-          │      ├── Task
-          │      └── PR
-          │
-          ├── Phase / Sub-Issue
-          │      └── PR
-          │
-          └── Phase / Sub-Issue
-                 └── PR
-```
-
-So:
-
--   **Milestone** = delivery/release target
--   **Intent issue** = desired business/system outcome
--   **Phase/sub-issue** = independently manageable part of the intent
--   **Task/checklist** = implementation action
--   **PR** = reviewable implementation unit
-
-This prevents GitHub from becoming a giant collection of disconnected
-technical tasks.
+Milestones represent delivery targets. Small implementation tasks use
+checklists or separately owned tasks that cite approved Spec/Plan
+sections. Keep stage and work status separate on the project board.
+The repository commands and evidence fields are defined in
+[the gate guide](../.githooks/README.md).
 
 ------------------------------------------------------------------------
 

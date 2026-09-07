@@ -1,48 +1,31 @@
 # Features — the append-only change ledger
 
-One numbered directory per intent (one unit of outcome, not one page
-or one task):
+One numbered directory per outcome:
 
 ```
-features/NNN-short-name/
-├── intent.md    # WHY: problem, outcome, actors, success criteria,
-│                #   phases (Stage 1)
-├── spec.md      # WHAT: flows, rules, states, acceptance (Stage 2)
-├── design/      # committed mocks the spec references
-└── plan.md      # HOW: approach, touched files, steps (Stage 3)
+features/NNN-name/
+├── intent.md
+├── spec.md
+├── design/
+├── plan.md
+├── build.md
+├── proof.md
+└── ship.md
 ```
 
-An intent whose outcome is too big for one reviewable PR is cut into
-**phases** (in `intent.md`). Each phase gets its own spec, plan,
-branch, and PR under the same intent:
+The accepted intent fixes phase names and dependencies. A phased outcome
+keeps intent.md at its root and places each phase's Spec-through-Ship
+artifacts under `Pn-name/`. Cut phases by outcome, not by page or task.
+Each stage has a Task sub-issue and a separate PR. The parent Intent
+issue links the artifact index and remains open until every phase ships.
 
-```
-features/NNN-short-name/
-├── intent.md                # lists P1, P2, … and their dependencies
-├── P1-short-name/
-│   ├── spec.md
-│   ├── design/
-│   └── plan.md
-└── P2-short-name/
-    ├── spec.md
-    └── plan.md
-```
+Intent → Spec → Plan → Build → Test + Review → Ship. Commit and merge
+the approved outcome at each boundary before the next stage starts.
+Use artifact branches for Intent/Spec, feature branches for Plan/Build,
+and proof/ship branches for their respective evidence. Details and
+commands are in [.githooks/README.md](../.githooks/README.md).
 
-- Numbers allocate in commit order and never reuse. Phase numbers
-  are fixed once the intent is accepted.
-- A directory is **immutable once its feature ships** — changes to
-  shipped behavior are a NEW feature chain that links back, never an
-  edit here. Current behavior lives in `product/capabilities/`.
-  A shipped phase is immutable even while later phases are open.
-- Incidents and maintenance findings (Stage 6) re-enter as new
-  entries here.
-- Draft intent and spec on `artifact/NNN-short-name` in a worktree.
-  Accept each before its next stage. Merge the reviewed artifact PR,
-  then create the implementation worktree from the updated default
-  branch. For later phases, another artifact PR adds the phase's spec.
-  A plan never lands in an artifact PR.
-- Implementation branch naming: `feature/NNN-short-name`, or
-  `feature/NNN-Pn-short-name` per phase — one branch, one worktree,
-  one agent per chain or phase. Independent phases may run in
-  parallel once the intent's shared ground (state names, terms, data
-  ownership, contracts) is settled.
+Keep approved permalinks on tasks after branches are deleted. Numbers
+never reuse; shipped artifacts never change. Later corrections start a
+new intent linking the shipped history. In-flight legacy stages retain
+real history and record missing old backlinks when adopting new gates.

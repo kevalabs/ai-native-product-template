@@ -1,0 +1,24 @@
+name: Stage task
+description: Track one stage and its artifact review under an Intent issue.
+type: Task
+title: "[NNN] Stage: outcome"
+body:
+  - type: textarea
+    id: record
+    attributes:
+      label: Stage record
+      description: Add the actual parent/sub-issue and blocked-by relationships after creation. Future-stage work stays blocked.
+      value: |
+        **Outcome:** <NNN-name>
+        **Stage:** <intent, spec, plan, build, proof, or ship>
+        **Phase:** <single or Pn-name>
+        **Parent issue:** <Intent issue URL>
+        **Owner:** <accountable person>
+        **Status:** Blocked
+        **Artifact:** <governing Markdown or section URL>
+        **Completion criteria:** <approval, checks, merge, and stage evidence>
+
+        Add Review PR when opened. After merge, add Approved artifact as
+        a commit permalink, verify the handoff, then set Done and close.
+    validations:
+      required: true

@@ -89,5 +89,7 @@ inline `<!-- template -->` instructions, in this order:
   it with the product's own license — ask the owner.
 - Tell the owner: review the `[ASSUMED]` sections, then land the
   constitution through a reviewed bootstrap PR. Each product feature
-  starts its own intent/spec artifact PR, then its implementation branch.
+  starts its own Intent PR, then separate Spec, Plan, Build, Proof,
+  and Ship PRs after each preceding merge. Bootstrap remains its own
+  narrow constitution PR.
   Preserve existing feature numbers; allocate the next unused number.
