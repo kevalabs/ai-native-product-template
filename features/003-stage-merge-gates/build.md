@@ -8,7 +8,7 @@
 **Stage issue:** https://github.com/kevalabs/ai-native-product-template/issues/14
 **Predecessor PR:** https://github.com/kevalabs/ai-native-product-template/pull/9
 **Plan commit:** 1e8fce64077f1b5c90fe344c20afe7236ef74bb5
-**Verification:** make test passes 79 tests plus syntax and whitespace checks; skill and YAML validation passes; the live Plan-to-Build handoff passes.
+**Verification:** make test passes 86 tests plus syntax and whitespace checks; the corrected live Plan-to-Build handoff passes. Initial skill and YAML validation remains recorded below.
 
 ## Changes
 
@@ -42,7 +42,7 @@ The replacement runs through the existing hook and required CI path;
 no hook, job, or approval gate was disabled. Features 001 and 002 remain
 unchanged historical records.
 
-## Verification evidence
+## Initial Build verification evidence
 
 - Before implementation, the old validator rejected a Build with its
   Plan already on the base and allowed bundled Intent/Spec changes.
@@ -64,6 +64,33 @@ unchanged historical records.
 
 Proof and Ship remain separate stages. A passing Build suite is not
 recorded as completion of their human review or delivery outcomes.
+
+## Dependency correction after initial Build
+
+[PR #17](https://github.com/kevalabs/ai-native-product-template/pull/17)
+merged the initial Build as `2e53d7ee5f3d30b567aebe8c94d6ff6537d9c97f`.
+Review of that version found a blocking gap against S7, S17, and S18:
+the PR check accepted an additional dependency marked Done without
+verifying its merged PR or approved artifact. The handoff check also
+accepted another outcome's artifact as evidence for that dependency.
+The original 79 tests passed on the merged version; they missed these
+cases. No passing Proof was recorded for that version.
+
+Both gates now use the same dependency check. Every dependency must
+identify its outcome, phase, and stage, a merged PR delivering that
+artifact, and an approved commit permalink matching its current content
+on the base. Missing, unavailable, stale, or mismatched evidence blocks
+advancement. The existing immediate-predecessor checks remain in place.
+
+Seven regression tests were added without changing existing tests.
+Six failed against the merged implementation before the fix; the valid
+additional-dependency case passed. All 86 tests now pass, along with
+syntax and whitespace checks. The corrected live handoff for Build
+task #14 also passes against the approved Plan PR #9.
+
+This correction changes only the GitHub validator, its tests, capability
+rule R23, and this Build record, all within the approved Plan. Its own
+reviewed Build PR must merge before Test + Review can proceed.
 
 ## Release restrictions
 

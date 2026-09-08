@@ -190,11 +190,35 @@ class Evidence:
             raise Violation("active task must be open and ready, in progress, or in review")
         if current_pr is not None and github_url(local.field(body, "Review PR"), self.repo, "pull") != current_pr:
             raise Violation("stage task does not link its current review PR")
-        for dependency in self.get(f"/issues/{task['number']}/dependencies/blocked_by", True):
+
+    def dependencies(self, number, base):
+        dependencies = self.get(f"/issues/{number}/dependencies/blocked_by", True)
+        for dependency in dependencies:
             record = self.issue(dependency["number"])
             text = record.get("body") or ""
             if record.get("state") != "closed" or record.get("state_reason") != "completed" or local.field(text, "Status") != "Done":
                 raise Violation("task has an unfinished or cancelled dependency")
+            outcome, phase, stage = (local.field(text, name) for name in ("Outcome", "Phase", "Stage"))
+            if not re.fullmatch(rf"[0-9]{{3,}}-{local.SLUG}", outcome) or stage not in local.STAGES:
+                raise Violation("dependency has an invalid outcome or stage")
+            if (phase != "single" and not re.fullmatch(rf"P[1-9][0-9]*-{local.SLUG}", phase)) or (stage == "intent" and phase != "single"):
+                raise Violation("dependency has an invalid phase")
+            root = "features/" + outcome
+            directory = root if phase == "single" else root + "/" + phase
+            path = local.stage_path(stage, root, directory)
+            pr = github_url(local.field(text, "Review PR"), self.repo, "pull")
+            merge, _ = self.merged(pr, base)
+            self.predecessor_scope(pr, stage, root, directory)
+            approved_url = local.field(text, "Approved artifact")
+            approved = permalink(approved_url, self.repo, path)
+            ancestor(approved, base)
+            local.require_status(merge, path, local.STATUS[stage])
+            if local.content(approved, path) != local.content(merge, path):
+                raise Violation("dependency approval differs from its merged artifact")
+            if local.content(merge, path) != local.content(base, path):
+                raise Violation("dependency artifact changed after its reviewed merge")
+            self.link(approved_url, path, merge)
+        return dependencies
 
     def link(self, url, artifact, ref, branch=None):
         prefix = f"https://github.com/{self.repo}/blob/"
@@ -235,6 +259,7 @@ class Evidence:
         if task["number"] != github_url(local.field(document, "Stage issue"), self.repo, "issues"):
             raise Violation("artifact backlink points to another stage task")
         self.active_task(task, document, stage, phase, current_pr)
+        deps = self.dependencies(task["number"], base)
         self.link(local.field(task["body"], "Artifact"), artifact, head, branch)
         self.link(local.field(self.issue(parent)["body"], "Artifact"), root + "/intent.md", head, branch)
         if current_pr:
@@ -249,7 +274,6 @@ class Evidence:
         prior_phase = "single" if predecessor == "intent" else phase
         prior = records[(prior_phase, predecessor)]
         prior_body = prior.get("body") or ""
-        deps = self.get(f"/issues/{task['number']}/dependencies/blocked_by", True)
         if prior["number"] not in {d["number"] for d in deps}:
             raise Violation("stage task must depend on its predecessor task")
         number = github_url(local.field(document, "Predecessor PR"), self.repo, "pull")
@@ -306,24 +330,13 @@ class Evidence:
             raise Violation("task is not in the declared outcome and phase")
         if task.get("state") != "open" or local.field(body, "Status") in {"Done", "Cancelled"}:
             raise Violation("closed or cancelled task cannot start work")
+        deps = self.dependencies(number, base)
         if stage == "intent":
             return
         prior_stage = local.STAGES[local.STAGES.index(stage) - 1]
         prior = records[("single" if prior_stage == "intent" else phase, prior_stage)]
-        deps = self.get(f"/issues/{number}/dependencies/blocked_by", True)
         if prior["number"] not in {d["number"] for d in deps}:
             raise Violation("next stage must depend on its predecessor task")
-        for dep in deps:
-            record = self.issue(dep["number"])
-            text = record.get("body") or ""
-            if record.get("state") != "closed" or record.get("state_reason") != "completed" or local.field(text, "Status") != "Done":
-                raise Violation("next stage has an unmet dependency")
-            merge, _ = self.merged(github_url(local.field(text, "Review PR"), self.repo, "pull"), base)
-            # Every dependency needs immutable evidence, not just a closed issue.
-            url = local.field(text, "Approved artifact")
-            match = re.fullmatch(rf"https://github\.com/{re.escape(self.repo)}/blob/({local.SHA})/(features/[\w./-]+\.md)(?:#[\w-]+)?", url)
-            if not match or not local.content(match[1], match[2]) or local.content(match[1], match[2]) != local.content(merge, match[2]):
-                raise Violation("dependency lacks its approved merged artifact")
         document = prior.get("body") or ""
         commit, _ = self.merged(github_url(local.field(document, "Review PR"), self.repo, "pull"), base)
         self.predecessor_scope(github_url(local.field(document, "Review PR"), self.repo, "pull"), prior_stage, root, directory)
