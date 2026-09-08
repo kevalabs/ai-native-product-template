@@ -24,19 +24,19 @@ the live policy readback supplies that evidence.
 
 - S1: PASS — The live handoff reads parent Intent #10 and its six native Task sub-issues #11–#16. The parent remains open; duplicate and missing stage tests reject incorrect graphs.
 - S2: PASS — `test_phase_group_uses_its_exact_stage_artifacts` checks grouped phase tasks. Wrong-phase and extra-dependency tests reject mismatched or unmet prerequisites. The stage skills require checking accepted Intent dependencies before phase work.
-- S3: PASS — The live graph and task records identify the outcome, owner, parent, stage, artifact, and completion criteria. Build #14 records PR #18; Proof #15 tracks this review. Future Ship #16 remains a blocked placeholder.
+- S3: PASS — The live graph and task records identify the outcome, owner, parent, stage, artifact, and completion criteria. Build task #14 records PR #18; Proof task #15 tracks this review. Future Ship task #16 remains a blocked placeholder.
 - S4: PASS — The parent indexes the artifacts, and active tasks link readable Markdown. The Build record links back to #14, and this record links #15. Backlink and section-link tests reject mismatches. Legacy planning backlinks are covered by the explicit transition under S21.
-- S5: PASS — Build #14 retains the full approved commit permalink and merged PR #18 after its remote branch was deleted. Intent, Spec, and Plan tasks retain their own permalinks. `test_branch_link_is_not_completion_evidence` rejects a mutable completion link.
-- S6: PASS — The real sequence is Intent #6, Spec #7/#8, Plan #9, Build #17/#18, then this Proof. The Plan-on-base, unmerged-Plan, bundled-stage, and complete-Proof tests enforce separate handoffs. The live Ship gate rejects advancement before this Proof merges.
+- S5: PASS — Build task #14 retains the full approved commit permalink and merged PR #18 after its remote branch was deleted. Intent, Spec, and Plan tasks retain their own permalinks. `test_branch_link_is_not_completion_evidence` rejects a mutable completion link.
+- S6: PASS — The real sequence is Intent PR #6, Spec PRs #7/#8, Plan PR #9, Build PRs #17/#18, then this Proof. The Plan-on-base, unmerged-Plan, bundled-stage, and complete-Proof tests enforce separate handoffs. The live Ship gate rejects advancement before this Proof merges.
 - S7: PASS — The live Build-to-Proof handoff passed before this worktree was created from main at the named Build. Closed-issue, wrong-default-branch, wrong-phase, and extra-dependency regressions reject substitute or incomplete evidence.
 - S8: PASS — Existing Intent, Spec, and Plan artifacts retain the owner's attributed approvals. Stage skills record conversation acceptance without requesting it again. Changed, stale, and dismissed review tests reject invalid GitHub approval evidence; human confirmation is recorded separately below.
 - S9: PASS — Plan PR #9 changed only the approved Plan. Tests reject Plan bundled with code, Intent bundled with Spec, and a Build that edits its Plan. The reviewed validator transition did not combine Plan and Build.
 - S10: PASS — Both Build PR checks passed, and the owner confirmed reviewing #17 and #18. Build includes tests and matching capability rules with shipment restrictions. Required checks and fresh human approval are now enforced on main, as verified below; this does not claim that protection existed before those merges.
 - S11: PASS — This record names the exact merged Build, covers all 24 S-rules, and records tests, human review, Intent results, and remaining stage work. Disposable checks reject a missing result, a failed S-rule, a blocking finding, and an empty Human review section.
 - S12: PASS — Review found the additional-dependency gap in the initial Build. Six regressions failed before PR #18 corrected it; this Proof tests the corrected merge. Stale-Build tests reject earlier evidence, and no passing Proof was recorded for the initial Build.
-- S13: PASS — The live Ship entry gate rejects unfinished Proof #15. The current-proof shipment test accepts a complete record; a disposable failed-delivery check rejects Result: failed. The Ship skill records the template's delivered default-branch version and final evidence PR.
-- S14: PASS — Parent #10 and Ship #16 remain open after both Build merges. The Ship skill checks every required phase and final Intent result before closure, then records its own merge on the task. This is guided completion, not automatic issue closure.
-- S15: PASS — Build #14 is Done only after its merge, approved permalink, and confirmed review were recorded. Proof #15 is In progress during verification and becomes In review with its PR; Ship stays Blocked. Status skills report stage and work status separately and name missing gates.
+- S13: PASS — The live Ship entry gate rejects unfinished Proof task #15. The current-proof shipment test accepts a complete record; a disposable failed-delivery check rejects Result: failed. The Ship skill records the template's delivered default-branch version and final evidence PR.
+- S14: PASS — Parent #10 and Ship task #16 remain open after both Build merges. The Ship skill checks every required phase and final Intent result before closure, then records its own merge on the task. This is guided completion, not automatic issue closure.
+- S15: PASS — Build task #14 is Done only after its merge, approved permalink, and confirmed review were recorded. Proof task #15 is In progress during verification and becomes In review with its PR; Ship stays Blocked. Status skills report stage and work status separately and name missing gates.
 - S16: PASS — Cancelled-parent and cancelled-dependency tests reject advancement. Closed-active-task tests reject invalid active state, and fresh dependency checks run for reopened tasks. The status and Ship skills keep cancellation separate from shipment and require a recorded reason.
 - S17: PASS — Staged and full-history tests reject uncommitted approvals, bundled stages, and early violations even after later corrections. The seven added dependency regressions cover every dependency's merge and artifact evidence. The installed CI job runs both local history and live GitHub checks.
 - S18: PASS — Timeout, malformed-response, wrong-repository, unavailable-dependency, and stale-artifact tests fail explicitly. Live retries looked up existing #10/#14/#15/#16 records before updating them; no replacement parent, stage task, or PR was created because a response was uncertain.
@@ -66,8 +66,8 @@ controlled API that denied access to setup endpoints returned
 unverifiable for every setting. These checks changed no repository code
 and are additional walkthrough evidence, not extra permanent tests.
 
-The real `make handoff` for #15 passed after Build #14 was completed.
-The same command for Ship #16 failed because its Proof dependency is
+The real `make handoff` for #15 passed after Build task #14 was completed.
+The same command for Ship task #16 failed because its Proof dependency is
 unfinished. That failure is the expected gate, not a test-suite failure.
 No implementation or planning file differs from the named Build in
 this Proof worktree; this PR adds only proof.md. Ship must repeat the
@@ -99,6 +99,17 @@ the same conversation. GitHub readback now confirms:
 Protection was installed during this stage; it is not retroactive
 review evidence. The approved PR requirements also apply to this Proof
 PR. Its eventual review and merge are recorded through [task #15][task].
+
+## PR identity
+
+This Proof was first proposed in [PR #19](https://github.com/kevalabs/ai-native-product-template/pull/19)
+using the owner's GitHub credentials. GitHub therefore treated the owner
+as its author and prevented his approval from satisfying the review rule.
+The replacement uses the `keva-builder[bot]` installation identity for
+the latest push and PR creation. Earlier commits and PR #19 remain in
+history; the bot identity does not supply human approval. The tested
+Build and requirement results remain the same. Task #15 links the
+current review PR.
 
 ## Intent results
 
