@@ -6,7 +6,8 @@
 **Parent issue:** https://github.com/kevalabs/ai-native-product-template/issues/22
 **Stage issue:** https://github.com/kevalabs/ai-native-product-template/issues/23
 
-**Status:** draft
+**Status:** accepted
+**Accepted by:** Suraj Chhetry, confirmed in the owner conversation on 2026-09-15.
 **Kind:** change
 **Originator:** Suraj Chhetry
 **Date:** 2026-09-15
