@@ -57,8 +57,10 @@ owner confirmed. Every existing gate stays, while the mechanical steps
 around the gates take one command instead of many manual edits.
 
 The sequence becomes Intent → Prototype → Spec → Plan → Build →
-Test + Review → Ship. The prototype step is skipped, with a one-line
-reason in the spec, when there is nothing to show.
+Test + Review → Ship. The prototype step is required for work about
+screens, rules and calculations, or outside services. It is skipped
+only with a one-line reason in the spec, for example when there is
+nothing to show.
 
 ## Actors
 
@@ -113,7 +115,8 @@ Shared ground — settled before P2 and P3 run in parallel, and where:
 - the header that records a prototype confirmation → P1's spec
 - the shape of the prototype note (what it tests, who looks at it,
   expiry, outcome) → P1's spec
-- where a product declares its sandbox → P2's spec
+- where a product declares its sandbox → a section in `AGENTS.md`;
+  its exact form in P2's spec
 - the tracking fields the automation reads and writes → already set by
   feature 003; P3 reuses them and does not redefine them
 
@@ -159,25 +162,26 @@ contracts change in this template.
 - [ASSUMED] No deadline applies. The reason to act now is the rework
   the salon product shows.
 
+The owner decided the following in the working conversation on
+2026-09-15:
+
+- The prototype step is required for screen, rule, and integration
+  work. Skipping it needs a one-line reason in the spec.
+- A prototype branch never merges to the default branch. That covers
+  its code and its prototype note. A demo that must stay up becomes
+  its own intent.
+- A prototype note expires 30 days after it is written unless the
+  product sets another length. An expired note makes CI warn, not fail.
+- Stage automation stays in this outcome as P3.
+- A product declares its sandbox paths in a section of `AGENTS.md`.
+  Bootstrap fills it, and the existing bootstrap PR may already
+  change that file.
+
 ## Open questions
 
-- Owner, before acceptance: is the prototype step required for screen,
-  rule, and integration work, with a written reason to skip, or only
-  recommended? Recommended answer: required, with a one-line reason
-  to skip.
-- Owner, before acceptance: may a prototype branch ever merge to the
-  default branch, for example for a stable sales demo? Recommended
-  answer: prototype code never merges; only the prototype note may
-  merge, so the default branch keeps a record of what was tried.
-- Owner, before acceptance: how long until a prototype note expires by
-  default? Recommended answer: 30 days.
-- Owner, before acceptance: keep stage automation as P3 of this
-  outcome, or split it into its own intent? Recommended answer: keep
-  it here, because both parts make small work cheaper.
-- Owner, during P2's spec: where does a product declare its sandbox
-  paths, as a section in `AGENTS.md` or a small settings file?
-  Recommended answer: a section in `AGENTS.md`, which bootstrap already
-  fills and the existing bootstrap PR may change.
-- Owner, during P1's spec: how does a spec keep its link to the exact
-  accepted prototype commit when prototype branches are not merged and
-  may be deleted?
+- Owner, during P1's spec: a spec links the exact accepted prototype
+  commit. Prototype branches never merge and may be deleted, so how
+  does that commit stay reachable?
+- Owner, during P2's spec: the prototype note never reaches the
+  default branch. Where is its outcome (promoted to intent NNN, or
+  dropped) recorded so the team can find it later?
