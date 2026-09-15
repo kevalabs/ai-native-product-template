@@ -96,14 +96,14 @@ nothing to show.
 
 ## Phases
 
-- P1 prototype-step — contributors and agents can run the prototype
+- P1-prototype-step — contributors and agents can run the prototype
   step, in one of its three forms, between Intent and Spec; the spec
   freezes the accepted prototype; the plan and review use its examples
   as test data. Docs, skills, and templates only. Depends on: —
-- P2 proto-lane — a team can work on a prototype branch that needs no
+- P2-proto-lane — a team can work on a prototype branch that needs no
   stage artifacts, and the checks keep it inside the product's declared
   sandbox. Depends on: P1 (can run alongside P3)
-- P3 stage-automation — contributors can start a stage, create an
+- P3-stage-automation — contributors can start a stage, create an
   outcome's tracking issues, and record a merged stage on its task
   without manual edits. Depends on: P1 (can run alongside P2)
 
