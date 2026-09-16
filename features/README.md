@@ -19,10 +19,15 @@ artifacts under `Pn-name/`. Cut phases by outcome, not by page or task.
 Each stage has a Task sub-issue and a separate PR. The parent Intent
 issue links the artifact index and remains open until every phase ships.
 
-Intent → Spec → Plan → Build → Test + Review → Ship. Commit and merge
-the approved outcome at each boundary before the next stage starts.
+Intent → Prototype → Spec → Plan → Build → Test + Review → Ship.
+Prototype has owner confirmation or a justified Spec skip, not a merged
+stage PR. The six stages each commit and merge their approved outcome.
+The Spec preserves confirmation and examples under its `design/`
+directory; disposable prototype source and its working note stay outside
+main. Use [the shared rules](../docs/agentic-sdlc.md#prototype-before-spec).
 Use artifact branches for Intent/Spec, feature branches for Plan/Build,
-and proof/ship branches for their respective evidence. Details and
+and proof/ship branches for their respective evidence, all targeting main.
+P1 does not install a prototype branch lane. Details and
 commands are in [.githooks/README.md](../.githooks/README.md).
 
 Keep approved permalinks on tasks after branches are deleted. Numbers

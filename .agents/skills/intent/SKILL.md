@@ -119,8 +119,14 @@ then open its own PR ready for review. Intent and Spec never share a PR.
 
 After review and merge, verify the merged version, set the Intent Task
 to Done, record its approved permalink and merged PR, and close the task
-as completed. Keep the parent open. Only then may `/spec NNN [Pn]` start
-from the updated default branch. Create six stage tasks for a single
+as completed. Keep the parent open. Next use `/prototype NNN [Pn]` for
+screen, rule, or outside-service behavior, or record a justified Spec
+skip for nothing meaningful to inspect. Follow the
+[shared rules](../../../docs/agentic-sdlc.md#prototype-before-spec).
+Substantive Spec drafting waits for confirmation or the skip reason;
+its worktree starts from updated main. Prototype has no merged stage
+PR or mandatory seventh task, and P1 grants no new branch permission.
+Create six stage tasks for a single
 phase; for a phased intent, create one Intent Task plus phase groups
 with Spec-through-Ship tasks. Future tasks may be blocked placeholders
 that link the governing Intent until their own artifacts are available.

@@ -12,7 +12,8 @@
 > | Reference | Here |
 > |-----------|------|
 > | Intent (WHY) | `features/NNN-name/intent.md` — `/intent` on `artifact/NNN-name` |
-> | Artifact handoff | each stage lands its approved artifact through a separate reviewed PR before the next starts |
+> | Artifact handoff | the six stages each land through a reviewed PR; Prototype uses owner confirmation, not a merged PR |
+> | Prototype (TRY) | `/prototype NNN [Pn]` after Intent merge; confirmation or a justified Spec skip |
 > | Phases | `## Phases` in the intent; multi-phase chains put each phase in `features/NNN-name/Pn-name/` |
 > | Spec (WHAT) | `spec.md` per chain or per phase — `/spec NNN [Pn]` |
 > | Plan (HOW) | `plan.md`, approved first commit in its own PR before Build — `/plan NNN [Pn]` |
@@ -29,11 +30,11 @@ task-driven**.
 
 The fundamental flow is:
 
-> **WHY → WHAT → HOW → BUILD → PROVE → SHIP**
+> **WHY → TRY → WHAT → HOW → BUILD → PROVE → SHIP**
 
 Or, in artifact/process terms:
 
-> **Intent → Spec → Plan → Implement → Test & Review → Ship**
+> **Intent → Prototype → Spec → Plan → Implement → Test & Review → Ship**
 
 We can remember the overall approach as **STEPS**.
 
@@ -42,6 +43,176 @@ but **humans remain responsible for important decisions, boundaries,
 approvals, and review**.
 
 ------------------------------------------------------------------------
+
+## Prototype before Spec
+
+After the accepted Intent PR merges, demonstrate the behavior before
+writing its Spec. Use a **screen walkthrough** for screens, a **worked
+example** for rules or calculations, and an **integration trial** for
+outside services. Mixed work needs every applicable form. The owner can
+confirm them together when they share one exact version and evidence set.
+
+This step is contributor guidance and human review. It adds no merged
+stage PR and no mandatory seventh tracking task. The existing Intent,
+Spec, Plan, Build, Proof, and Ship PRs keep their gates. A Spec tracking
+Task can exist before confirmation; substantive Spec drafting cannot.
+
+### Run and confirm
+
+Use [the prototype skill](../.agents/skills/prototype/SKILL.md), the
+[note template](../templates/prototype-template.md), and the
+[examples template](../templates/prototype-examples-template.md).
+First verify the accepted Intent merge and the product's permitted
+prototype workspace. P1 does not install a prototype branch lane or
+sandbox enforcement. If no permitted workspace exists, report that
+limit and wait for P2 or a separately authorized product setup. Do not
+bypass hooks or place prototype code on an artifact branch.
+
+A prototype only needs to run its named examples well enough for feedback.
+Add no unit, integration, or end-to-end tests to its code, and impose no
+coverage gate. This exception applies to disposable prototype code;
+Build still needs tests. Existing security and privacy rules apply.
+Use synthetic data and test services, never real personal data or
+production secrets. Reachable real users may give feedback; lack of
+available users does not block the owner from making a decision.
+
+Before marking a version `ready`, run every named case:
+
+- Screen walkthrough: named scenarios and sample data.
+- Worked example: named inputs and expected outputs.
+- Integration trial: named success and failure cases.
+
+Missing data, an omitted applicable form, or a failed named case keeps
+the demonstration out of `ready`. Commit the runnable version and its
+examples before asking the owner to decide. The note's `Prototype commit`
+is that full SHA; record the decision afterward, avoiding a self-referencing
+commit hash. Never claim an uncommitted version has been confirmed.
+
+Only the product owner confirms or rejects. Record `Prototype form`,
+`Prototype commit`, `Evidence`, `Examples`, `Confirmed by`, `Confirmed at`,
+and `Confirmation source`. Every location must identify the exact version.
+Record how available user feedback affected the decision. A conversation
+source includes the person, dated decision, and enough attributable text
+or a link for review. User feedback and an agent's assertion are not approval.
+
+### State, age, and retention
+
+Each version follows `draft → ready → confirmed | rejected`, with
+`ready → expired → ready` for an unresolved version. The final two states
+are immutable. A change after confirmation or rejection creates a new
+version; only the latest explicitly confirmed version governs a new Spec.
+Do not overwrite the old examples, commit, or decision record.
+
+Read `Prototype settings` in AGENTS.md. The default unresolved-note age
+limit is 30 days from `Created at`; a product may declare another period.
+Use timestamps with UTC offsets. At the limit, report `expired` as a
+warning, not a failing check. P1 makes this a manual warning, not a new
+CI job. To return to `ready`, explicitly record a refresh and rerun the
+cases. Preserve the original date; a refresh does not reset the age used
+for Spec acceptance or silently extend a confirmation.
+
+Before accepting a Spec whose note is at least 30 days old, the owner
+reconfirms the version or explicitly accepts its age in the Spec with
+a dated source. This review remains necessary even after a refresh.
+Once the Spec is accepted, its frozen confirmation no longer expires.
+
+Keep a remote ref reaching the confirmed commit until the phase ships.
+Record repository and ref in `Retained ref`, and preserve the decision
+record and confirmation source as well. If the working branch will be
+deleted, retain a tag first; never retarget that tag to changed content.
+Review access from a fresh fetch or clone. An old SHA link alone does
+not establish retention. Prototype code and its working note never merge
+to main; preserve their evidence through the Spec instead. P1 installs
+no tag protection, cleanup job, or new branch naming scheme.
+
+### Freeze the evidence in Spec
+
+The prototype demonstration reads its examples Markdown file. That file
+has one JSON code block containing cases with unique `id` and `form`
+fields and the form-specific data described above. Products choose
+domain fields before confirmation. Illustrative template cases are not
+real owner-confirmed examples.
+
+Copy the whole confirmed file byte for byte to the exact phase's
+`design/prototype-examples.md`. Preserve supporting Markdown and images
+in that directory, using the current allowed extensions: `.md`, `.png`,
+`.jpg`, `.jpeg`, `.webp`, `.svg`, or `.pdf`. Review images and Markdown
+for embedded executable code or sensitive data; an allowed extension
+alone does not make the content safe or appropriate.
+
+Fill the Spec template's `Prototype confirmation` section with the
+confirmation fields, retained ref, original and preserved example
+locations, evidence, and any age acceptance. Preserve the owner's
+attributable decision in reviewable form. The Spec derives requirements
+and acceptance cases from those examples. Copy no runnable prototype
+source or working note. A confirmation for another commit, inaccessible
+source, missing examples, or evidence that cannot be preserved blocks
+Spec acceptance, even if a demonstration previously took place.
+
+When there is nothing meaningful to inspect, replace that section's
+fields with `Prototype skip:` and one concrete reason. A pure refactor
+that preserves all behavior can qualify. A screen change with no demo
+yet does not. Owner acceptance of the Spec accepts the skip. Do not make
+an empty prototype to satisfy paperwork; lack of evidence is not itself
+a reason to skip. Existing accepted Specs are not back-filled.
+
+### Use the examples in Build
+
+The Plan names the preserved file and the test reader. Build tests load
+the same file's JSON block and assert the product's observed behavior;
+do not transcribe it into a second fixture. Compare the original and
+preserved bytes and record the source and destination in build.md.
+For example, a Python product can read the single block as follows:
+
+```python
+import json
+import re
+from pathlib import Path
+
+blocks = re.findall(r"^```json\n(.*?)^```\s*$",
+                    Path(examples_path).read_text(), re.M | re.S)
+assert len(blocks) == 1
+cases = json.loads(blocks[0])
+```
+
+The product's tests supply `examples_path` and compare each case's
+expected results with the real implementation. This example is a reader,
+not a product test or a new common library. Changed case data needs
+renewed prototype confirmation or an accepted Spec revision before
+Build continues. Implement production behavior independently; never
+promote the disposable prototype code into the product.
+
+## Branches and delivery
+
+All stage PRs target `main`. Do not use a long-lived `dev` or other
+environment branch as deployment state. A feature-branch preview is
+optional when early interaction helps. A merge into main identifies
+integrated source; it is not by itself production delivery.
+
+Build an immutable artifact from the merged Build commit for development
+or staging. Record its identity or digest and source commit in Proof,
+then test that exact version. The Build record can describe the artifact
+recipe before merge; it cannot invent its future merge SHA or digest.
+Proof rejects an artifact whose identity or source differs from the
+named merged Build. A pre-merge preview is not that proved artifact.
+
+After passing Proof merges, Ship promotes the same artifact to the
+delivery destination. Compare the identity and record the successful
+result. If the artifact is unavailable or the destination needs a
+different rebuild, leave shipment unsuccessful. Do not rebuild and call
+the result the proved version. A correction needs reviewed Build work
+and renewed Proof. Preserve existing release approval and region rules.
+
+For this template, which has no runtime deployment, the immutable
+merged Build source is the artifact. Reviewed availability on main is
+its delivery target. Separate Proof and Ship evidence still establish
+outcome completion; no mandatory release tag or provider is introduced.
+
+Adopt the prototype step for outcomes or phases not yet at Spec. Keep
+accepted Specs and shipped history intact. P1 provides manual guidance;
+P2 owns the new sandbox lane, and P3 owns tracking automation. A rollback
+of guidance is reviewed and preserves already accepted evidence. The
+final phase's Ship records the full adoption note for existing products.
 
 ## 2. Intent --- WHY
 
@@ -230,8 +401,9 @@ solutions that conflict when integrated.
 
 ## 7. Spec --- WHAT
 
-Once the human approves the intent, the agent produces the
-**Specification**.
+After the accepted Intent merges, the owner confirms the prototype
+or the Spec records a concrete skip reason. The agent then produces
+the **Specification** from that evidence.
 
 The spec answers:
 
@@ -241,9 +413,9 @@ The intent is high-level. The spec expands each phase into detailed
 expected behavior.
 
 ``` text
-Intent
+Intent accepted and merged
   ↓
-Approved
+Prototype confirmed (or justified skip)
   ↓
 Specification
 ```
@@ -360,8 +532,8 @@ For example:
 Conceptually:
 
 ``` text
-WHY          WHAT         HOW
-Intent  →  Specification  →  Technical Plan
+WHY        TRY           WHAT             HOW
+Intent  →  Prototype  →  Specification  →  Technical Plan
 ```
 
 The plan should be reviewed before significant code generation begins.
@@ -374,6 +546,8 @@ Once the plan is accepted, agents execute it.
 
 ``` text
 Intent
+   ↓
+Prototype (or justified skip)
    ↓
 Spec
    ↓
@@ -433,6 +607,8 @@ This gives us traceability:
 ``` text
 Intent
   ↓
+Prototype (or justified skip)
+  ↓
 Spec
   ↓
 Plan
@@ -454,20 +630,13 @@ Only after the implementation has been proven and reviewed should it be
 shipped.
 
 ``` text
-WHY          WHAT         HOW
- │            │            │
-Intent ───→ Spec ───→ Plan
-                         │
-                         ↓
-                       Build
-                         │
-                         ↓
-                       Prove
-                  ┌──────┴──────┐
-                 Test          Review
-                  └──────┬──────┘
-                         ↓
-                        Ship
+Intent → Prototype (or justified skip) → Spec → Plan
+                                                 ↓
+                                               Build
+                                                 ↓
+                                         Test + Review
+                                                 ↓
+                                                Ship
 ```
 
 That is the core Agentic SDLC loop.
@@ -481,10 +650,11 @@ Task sub-issue with its owner, governing Markdown, predecessor, review
 PR, and completion criteria. Larger outcomes group Spec-through-Ship
 tasks under phase issues after their shared Intent is accepted.
 
-The stage sequence is Intent → Spec → Plan → Build → Test + Review →
-Ship. Each stage commits its own outcome artifact and merges its own
-reviewed PR before the next starts. Build includes normal tests and
-human review before its merge; Proof then checks the exact merged
+The workflow is Intent → Prototype → Spec → Plan → Build → Test +
+Review → Ship. Prototype has owner confirmation or a justified Spec skip,
+not a merged stage PR. Each of the six stages commits its outcome
+artifact and merges its reviewed PR before the next stage starts. Build
+includes normal tests and human review before its merge; Proof checks the exact merged
 version against every Spec rule and the Intent's success criteria.
 
 Issues link readable draft artifacts. After merge, they retain exact
@@ -518,6 +688,8 @@ Intent-driven:
 Intent
     ↓
 Phase
+    ↓
+Prototype confirmed (or justified skip)
     ↓
 Specification
     ├── User flows
@@ -558,6 +730,10 @@ Agent proposes Phases
             ↓
        HUMAN APPROVES
             ↓
+Agent demonstrates Prototype
+            ↓
+ OWNER CONFIRMS (or accepts Spec skip)
+            ↓
 Agent develops Spec
             ↓
        HUMAN APPROVES
@@ -585,16 +761,16 @@ The goal is **human judgment at high-leverage decision points**.
 
 The simplest mental model is:
 
-> **WHY → WHAT → HOW → BUILD → PROVE → SHIP**
+> **WHY → TRY → WHAT → HOW → BUILD → PROVE → SHIP**
 
 Which maps to:
 
-> **Intent → Spec → Plan → Implement → Test & Review → Ship**
+> **Intent → Prototype → Spec → Plan → Implement → Test & Review → Ship**
 
 The broader mnemonic is **STEPS**:
 
 -   **S --- State the Intent**
--   **T --- Translate into Specification**
+-   **T --- Try the behavior, then Translate into Specification**
 -   **E --- Execute the Plan**
 -   **P --- Prove the Outcome**
 -   **S --- Ship**
@@ -605,7 +781,7 @@ artifact-for-letter mapping.
 
 The actual operational sequence should remain:
 
-> **Intent → Spec → Plan → Implement → Prove → Ship**
+> **Intent → Prototype → Spec → Plan → Implement → Prove → Ship**
 
 ------------------------------------------------------------------------
 

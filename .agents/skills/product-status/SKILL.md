@@ -33,6 +33,13 @@ For every chain in `features/NNN-*/` plus every shipped capability:
     do not prove advancement. Name inaccessible evidence as unverified.
   - Legacy shipped records keep their real historical evidence; active
     adoption records missing backlinks rather than inventing old proof.
+  - For work adopting prototypes, inspect its recorded state, owner
+    confirmation or justified skip, preserved evidence, and any age
+    decision under [the shared rules](../../../docs/agentic-sdlc.md#prototype-before-spec).
+    Report "Awaiting prototype feedback" or the actual missing decision
+    in plain words. Expiry warns; it is not a failed check. Do not infer
+    confirmation from task closure, user feedback, or handoff success.
+    Name missing workspace setup without claiming P1 installs a lane.
 - **Started** — the intent's Date field; fall back to the first git
   commit that touched the feature directory
   (`git log --reverse --format=%as -- features/NNN-*` | first line).

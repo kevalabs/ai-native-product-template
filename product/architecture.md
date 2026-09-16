@@ -70,14 +70,18 @@ layout is a destination, not commit one.
    Spec, and Plan each land separately; Build requires the merged
    approved Plan. Proof and Ship have their own evidence PRs. Review
    checks that the Build diff matches the approved touched surface.
+   Between merged Intent and Spec, require prototype confirmation or
+   a justified skip under [the shared guide](../docs/agentic-sdlc.md#prototype-before-spec).
+   Prototype has no merged stage PR and creates no implicit sandbox.
 9. **Apps are named by audience.** Adding an audience adds a
    directory, never a restructure. `core` stays singular.
 10. **The repo is the unit of truth, never the unit of deployment.**
     CI builds/deploys only what a diff affects, computed from the
     workspace dependency graph — not naive path filters.
-11. **Build once, deploy many.** SHA-tagged images; a region deploy
-    points a region at a SHA; rollback = re-point. A versioned
-    manifest records which SHA runs where.
+11. **Build once, deploy many.** Build an immutable artifact from the
+    merged Build commit for staging. Proof tests that artifact; Ship
+    promotes the same identity without rebuilding. A versioned manifest
+    records which SHA or digest runs where; rollback re-points it.
 12. **Mobile releases are a separate lane** (store review, own
     cadence) — the standing reason for rule 6.
 
@@ -90,8 +94,14 @@ layout is a destination, not commit one.
 
 ## Deployment (per region)
 
-CI builds container images once; `make deploy REGION=…` targets the
+Stage PRs target main; no long-lived environment branch represents
+deployment state. Optional feature previews help early interaction but
+do not replace Proof of the merged Build artifact. Products build their
+container images once from that commit; `make deploy REGION=…` targets the
 region's host. Deploy/rollback/status are exposed to agents as tools
 (Make targets / MCP with scoped tokens) — agents never hold raw
 platform credentials. Preview environments per PR where the platform
 supports it.
+An artifact mismatch fails Proof; an unavailable proved artifact or a
+required rebuild prevents successful Ship. This template has no runtime:
+its merged Build source is the artifact and main is its delivery target.

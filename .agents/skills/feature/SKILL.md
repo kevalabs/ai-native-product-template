@@ -15,6 +15,14 @@ alone does not unlock the next stage. Name missing approvals, merges,
 links, inaccessible evidence, stale proof, and unmet phase dependencies.
 Use the read-only handoff check where appropriate; do not mutate records.
 
+Before Spec on adopting work, inspect prototype confirmation or the
+justified skip using [the shared rules](../../../docs/agentic-sdlc.md#prototype-before-spec).
+Show the prototype's actual state and missing confirmation, form,
+examples, access, or age decision as the next gate. An expiry warning
+alone is not a failed CI check. Prototype has no merged stage PR;
+handoff success alone does not verify confirmation. Report the P1
+workspace limitation when relevant, without inventing a new branch lane.
+
 Show Proposed for draft intents, Accepted for accepted outcomes before
 Build, In build after the Plan merge, and In review/proof/delivery as
 supported by current work. Show Shipped only after successful delivery

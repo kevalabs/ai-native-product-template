@@ -30,6 +30,18 @@ Do not draft `spec.md` until the interview is done.
   gate blocks stage work; do not stack it on an open Intent PR.
 - Use a clean artifact worktree from the updated default branch.
   Resolve the accepted `features/NNN-name/intent.md` there.
+- Before substantive drafting, apply the
+  [prototype rules](../../../docs/agentic-sdlc.md#prototype-before-spec).
+  Require owner confirmation of the exact version for every applicable
+  form, or record one concrete skip reason for nothing meaningful to
+  inspect. A tracking Task may exist before this decision. Do not infer
+  confirmation from user feedback or a passing handoff command.
+- Use the Spec template's confirmation fields. Preserve the original
+  examples file byte for byte under this phase's `design/`, with readable
+  supporting evidence. Check commit retention, decision source, access,
+  and age before acceptance. Reject another commit's confirmation or
+  inaccessible evidence. Copy no prototype source or working note.
+  Adopt this rule for work not yet at Spec; do not back-fill accepted Specs.
 - Read the intent's `## Phases`. If it lists phases and no `Pn` was
   given, ask which phase this spec is for and stop until answered.
   If it says "Single phase" and a `Pn` was given, say so and stop.

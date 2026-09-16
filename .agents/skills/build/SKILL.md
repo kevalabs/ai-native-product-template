@@ -21,6 +21,12 @@ Read those artifacts and AGENTS.md before editing code. Read
 4. Implement and test the approved changes. Bug fixes start with a
    failing test. Update matching capability docs with current behavior
    and any release restrictions. New glossary terms land in this PR.
+   For a Spec using prototype confirmation, make tests read its preserved
+   examples file directly. Compare it byte for byte with the confirmed
+   source and record both locations and the result in build.md. Do not
+   copy cases into a second fixture or promote disposable prototype code.
+   Changed cases need renewed confirmation or an accepted Spec revision.
+   See [the shared rules](../../../docs/agentic-sdlc.md#prototype-before-spec).
 5. Run make test, staged checks, and full PR-history checks. Review the
    complete diff against the declared files and every S-rule. Record
    actual verification in build.md; incomplete work is not ready.
@@ -28,6 +34,10 @@ Read those artifacts and AGENTS.md before editing code. Read
    Stage issue header and artifact link. Update the existing Task with
    that PR, then run live GitHub evidence checks. Look up identities
    before mutations and verify an unknown write result before retrying.
+   Target main. A preview is optional. Describe how the merged Build
+   produces the immutable staging artifact; record its actual identity
+   and source in Proof after merge, not an invented future SHA here.
+   Follow [delivery rules](../../../docs/agentic-sdlc.md#branches-and-delivery).
 7. After human review and merge, record the approved artifact permalink
    and merged PR on the Build Task and close it as completed. Keep the
    parent open. Only then may `/proof` start. A Build merge is not Ship.

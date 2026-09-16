@@ -40,3 +40,18 @@ of that feature's PR.
 - **Feature** — one numbered outcome directory, immutable after Ship.
 - **Capability** — current implemented behavior, updated with the Build
   that changes it and stating any remaining release restrictions.
+- **Prototype** — disposable demonstration of an accepted Intent's
+  behavior before Spec. Its code never becomes production code.
+- **Sandbox** — the product's explicitly permitted place for prototype
+  work. A declaration alone does not install branch or path enforcement.
+- **Screen walkthrough** — prototype form with named screen scenarios
+  and sample data that a person can follow.
+- **Worked example** — prototype form with named inputs and expected
+  outputs for a rule or calculation.
+- **Integration trial** — prototype form with named success and failure
+  cases for an outside service.
+- **Prototype note** — versioned working record of a prototype's cases,
+  evidence, state, age, feedback, and decision; it stays outside main.
+- **Prototype confirmation** — the owner's attributable, dated acceptance
+  of an exact committed prototype, its forms, evidence, and examples.
+  Real-user feedback alone is not confirmation.

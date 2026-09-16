@@ -9,6 +9,8 @@
 **Predecessor PR:** <merged previous-stage PR URL>
 **Build commit:** <full proved Build SHA>
 **Proof commit:** <full merged Proof SHA>
+**Artifact identity:** <same immutable ID/digest as Proof; source SHA for this template>
+**Artifact source:** <originating merged Build SHA, matching Proof and Build commit>
 **Destination:** <delivery target>
 **Result:** success
 **Delivery evidence:** <link to successful delivery evidence>
@@ -18,6 +20,12 @@
 ## Delivery
 
 <Evidence, exact version, and any relevant limits.>
+
+<Compare the delivered identity with Proof and record the result and
+destination. Unavailable artifacts or a destination requiring a different
+rebuild leave shipment unsuccessful. Keep the confirmed prototype commit
+and decision reachable through shipment; follow product retention policy
+afterward. This template delivers the exact merged Build source.>
 
 ## Intent results
 
