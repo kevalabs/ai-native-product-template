@@ -17,6 +17,28 @@ The spec answers WHAT. Someone who knows the product should
 understand every line without knowing how it is built. No tables,
 endpoints, components, or services — those belong in `plan.md`.
 
+## Prototype confirmation
+
+<!-- Before substantive drafting, fill this record or replace it with
+     one concrete Prototype skip reason for behavior nobody can
+     meaningfully inspect. Owner acceptance of the Spec accepts the skip.
+     Keep tracking headers above: the predecessor remains the Intent PR. -->
+
+**Prototype form:** <all applicable forms>
+**Prototype commit:** <full confirmed SHA>
+**Retained ref:** <remote repository and ref retaining the commit through Ship>
+**Evidence:** <preserved Markdown/images in this phase's design/ directory>
+**Examples:** <original commit permalink and preserved design/prototype-examples.md>
+**Confirmed by:** <owner>
+**Confirmed at:** <timestamp with UTC offset>
+**Confirmation source:** <attributable decision source>
+**Age acceptance:** <not needed, or dated reconfirmation / explicit owner acceptance at 30 days or more>
+
+Preserve the confirmed examples byte for byte. Check reachability and
+reviewer access to the commit, source, evidence, and examples. A changed
+commit, omitted form, or inaccessible evidence blocks acceptance.
+Copy no runnable prototype code or working prototype note into this PR.
+
 ## Flows
 
 The paths through this phase, one per actor, as numbered steps in

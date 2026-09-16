@@ -9,16 +9,24 @@ is a symlink to it). Edit this file, never the pointers.
 
 Read `product/intent.md` for what this product is. Every feature is
 built from a committed artifact chain in `features/NNN-name/`:
-`intent.md` (why) → `spec.md` (what) → `plan.md` (how) → code →
-proof → ship. The model behind it is `docs/agentic-sdlc.md`. Do not
+`intent.md` (why) → prototype confirmation or justified skip →
+`spec.md` (what) → `plan.md` (how) → code → proof → ship.
+The model behind it is `docs/agentic-sdlc.md`. Do not
 write feature code without an approved `plan.md` in that feature's
 (or phase's) directory.
 
 ## Workflow rules (generic — keep)
 
-- Every outcome follows Intent → Spec → Plan → Build → Test + Review
-  → Ship. Commit each stage's artifacts, obtain the required human
-  approval, and merge its own PR before starting the next stage.
+- Every outcome follows Intent → Prototype → Spec → Plan → Build →
+  Test + Review → Ship. Prototype uses owner confirmation or a justified
+  Spec skip; it has no merged stage PR. Commit each of the six stages'
+  artifacts, obtain human approval, and merge its PR before the next stage.
+- Before substantive Spec drafting, follow the shared
+  [prototype rules](docs/agentic-sdlc.md#prototype-before-spec). Preserve
+  confirmed examples and reviewable evidence in the Spec; Build tests
+  load the same examples file. Never merge disposable prototype source
+  or its working note. Adopt this for work not yet at Spec; do not
+  back-fill existing accepted Specs or shipped chains.
 - Never commit directly to the default branch. Start every stage in
   its own worktree from the updated default branch. Artifact branches
   carry one intent or exact-phase spec; feature branches carry a
@@ -68,6 +76,19 @@ write feature code without an approved `plan.md` in that feature's
 - Hooks and CI check stage scope, prerequisites, paths, history, and
   links. Human review verifies actual approval and semantic evidence
   under `REVIEW.md`. Review changes to the checks themselves.
+- Stage PRs target main. Optional feature previews precede integration;
+  products build an immutable staging artifact from the merged Build.
+  Proof tests that artifact and Ship promotes the same version without
+  rebuilding. Follow [the delivery guide](docs/agentic-sdlc.md#branches-and-delivery).
+
+## Prototype settings
+
+- **Expiry days:** 30. A product may declare another unresolved-note
+  period here. Report expiry as a warning; P1 supplies manual guidance.
+- **Sandbox:** not configured by P1. P2 defines sandbox paths and
+  exemptions. This section grants no new branch lane or write permission.
+  Use only an already authorized workspace; otherwise report the missing
+  setup without bypassing the current hooks or approved-Plan rule.
 
 ## Code rules (product-specific — bootstrap fills this)
 

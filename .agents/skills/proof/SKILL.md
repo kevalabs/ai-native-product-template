@@ -17,12 +17,24 @@ passes. Link test results, human review, and Intent success results.
 Set passed only when every requirement has evidence and no blocking
 finding remains. A model's PASS text does not establish human review.
 
+For a Spec using prototype confirmation, verify that Build tests load
+the preserved examples unchanged and report case results against the
+confirmed behavior. Check the retained prototype commit and evidence
+remain reachable through shipment; never invent a legacy confirmation.
+
+For runtime products, resolve the immutable artifact built from the
+merged Build commit, record its identity or digest, source commit, staging
+destination, and test evidence, then test that exact artifact. A source
+or identity mismatch blocks Proof. A feature preview cannot substitute.
+For this template, record the merged source SHA as the artifact identity.
+See [delivery rules](../../../docs/agentic-sdlc.md#branches-and-delivery).
+
 Run make test on the named Build and check that no product or planning
 changes have made its evidence stale. Resolve blocking findings through
 a reviewed Build correction or revised approved scope, then repeat
 proof for the new version. A proof branch cannot change implementation.
 
-Commit only proof.md, open its PR with the Stage issue link, and update
+Commit only proof.md, open its PR to main with the Stage issue link, and update
 the existing Task. Verify existing identities before writes and unknown
 write results before retries. After review and merge, record the approved
 permalink and merged PR, mark the Task Done, and close as completed.

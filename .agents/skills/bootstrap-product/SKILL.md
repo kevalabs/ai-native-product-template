@@ -61,6 +61,12 @@ inline `<!-- template -->` instructions, in this order:
   rules verbatim; keep/adapt/delete candidate code rules; add rules
   specific to this product's constraints. Leave `CLAUDE.md`,
   `GEMINI.md`, and `.agents/rules/` alone — they only point here.
+- Preserve `Prototype settings`. Ask only if the owner wants a period
+  other than 30 days; record an explicit choice. Keep sandbox setup
+  unresolved when the product has no permitted workspace. P1 does not
+  define sandbox paths, exemptions, or a branch lane; never invent them
+  or bypass checks. Link the shared prototype and delivery rules when
+  explaining the product's workflow.
 - `REVIEW.md` — same; derive the product-specific blocking checks
   from the constitution (every hard constraint should have a matching
   review check).
@@ -89,7 +95,8 @@ inline `<!-- template -->` instructions, in this order:
   it with the product's own license — ask the owner.
 - Tell the owner: review the `[ASSUMED]` sections, then land the
   constitution through a reviewed bootstrap PR. Each product feature
-  starts its own Intent PR, then separate Spec, Plan, Build, Proof,
-  and Ship PRs after each preceding merge. Bootstrap remains its own
+  starts its own Intent PR, then prototype confirmation or a justified
+  skip before Spec. Spec, Plan, Build, Proof, and Ship retain separate
+  PRs after each preceding merge. Bootstrap remains its own
   narrow constitution PR.
   Preserve existing feature numbers; allocate the next unused number.

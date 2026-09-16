@@ -42,7 +42,7 @@ file is your map; read it top to bottom once.
 | 5 | `product/architecture.md` | Target layout + the numbered standing rules every decision cites |
 | 6 | `AGENTS.md` | How agent sessions must work in this repo — read by every coding agent |
 | 7 | `REVIEW.md` | What every PR is judged against (blocking checks included) |
-| 8 | `docs/agentic-sdlc.md` | The process model behind section 3 — why → what → how → build → prove → ship, phases, human gates |
+| 8 | `docs/agentic-sdlc.md` | The process model behind section 3 — why → try → what → how → build → prove → ship, phases, human gates |
 
 `product/` is the **constitution** — slow-changing, always true.
 Don't skip it: agents load these files as context, and so should you.
@@ -61,9 +61,10 @@ features/              append-only ledger of change chains:
                        holds that phase's spec, design/, and plan.
                        Immutable once shipped — this is the history.
 templates/             copy these to start any artifact:
-                       intent, spec, plan, capability
+                       intent, prototype note/examples, spec, plan,
+                       build, proof, ship, capability
 docs/agentic-sdlc.md   the process model this loop implements
-                       (why → what → how → build → prove → ship)
+                       (why → try → what → how → build → prove → ship)
 AGENTS.md              agent conventions — the one file every coding
                        agent reads (CLAUDE.md, GEMINI.md, and
                        .agents/rules/ just point at it)
@@ -113,18 +114,33 @@ and desired outcome. One outcome is one numbered feature directory;
 large outcomes have fixed phases in the accepted Intent.
 
 ```
-Intent → Spec → Plan → Build → Test + Review → Ship
-   Each arrow requires approved artifacts committed and a reviewed PR merged.
+Intent → Prototype → Spec → Plan → Build → Test + Review → Ship
+   Prototype: owner confirmation or a justified Spec skip; no merged PR.
+   The six stages: approved artifacts and a separate reviewed PR each.
 ```
 
 | Command | Produces | Entry gate |
 |---|---|---|
 | `/intent` | intent.md and Intent parent issue | Proposed outcome |
-| `/spec NNN [Pn]` | spec.md | Accepted Intent PR merged |
+| `/prototype NNN [Pn]` | Disposable demonstration, examples, and note outside main | Accepted Intent PR merged; permitted workspace |
+| `/spec NNN [Pn]` | spec.md and preserved evidence | Accepted Intent PR merged; confirmation or justified skip |
 | `/plan NNN [Pn]` | plan.md, alone in its PR | Accepted Spec PR merged |
 | `/build NNN [Pn]` | build.md, code, tests, capabilities | Approved Plan PR merged |
 | `/proof NNN [Pn]` | proof.md | Reviewed Build PR merged |
 | `/ship NNN [Pn]` | ship.md | Passing Proof PR merged |
+
+Before substantive Spec drafting, demonstrate screens, rules, and outside
+services using every applicable prototype form. The owner confirms an
+exact version; the Spec preserves its evidence and examples. Build tests
+load that same examples file. A pure refactor with nothing meaningful
+to inspect can record a one-line skip accepted with its Spec.
+Follow [the shared prototype rules](docs/agentic-sdlc.md#prototype-before-spec).
+There is no extra merged prototype PR or mandatory seventh stage task.
+
+P1 supplies manual guidance and review checks. The new prototype branch
+lane and sandbox enforcement are not installed. Use an already permitted
+workspace, or report the missing setup without bypassing existing gates.
+Adopt at work not yet at Spec; keep existing accepted Specs unchanged.
 
 The parent issue has type Intent; stage sub-issues have type Task. Each
 issue links to its governing Markdown and each new artifact links back.
@@ -152,6 +168,11 @@ Build includes tests, lint, and build verification before merge. The
 separate Proof stage names the exact merged Build, tests every Spec
 rule, checks the Intent, and records human review and remaining findings.
 Ship requires merged passing proof and successful delivery evidence.
+All stage PRs target main; environment branches do not represent
+deployment state. Feature previews are optional. Products build an
+immutable staging artifact from the merged Build commit; Proof tests it
+and Ship promotes that same artifact without rebuilding. See
+[branches and delivery](docs/agentic-sdlc.md#branches-and-delivery).
 For this template, delivery is the approved version on the default
 branch; a release tag is optional. A Build merge alone does not close
 the parent outcome. Cancelled work is never counted as shipped.

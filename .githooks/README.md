@@ -9,7 +9,7 @@ Product repositories extend it with their tests, lint, and build.
 | Stage | Branch | Outcome artifact | Prerequisite |
 |---|---|---|---|
 | Intent | artifact/NNN-name | intent.md | Parent Intent issue |
-| Spec | artifact/NNN-name | spec.md | Accepted Intent PR merged |
+| Spec | artifact/NNN-name | spec.md and preserved design evidence | Accepted Intent PR merged; prototype confirmation or justified skip reviewed by a human |
 | Plan | feature/NNN[-Pn]-name | plan.md only | Accepted Spec PR merged |
 | Build | feature/NNN[-Pn]-name | build.md and declared implementation | Approved Plan PR merged |
 | Test + Review | proof/NNN[-Pn]-name | proof.md only | Build PR merged |
@@ -20,6 +20,22 @@ cannot combine Intent and Spec. Bootstrap keeps its existing narrow
 constitution allowlist. Start each stage worktree from the updated
 remote default branch. Local branch reuse after a reviewed merge is
 fine once fast-forwarded; previous stage commits must not be replayed.
+
+All stage PRs target main. Between Intent and Spec, follow the
+[prototype rules](../docs/agentic-sdlc.md#prototype-before-spec). Prototype
+does not add a merged stage PR or another required Task. Spec preserves
+the examples Markdown file byte for byte and permitted evidence under
+the exact phase's `design/`; source code and the working note stay out.
+The current artifact check permits Markdown and images there, not raw
+JSON fixtures. Human review checks confirmation, age, access, and content.
+
+P1 adds no prototype branch permission, sandbox enforcement, expiry job,
+or lifecycle automation. `make handoff` verifies the six existing stage
+gates, not the new manual confirmation. Do not report its success as
+proof of confirmation or bypass hooks to create a prototype. Products
+need an already permitted workspace until the separate lane is installed.
+See [delivery rules](../docs/agentic-sdlc.md#branches-and-delivery) for
+optional previews and promotion of the same proved artifact.
 
 ## Before work and before review
 

@@ -55,6 +55,12 @@ alternatives.
   the collision check.
 - If `plan.md` already exists on this branch, revise instead of
   recreating.
+- For a Spec using prototype confirmation, read its preserved evidence
+  and exact examples file under the
+  [shared rules](../../../docs/agentic-sdlc.md#prototype-before-spec).
+  Name how Build tests load that same file and prove its cases. Do not
+  silently replace confirmed data with a new fixture. A recorded skip
+  needs no empty examples file; accepted legacy Specs need no back-fill.
 
 ## Step 1 — interview (design decisions, out loud)
 
@@ -102,9 +108,16 @@ looked up rather than asked.
 4. **Migrations.** Ordering and reversibility; what is the rollback if
    the deploy halts mid-way?
 5. **Tests.** Map every spec S-number to the test(s) that prove it,
-   and which tests are written first.
+   and which tests are written first. Include confirmed example IDs,
+   their preserved file, and the reader used by the tests. Changed cases
+   need renewed confirmation or an accepted Spec revision.
 6. **Rollout.** Feature flags, region order, and the capability-doc
-   update (which files, in this same PR).
+   update (which files, in this same PR). Follow the
+   [delivery rules](../../../docs/agentic-sdlc.md#branches-and-delivery):
+   stage PRs target main; optional previews do not replace Proof of the
+   immutable artifact built from the merged Build. Plan its identity
+   evidence and same-artifact promotion at Ship, or the template's
+   source-only delivery. Do not introduce an environment branch.
 
 ## Step 2 — write and commit
 

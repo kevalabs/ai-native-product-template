@@ -30,6 +30,26 @@ severity. Do not review formatting or style — linters own that.
 
 - Verify actual owner approval of intent, spec, and plan. Markdown
   status values alone are not approval evidence.
+- For work adopting the prototype step, use the
+  [shared review rules](docs/agentic-sdlc.md#prototype-before-spec).
+  Before Spec, require every applicable prototype form, successful named
+  cases, the exact committed version, and attributable owner confirmation.
+  Check retained-ref reachability, evidence access, age acceptance when
+  needed, and byte-for-byte preserved examples. Missing evidence or a
+  different commit blocks acceptance. The alternative is a concrete
+  owner-accepted skip for nothing meaningful to inspect, not an empty demo.
+  Do not demand retroactive confirmation for existing accepted Specs.
+- Prototype code has no automated product tests or coverage gate. Reject
+  prototype tests and any real personal data or production secrets.
+  Build tests must load the confirmed examples file unchanged; altered
+  cases require renewed confirmation or an accepted Spec revision.
+  Prototype code and its working note never merge into the product.
+- Stage PRs target main. For runtime delivery, check the immutable
+  artifact's identity and originating merged Build commit in Proof,
+  then require Ship to deliver that same artifact. A mismatch blocks
+  Proof; an unavailable artifact or a required rebuild prevents successful
+  Ship. Optional previews do not replace this evidence. For this
+  template, the merged Build source is the delivery artifact.
 - Confirm each predecessor stage has its own approved, merged PR
   before the next stage starts. Plan must already be merged before
   Build. Verify the exact phase and the approved artifact permalink.
