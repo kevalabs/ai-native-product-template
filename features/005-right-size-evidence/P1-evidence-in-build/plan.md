@@ -8,7 +8,7 @@
 **Predecessor PR:** https://github.com/kevalabs/ai-native-product-template/pull/73
 
 **Status:** approved
-**Approved by:** Suraj Chhetry, who approved this plan as written in the working conversation on 2026-09-17.
+**Approved by:** Suraj Chhetry, who approved this plan as written in the working conversation on 2026-09-17, and approved its revised touched surface on 2026-09-17.
 **Spec:** [Test + Review and Ship evidence land where they are produced](spec.md)
 **Branch:** feature/005-P1-evidence-in-build
 
@@ -90,9 +90,12 @@ depends on it.
 - .agents/skills/feature/SKILL.md
 - .agents/skills/product-status/SKILL.md
 - .agents/skills/bootstrap-product/SKILL.md
+- .agents/skills/capability/SKILL.md
+- templates/proof-template.md
+- templates/ship-template.md
 - features/005-right-size-evidence/P1-evidence-in-build/build.md
 
-Twenty-six files. No other plan is in flight: outcome 004's P2 and P3
+Twenty-nine files. No other plan is in flight: outcome 004's P2 and P3
 have no plan, and their tasks are blocked placeholders. Outcome 004 P2
 will touch `AGENTS.md` for its sandbox section and the prototype rules
 in `docs/agentic-sdlc.md`; this plan adds a separate settings section
@@ -102,6 +105,13 @@ feature directory.
 
 Reviewability: about 900 changed lines, roughly half of them validator
 code and tests. One reviewer can read it in one sitting.
+
+Revision, 2026-09-17: Build found three more files carrying instructions
+that contradict merged-source delivery — the capability skill and the
+proof and ship templates all tell every product to write a separate
+Proof and Ship record. S17 requires the Build to update every such
+instruction, so the owner approved adding them to this surface before
+any Build PR opened. Nothing else in this plan changes.
 
 ## Steps
 
