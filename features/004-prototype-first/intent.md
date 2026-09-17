@@ -7,7 +7,7 @@
 **Stage issue:** https://github.com/kevalabs/ai-native-product-template/issues/23
 
 **Status:** accepted
-**Accepted by:** Suraj Chhetry, confirmed in the owner conversation on 2026-09-15.
+**Accepted by:** Suraj Chhetry, original Intent confirmed on 2026-09-15; prototype worktree and code-retaining promotion revision confirmed in the owner conversation on 2026-09-17 (see Revision below).
 **Kind:** change
 **Originator:** Suraj Chhetry
 **Date:** 2026-09-15
@@ -49,13 +49,19 @@ The owner also spends time on typing that the gates do not need:
 starting each stage, creating the issue for each stage, and recording
 the approved link and merged PR on each task by hand.
 
+On 2026-09-17, the owner asked to simplify prototype work: keep it in
+the normal worktree location on its own branch, then let an approved
+prototype become feature work without throwing its code away.
+
 ## Outcome
 
-Before a spec is written, a team can show the owner a cheap, thrown-away
-prototype and get it confirmed. The spec then freezes exactly what the
-owner accepted, and the Build is tested against the same examples the
-owner confirmed. Every existing gate stays, while the mechanical steps
-around the gates take one command instead of many manual edits.
+Before a spec is written, a team can show the owner a cheap prototype
+in a normal worktree on a separate branch. Once the owner approves it,
+that prototype becomes feature work and retains its code. It follows
+Spec → Plan → Build → Test + Review → Ship. The spec freezes what the
+owner accepted, and Build tests use the same confirmed examples. Each
+stage keeps its approval and merge gate, while the mechanical tracking
+steps take one command instead of many manual edits.
 
 The sequence becomes Intent → Prototype → Spec → Plan → Build →
 Test + Review → Ship. The prototype step is required for work about
@@ -86,6 +92,9 @@ nothing to show.
 - A team can try an idea on a prototype branch without writing an
   intent, spec, plan, proof, or ship record. The checks reject any
   change outside the product's declared sandbox and the prototype note.
+  Its worktree lives alongside the team's other worktrees. Owner
+  approval allows that branch to become feature work with its code
+  retained; Spec and Plan approval still precede further feature work.
 - Starting a stage, creating the tracking issues for a merged intent,
   and recording a merged stage on its task each take one command or
   happen on merge, and never create duplicate issues.
@@ -102,7 +111,11 @@ nothing to show.
   as test data. Docs, skills, and templates only. Depends on: —
 - P2-proto-lane — a team can work on a prototype branch that needs no
   stage artifacts, and the checks keep it inside the product's declared
-  sandbox. Depends on: P1 (can run alongside P3)
+  sandbox. Its worktree uses the normal worktree location. Owner
+  approval allows the branch and code to become feature work, followed
+  by the existing Spec-through-Ship gates. P2 updates the delivered
+  guidance and checks for this promotion. Depends on: P1 (can run
+  alongside P3 after the promotion contract is settled)
 - P3-stage-automation — contributors can start a stage, create an
   outcome's tracking issues, and record a merged stage on its task
   without manual edits. Depends on: P1 (can run alongside P2)
@@ -120,6 +133,9 @@ Shared ground — settled before P2 and P3 run in parallel, and where:
   its exact form in P2's spec
 - the tracking fields the automation reads and writes → already set by
   feature 003; P3 reuses them and does not redefine them
+- prototype-to-feature promotion, retained code, and its relationship
+  to stage branches → P2's accepted Spec; settle this before dependent
+  P3 automation is specified
 
 ## Affected systems
 
@@ -138,8 +154,17 @@ contracts change in this template.
   adopt the prototype step. Nothing is back-filled.
 - Phases are still cut by outcome, never by layer. Build still does
   screens and back end together.
-- A prototype is thrown away. Its code is never promoted into product
-  code. Promotion means a new intent that cites the prototype.
+- A prototype starts in a separate branch and a worktree alongside the
+  team's other worktrees. After owner approval, that branch can become
+  feature work and keep its code. It follows Spec → Plan → Build →
+  Test + Review → Ship. An accepted governing Intent is still required;
+  a standalone experiment obtains one before Spec if none exists.
+- Prototype approval does not approve a Spec or Plan, permit further
+  feature implementation before Plan approval, or approve a release.
+  Retained code must meet the approved scope and normal Build tests
+  and review before merging as production implementation. Spec and
+  Plan PRs remain artifact-only; prototype source enters main through
+  the reviewed Build. Preserve the exact confirmed version as evidence.
 - Human gates do not change. The prototype step adds one owner
   confirmation, recorded like other approvals with the person, date,
   and source. Agents never invent it.
@@ -164,13 +189,14 @@ contracts change in this template.
   the salon product shows.
 
 The owner decided the following in the working conversation on
-2026-09-15:
+2026-09-15. The branch and code-retention decision was replaced on
+2026-09-17 as recorded below:
 
 - The prototype step is required for screen, rule, and integration
   work. Skipping it needs a one-line reason in the spec.
-- A prototype branch never merges to the default branch. That covers
-  its code and its prototype note. A demo that must stay up becomes
-  its own intent.
+- Originally, prototype code and its working note never merged to the
+  default branch. The 2026-09-17 revision allows approved code to enter
+  through feature Build. The working note remains prototype evidence.
 - A prototype note expires 30 days after it is written unless the
   product sets another length. An expired note makes CI warn, not fail.
 - Stage automation stays in this outcome as P3.
@@ -178,11 +204,44 @@ The owner decided the following in the working conversation on
   Bootstrap fills it, and the existing bootstrap PR may already
   change that file.
 
+## Revision
+
+Suraj Chhetry requested on 2026-09-17 in the working conversation:
+
+> Let's make it simple prototype is a also work tree so it be place
+> where working tree are being keep and also make sure that prototype
+> will be separate branch which once approved can be converted into feature.
+
+Asked whether conversion keeps the prototype code, with Spec and Plan
+approval required before further feature work, the owner confirmed:
+
+> yea , prototype once approve will become feature and need to follow
+> the patter as spec->plan ....
+
+This revises the still-open Intent for P2 and dependent P3 work. It does
+not rewrite shipped P1 artifacts or claim that promotion is implemented.
+P1 shipped through [PR #49](https://github.com/kevalabs/ai-native-product-template/pull/49)
+under the original [Intent PR #43](https://github.com/kevalabs/ai-native-product-template/pull/43).
+Its original approved Intent remains available at commit
+`d05540e142e83241f18a69ecb4813d0d1b99bbb4`.
+
+P2's Spec must explicitly replace P1's independent-reimplementation
+flow and the prohibition on merging approved prototype code, including
+S9's code exclusion. P2's reviewed Build will update the active guide,
+skills, capability rules, and checks consistently. Exact-version owner
+confirmation, retained examples, human stage approvals, and immutable
+shipped records continue to apply. P3 uses the settled promotion
+contract for its automation rather than defining another one.
+
 ## Open questions
 
-- Owner, during P1's spec: a spec links the exact accepted prototype
-  commit. Prototype branches never merge and may be deleted, so how
-  does that commit stay reachable?
-- Owner, during P2's spec: the prototype note never reaches the
-  default branch. Where is its outcome (promoted to intent NNN, or
-  dropped) recorded so the team can find it later?
+- P1 settled retention: preserve the confirmed commit through shipment
+  using a recorded remote ref, retaining a tag before deleting its only
+  branch. P2 must preserve this evidence when a branch becomes feature work.
+- Owner, during P2's Spec: where is a prototype's final outcome
+  (converted to feature work or dropped) recorded so the team can find it?
+- P2 Spec and Plan owners: define the promotion handoff so the same
+  worktree and retained code can continue as feature work while Spec
+  and Plan keep their separate artifact-only PRs and the Build starts
+  from the merged Plan. Settle how prototype history is retained and
+  how carried code becomes subject to the normal Build checks.
