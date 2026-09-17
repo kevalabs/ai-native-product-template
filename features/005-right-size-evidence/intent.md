@@ -6,7 +6,8 @@
 **Parent issue:** https://github.com/kevalabs/ai-native-product-template/issues/51
 **Stage issue:** https://github.com/kevalabs/ai-native-product-template/issues/52
 
-**Status:** draft
+**Status:** accepted
+**Accepted by:** Suraj Chhetry, who approved and merged Intent PR #71 on 2026-09-17 and confirmed the merge in the working conversation on 2026-09-17.
 **Kind:** change
 **Originator:** Suraj Chhetry
 **Date:** 2026-09-17
