@@ -36,6 +36,9 @@ of that feature's PR.
   record and its approving review; for a runtime artifact it has its own
   artifact and PR.
 - **Ship** — delivery of the proved version and its recorded evidence.
+- **Tracking command** — `track-create`, `track-link`, or
+  `track-complete`: a local command that writes stage tracking issues
+  and refuses to record a decision a person owns.
 - **Fix** — a change that makes the product do what a shipped Spec or
   capability rule already says. It adds and changes no rule.
 - **Fix lane** — the one reviewed PR a fix lands in, on a

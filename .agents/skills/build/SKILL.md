@@ -5,7 +5,9 @@ description: Implement an outcome or phase after its approved Plan PR has merged
 
 Build feature NNN or phase Pn under its accepted Spec and approved Plan.
 Read those artifacts and AGENTS.md before editing code. Read
-`.githooks/README.md` for record fields and gate commands.
+`.githooks/README.md` for record fields, gate commands, and the
+tracking commands: `make track-link` after opening the Build PR and
+`make track-complete` after it merges.
 
 1. Fetch the default branch. Find the existing Intent parent and Build
    Task, and run `make handoff` for that Task before coding. Verify the

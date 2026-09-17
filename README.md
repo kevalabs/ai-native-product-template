@@ -205,6 +205,11 @@ missing gate. `/product-status` gives stakeholder status based on actual
 artifacts, links, merges, and shipment evidence. Neither report advances
 work or treats a status label as proof.
 
+`make track-create`, `make track-link`, and `make track-complete` do the
+mechanical issue writes with your own GitHub authentication. Each takes
+`DRY_RUN=--dry-run`. They refuse to record any decision a person owns,
+and their success is not evidence.
+
 Run `make setup` once per clone and `make test` before handoff. Run
 `make setup-check REPO=owner/repo` to inspect issue types, required
 remote policy, and the PR authoring identity that required review
