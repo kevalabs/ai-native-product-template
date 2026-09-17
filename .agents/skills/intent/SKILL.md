@@ -22,11 +22,14 @@ a sharp question now is cheaper than a wrong feature.
 ## Step 0 — context (before asking anything)
 
 - Read `.githooks/README.md` for the tracking headers and commands.
-  Look up the parent Intent and exact stage Task before creating one;
-  verify unknown write results before retrying. Never create a duplicate
-  because a response timed out. Keep the issue linked to its artifact
-  and the artifact linked back. Use actual sub-issue and dependency
-  relationships; status labels alone do not authorize work.
+  Use `make track-create` for an outcome's issues, `make track-link`
+  after opening a PR and before the checks run, and
+  `make track-complete` after a stage merges; add `DRY_RUN=--dry-run`
+  to see a command's changes first. They look up existing records,
+  refuse duplicates, and never write a decision a person owns. Keep the
+  issue linked to its artifact and the artifact linked back. Status
+  labels alone do not authorize work, and a command's success is not
+  evidence.
 
 - Read `product/intent.md`, `product/personas.md`, and skim
   `product/capabilities/` and existing `features/*/intent.md`.

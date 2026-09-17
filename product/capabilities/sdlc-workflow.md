@@ -97,9 +97,21 @@ records its shipment evidence and its success criteria hold.
   dependency's merged stage PR and current approved artifact for its
   declared outcome and phase. A closed task alone cannot unlock work.
   Reopened tasks require renewed evidence checks.
-- R24 Stage skills look up existing identities before mutations and
-  verify unknown write results before retrying. There is no background
-  issue/PR lifecycle automation or automatic human approval.
+- R24 Stage skills and tracking commands look up existing identities
+  before mutations and verify unknown write results before retrying.
+  Tracking runs only when a contributor invokes it; there is no
+  background automation and no automatic human approval.
+- R42 `track-create` builds an outcome's parent Intent issue and one
+  Task per tracked stage and phase from its accepted intent, and
+  refuses when a graph already exists. `track-link` records a stage PR
+  and sets its task to in review. `track-complete` verifies the merge,
+  records the approved permalink and merged PR, and closes the task as
+  completed, refusing an unmerged PR or a changed artifact.
+- R43 Every tracking write reports what it changed and supports a dry
+  run that writes nothing. A command refuses to record Accepted by,
+  Approved by, Confirmed by, or Blocking findings, and never merges a
+  PR, approves a review, or pushes a tag. A command's success is not
+  evidence: the handoff and PR checks verify the graph independently.
 - R25 An owner can record an explicit intent-label fallback where custom
   types are unavailable. It retains the same artifact and merge gates.
 

@@ -54,6 +54,12 @@ write feature code without an approved `plan.md` in that feature's
   links to its governing Markdown artifact or section; each new artifact
   links back. Completed tasks retain an approved
   commit permalink and merged PR. Closing an issue is not a merge gate.
+- Tracking writes have commands: `make track-create` for an outcome's
+  issues, `make track-link` before the checks run, and
+  `make track-complete` after a stage merges. They refuse to record an
+  acceptance, approval, confirmation, or blocking finding, and they
+  never merge, review, or tag. A command's success is not evidence: the
+  handoff and PR checks still verify the graph.
 - Before stage work, fetch the default branch and run `make handoff`
   for its task. Missing or inaccessible evidence blocks that handoff.
   Local index checks are useful offline but do not establish remote

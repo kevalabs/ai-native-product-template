@@ -1,6 +1,6 @@
 PYTHON ?= python3
 
-.PHONY: setup setup-check handoff test lint build
+.PHONY: setup setup-check handoff test lint build track-create track-link track-complete
 
 setup:
 	git config core.hooksPath .githooks
@@ -26,3 +26,14 @@ setup-check:
 
 handoff:
 	$(PYTHON) scripts/check_github.py --repo "$(REPO)" --handoff --issue "$(ISSUE)" --base "$(BASE)"
+
+# Tracking writes. They never record an approval, review, merge, or tag.
+# Add DRY_RUN=--dry-run to see what a command would change.
+track-create:
+	$(PYTHON) scripts/track.py create --repo "$(REPO)" --outcome "$(OUTCOME)" --base "$(BASE)" $(DRY_RUN)
+
+track-link:
+	$(PYTHON) scripts/track.py link --repo "$(REPO)" --outcome "$(OUTCOME)" --issue "$(ISSUE)" --pr "$(PR)" $(DRY_RUN)
+
+track-complete:
+	$(PYTHON) scripts/track.py complete --repo "$(REPO)" --outcome "$(OUTCOME)" --issue "$(ISSUE)" --base "$(BASE)" $(DRY_RUN)

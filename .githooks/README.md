@@ -76,6 +76,38 @@ local-only. CI repeats each commit's checks and reads live GitHub
 metadata. It uses the ordinary pull_request event with read-only
 permissions. There is no supplied-snapshot or offline-success option.
 
+## Tracking commands
+
+Three commands do the mechanical tracking writes, using your existing
+`gh` authentication. Add `DRY_RUN=--dry-run` to any of them to see what
+would change without writing.
+
+```sh
+make track-create OUTCOME=005-name REPO=owner/repo BASE=origin/main
+make track-link OUTCOME=005-name ISSUE=60 PR=79 REPO=owner/repo
+make track-complete OUTCOME=005-name ISSUE=60 REPO=owner/repo BASE=origin/main
+```
+
+`make track-create` builds the parent Intent issue and one Task per
+stage the delivery mode tracks, for every phase the accepted intent
+declares. It reads the repository first and refuses when a graph already
+exists, so running it twice is a report rather than a second graph.
+
+`make track-link` records a stage PR on its task and sets the task to in
+review. Run it after opening the PR and before the checks run, so the
+history check finds its Review PR on the first try.
+
+`make track-complete` verifies the merge with the same evidence rules
+the checks use, then records the approved artifact permalink and the
+merged PR, sets the task Done, and closes it as completed. It refuses
+when the PR is not merged, when its artifact is missing, or when the
+artifact changed after review.
+
+No command records an acceptance, approval, confirmation, or blocking
+finding: it names the field and changes nothing. None of them merges a
+PR, approves a review, or pushes a shipped tag. A command's success is
+not evidence; the handoff and PR checks still verify the graph.
+
 ## Tracking record
 
 Use exact standalone Markdown headers, not fenced code, in issue bodies
