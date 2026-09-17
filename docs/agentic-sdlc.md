@@ -18,10 +18,11 @@
 > | Spec (WHAT) | `spec.md` per chain or per phase — `/spec NNN [Pn]` |
 > | Plan (HOW) | `plan.md`, approved first commit in its own PR before Build — `/plan NNN [Pn]` |
 > | Implement | one worktree, one branch, one agent per phase |
-> | Prove | `make test` + PR commit-history validation + `REVIEW.md` (spec compliance and outcome check); product repos extend the template checks with their build/tests |
-> | Ship | delivery succeeds and its Ship evidence PR merges, after passing Proof; capability docs land with Build |
-> | Human gates | intent `accepted` (includes the phase split), spec `accepted`, plan `approved`, PR approved |
-> | GitHub structure | one Intent parent, Task sub-issues per stage, optional phase groups, and one reviewed PR per stage |
+> | Prove | `make test` + S-rule results in the Build record + a non-author approving review + `REVIEW.md`; a runtime-artifact product adds a separate `proof.md` PR against its immutable artifact |
+> | Ship | a `shipped/NNN[-Pn-name]` tag on the merged Build commit, or a merged `ship.md` PR promoting the proved artifact; capability docs land with Build |
+> | Human gates | intent `accepted` (includes the phase split), spec `accepted`, plan `approved`, every PR approved by someone other than its author |
+> | GitHub structure | one Intent parent, Task sub-issues per tracked stage, optional phase groups, and one reviewed PR per stage |
+> | Delivery mode | `## Delivery settings` in AGENTS.md: `merged source` or `runtime artifact` |
 
 ## 1. Core principle
 
@@ -577,6 +578,15 @@ Proof consists broadly of:
 
 > **Testing + Verification + Review**
 
+Proof is a step, not necessarily a separate pull request. When the
+merged source is the delivery, its evidence belongs in the Build PR
+where the work is: a result for every Spec rule naming the test that
+proves it, a statement of which Intent success criteria now hold, and
+an approving review from someone other than the author. When a product
+deploys a built artifact, Proof gets its own record and PR, because it
+tests something the Build PR cannot: the immutable artifact built from
+the merged commit.
+
 The agent should first perform its own automated verification.
 
 Examples:
@@ -627,7 +637,12 @@ Original Intent
 ## 13. Ship
 
 Only after the implementation has been proven and reviewed should it be
-shipped.
+shipped. Shipment is a recorded fact, and its form follows the delivery
+mode: an annotated `shipped/` tag on the merged Build commit when the
+merged source is the delivery, or a merged Ship record promoting the
+proved artifact when a product deploys one. Either way the version is
+identified exactly, the record is immutable, and a correction starts
+new work rather than moving the old marker.
 
 ``` text
 Intent → Prototype (or justified skip) → Spec → Plan
@@ -652,10 +667,18 @@ tasks under phase issues after their shared Intent is accepted.
 
 The workflow is Intent → Prototype → Spec → Plan → Build → Test +
 Review → Ship. Prototype has owner confirmation or a justified Spec skip,
-not a merged stage PR. Each of the six stages commits its outcome
-artifact and merges its reviewed PR before the next stage starts. Build
-includes normal tests and human review before its merge; Proof checks the exact merged
-version against every Spec rule and the Intent's success criteria.
+not a merged stage PR. Intent, Spec, Plan, and Build each commit their
+artifact and merge their reviewed PR before the next step starts.
+
+Where the last two steps record their evidence follows the product's
+delivery mode. For `merged source`, the Build record carries a result
+for every Spec rule naming the test that proves it and reports the
+Intent's success criteria; a non-author approving review on that PR is
+Test + Review; and an annotated `shipped/` tag on the merged Build
+commit is the Ship record. Those products track Intent, Spec, Plan, and
+Build tasks only. For `runtime artifact`, Proof checks the exact merged
+version and its immutable artifact in its own PR, and Ship promotes that
+artifact in another, with all six tasks.
 
 Issues link readable draft artifacts. After merge, they retain exact
 approved commit permalinks and merged PRs. Artifacts link back to their

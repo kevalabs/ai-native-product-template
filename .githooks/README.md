@@ -12,8 +12,14 @@ Product repositories extend it with their tests, lint, and build.
 | Spec | artifact/NNN-name | spec.md and preserved design evidence | Accepted Intent PR merged; prototype confirmation or justified skip reviewed by a human |
 | Plan | feature/NNN[-Pn]-name | plan.md only | Accepted Spec PR merged |
 | Build | feature/NNN[-Pn]-name | build.md and declared implementation | Approved Plan PR merged |
-| Test + Review | proof/NNN[-Pn]-name | proof.md only | Build PR merged |
-| Ship | ship/NNN[-Pn]-name | ship.md only | Passing Proof PR merged |
+| Test + Review | the Build PR, or proof/NNN[-Pn]-name | S-rule and Intent results in build.md, or proof.md only | Implementation complete; a non-author approving review before merge |
+| Ship | the merged Build commit, or ship/NNN[-Pn]-name | shipped/NNN[-Pn-name] tag, or ship.md only | Reviewed Build merged; passing Proof PR merged for a runtime artifact |
+
+The last two rows follow the `Delivery` setting in `AGENTS.md`. With
+`merged source`, Test + Review evidence lands in the Build record and
+Ship is an annotated tag on the merged Build commit; there is no Proof
+or Ship PR and no Proof or Ship task. With `runtime artifact`, both
+stages keep their own branches, records, PRs, and tasks.
 
 All paths live under the chain or exact phase directory. Artifact PRs
 cannot combine Intent and Spec. Bootstrap keeps its existing narrow
@@ -72,6 +78,12 @@ folder name; Phase is `single` or the full `Pn-name` folder name. Stages
 are lowercase `intent`, `spec`, `plan`, `build`, `proof`, and `ship`.
 The PR body includes its Stage issue URL.
 
+The shipped tag is annotated, named `shipped/<outcome>` or
+`shipped/<outcome>-<Pn-name>`, and its message names the merged Build
+PR. The checks fetch tags and require it to point at a commit on the
+default branch carrying that phase's ready Build record. A tag never
+moves; a correction starts a new intent.
+
 The parent has type Intent, Outcome, Status, Artifact (intent URL), and
 an index of available artifacts. Each stage task has type Task, Outcome,
 Stage, Phase, Parent issue, Owner, Status, Artifact, Completion criteria,
@@ -81,6 +93,12 @@ stays open until successful shipment. A phased parent has one Intent
 task plus phase groups (`Stage: phase`, `Phase: Pn-name`) containing
 Spec-through-Ship tasks. Only complete, noncancelled dependencies unlock
 work. Keep project Stage and Status fields separate if using a project.
+
+A merged-source outcome tracks Intent, Spec, Plan, and Build tasks per
+phase; a runtime-artifact outcome also tracks Proof and Ship. A task for
+a stage the mode does not track is closed as not planned and unlocks
+nothing. The Build task completes when its PR has merged and the phase's
+shipped tag exists.
 
 After merge, set the task to Done, close it as completed, and record
 Approved artifact as a full commit permalink and Review PR as the merged
@@ -97,7 +115,10 @@ current tracking. Do not rewrite shipped history or claim old compliance.
 ## Setup and review limits
 
 `make setup-check REPO=owner/repo` reads issue types, classic protection,
-and branch rulesets. Missing or inaccessible setup is reported and exits
+and branch rulesets. When it finds required review configured it also
+prints the PR authoring identity requirement: GitHub ignores an approval
+from a PR's author, so one person needs a separate identity to open PRs.
+It cannot verify which identity a repository uses. Missing or inaccessible setup is reported and exits
 unsuccessfully. An administrator must configure both required job names,
 human review, and renewed approval after changes. Inspect bypass rights
 as part of that configuration review. Local setup never changes remote

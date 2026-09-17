@@ -126,7 +126,8 @@ skip for nothing meaningful to inspect. Follow the
 Substantive Spec drafting waits for confirmation or the skip reason;
 its worktree starts from updated main. Prototype has no merged stage
 PR or mandatory seventh task, and P1 grants no new branch permission.
-Create six stage tasks for a single
-phase; for a phased intent, create one Intent Task plus phase groups
-with Spec-through-Ship tasks. Future tasks may be blocked placeholders
+Create the stage tasks its delivery mode tracks: Intent, Spec, Plan,
+and Build for merged source, plus Proof and Ship for a runtime artifact.
+For a phased intent, create one Intent Task plus phase groups holding
+that phase's tasks. Future tasks may be blocked placeholders
 that link the governing Intent until their own artifacts are available.

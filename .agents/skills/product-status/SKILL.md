@@ -23,9 +23,11 @@ For every chain in `features/NNN-*/` plus every shipped capability:
   - `Committed` — intent accepted, requirements or Plan in progress.
   - `In build` — approved Plan PR merged; Build underway.
   - `In review` — Build or Proof being reviewed; identify which.
-  - `In delivery` — passing Proof PR merged; Ship not complete.
-  - `Shipped` — successful delivery and Ship evidence PR merged,
-    every required phase complete, and Intent success criteria checked.
+  - `In delivery` — reviewed Build merged, shipment not yet recorded;
+    for a runtime artifact, passing Proof merged and Ship not complete.
+  - `Shipped` — the phase's shipped tag exists on its merged Build, or
+    a runtime artifact's Ship evidence PR merged, with every required
+    phase complete and Intent success criteria checked.
   - `Cancelled` — explicitly cancelled, never counted as shipment.
   - Multi-phase: one row per parent outcome, with completed phase count.
     Keep stage separate from work status. Inspect linked issues and

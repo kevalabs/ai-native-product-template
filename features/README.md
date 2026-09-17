@@ -8,9 +8,9 @@ features/NNN-name/
 ├── spec.md
 ├── design/
 ├── plan.md
-├── build.md
-├── proof.md
-└── ship.md
+├── build.md          S-rule results and Intent results live here
+├── proof.md          runtime-artifact products only
+└── ship.md           runtime-artifact products only
 ```
 
 The accepted intent fixes phase names and dependencies. A phased outcome
@@ -21,12 +21,17 @@ issue links the artifact index and remains open until every phase ships.
 
 Intent → Prototype → Spec → Plan → Build → Test + Review → Ship.
 Prototype has owner confirmation or a justified Spec skip, not a merged
-stage PR. The six stages each commit and merge their approved outcome.
+stage PR. Intent, Spec, Plan, and Build each commit and merge their
+approved artifact. Where Test + Review and Ship evidence lands follows
+the `Delivery` setting in `AGENTS.md`: inside the Build record and a
+`shipped/` tag for merged source, or separate proof.md and ship.md PRs
+for a runtime artifact.
 The Spec preserves confirmation and examples under its `design/`
 directory; disposable prototype source and its working note stay outside
 main. Use [the shared rules](../docs/agentic-sdlc.md#prototype-before-spec).
-Use artifact branches for Intent/Spec, feature branches for Plan/Build,
-and proof/ship branches for their respective evidence, all targeting main.
+Use artifact branches for Intent/Spec and feature branches for
+Plan/Build; a runtime-artifact product adds proof/ and ship/ branches.
+All target main.
 P1 does not install a prototype branch lane. Details and
 commands are in [.githooks/README.md](../.githooks/README.md).
 

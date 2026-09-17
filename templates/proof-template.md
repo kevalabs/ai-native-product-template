@@ -1,5 +1,9 @@
 # <Outcome> — Proof
 
+<!-- Runtime-artifact delivery only. A merged-source product records
+     Test + Review in build.md and ships by tag; it writes no proof.md.
+     Check the Delivery setting in AGENTS.md before using this file. -->
+
 **Status:** passed
 **Stage:** proof
 **Outcome:** <NNN-name>

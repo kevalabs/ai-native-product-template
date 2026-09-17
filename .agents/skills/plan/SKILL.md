@@ -108,7 +108,10 @@ looked up rather than asked.
 4. **Migrations.** Ordering and reversibility; what is the rollback if
    the deploy halts mid-way?
 5. **Tests.** Map every spec S-number to the test(s) that prove it,
-   and which tests are written first. Include confirmed example IDs,
+   and which tests are written first. Under merged-source delivery the
+   Build record repeats this mapping as its S-rule results, and CI
+   checks each named test exists under the declared test paths, so name
+   tests you will actually create. Include confirmed example IDs,
    their preserved file, and the reader used by the tests. Changed cases
    need renewed confirmation or an accepted Spec revision.
 6. **Rollout.** Feature flags, region order, and the capability-doc

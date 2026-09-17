@@ -141,7 +141,9 @@ for `/plan`.
 - Follow `templates/spec-template.md` exactly, at the path from
   Step 0, status `draft`. Fill the `Phase:` header.
 - Acceptance criteria are keyed to S-numbers — every S-rule gets at
-  least one named test; an S-rule with no test is a spec bug. This
+  least one named test; an S-rule with no test is a spec bug. The Build
+  record reports a result for every S-rule, so keep them numbered
+  consecutively and testable as written. This
   list is what review proves the PR against.
 - If a table, endpoint, component, or service name slipped in, move
   it to **Open questions** addressed to `/plan` — the spec stays

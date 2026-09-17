@@ -8,8 +8,11 @@ With an NNN argument, report that chain; otherwise show the product board.
 Read `.githooks/README.md` for stage tasks and evidence fields.
 
 For each chain or phase, inspect both artifacts and their linked GitHub
-issues/PRs. Distinguish stage from status. Intent, Spec, Plan, Build,
-Test + Review, and Ship each require their own approved merged PR.
+issues/PRs. Distinguish stage from status. Read the Delivery setting in
+AGENTS.md. Intent, Spec, Plan, and Build each require their own approved
+merged PR. Test + Review is the Build record's results plus a non-author
+approving review, and Ship is the shipped tag, unless the product
+delivers a runtime artifact, which keeps separate Proof and Ship PRs.
 A file's existence, accepted marker, local Plan commit, or closed task
 alone does not unlock the next stage. Name missing approvals, merges,
 links, inaccessible evidence, stale proof, and unmet phase dependencies.

@@ -49,6 +49,14 @@ def permalink(value, repo, path):
     return match[1]
 
 
+def tagged_commit(tag):
+    """The commit a shipped tag resolves to, after fetching tags; empty when absent."""
+    subprocess.run(["git", "fetch", "--quiet", "--tags", "origin"], capture_output=True)
+    result = subprocess.run(["git", "rev-list", "-n", "1", "--end-of-options", tag],
+                            capture_output=True, text=True)
+    return "" if result.returncode else result.stdout.strip()
+
+
 def ancestor(older, newer):
     if not re.fullmatch(local.SHA, older):
         raise Violation("expected a full commit ID")
@@ -85,17 +93,16 @@ class Evidence:
             raise Violation("predecessor PR belongs to another repository")
         return pr
 
-    def merged(self, number, base):
+    def merged(self, number, base, stage=None):
         pr = self.pull(number)
         if not pr.get("merged") or pr.get("base", {}).get("ref") != self.get("")["default_branch"]:
             raise Violation(f"predecessor PR #{number} must merge into the default branch")
         commit = pr.get("merge_commit_sha", "")
         ancestor(commit, base)
-        if pr.get("merged_by", {}).get("type") != "User":
-            # A bot merge is acceptable only with a current human approving review.
-            self.review(number, pr, require_approval=True)
-        else:
-            self.review(number, pr)
+        # A bot merge always needs a current human approving review, and so does
+        # Build: that review is the Test + Review step, whoever merged it.
+        required = stage == "build" or pr.get("merged_by", {}).get("type") != "User"
+        self.review(number, pr, require_approval=required)
         return commit, pr
 
     def review(self, number, pr, require_approval=False):
@@ -111,6 +118,18 @@ class Evidence:
         if require_approval and not approved:
             raise Violation("predecessor needs a current human approving review")
         return approved
+
+    def shipment(self, root, directory, base):
+        """For merged source, shipment is a tag on the phase's merged Build commit."""
+        outcome = root.rsplit("/", 1)[-1]
+        phase = "" if root == directory else "-" + directory.rsplit("/", 1)[-1]
+        commit = tagged_commit(f"shipped/{outcome}{phase}")
+        if not commit:
+            return False
+        ancestor(commit, base)
+        if not local.status(commit, directory + "/build.md", local.STATUS["build"]):
+            raise Violation("the shipped tag names a commit without a ready Build record")
+        return True
 
     def predecessor_scope(self, number, stage, root, directory):
         path = local.stage_path(stage, root, directory)
@@ -130,7 +149,9 @@ class Evidence:
             if local.content(merge, path) != local.content(base, path):
                 raise Violation("requirements changed after predecessor review; repeat the affected stage")
 
-    def graph(self, parent_number, root):
+    def graph(self, parent_number, root, ref=None):
+        # The reviewed version declares the mode; a PR may be the one adding it.
+        stages = local.tracked_stages(local.delivery(ref, False)[0]) if ref is not None else local.STAGES
         parent = self.issue(parent_number)
         body = parent.get("body") or ""
         if local.field(body, "Outcome") != root.rsplit("/", 1)[-1]:
@@ -147,7 +168,13 @@ class Evidence:
             full = self.issue(issue["number"])
             text = full.get("body") or ""
             key = (local.field(text, "Phase"), local.field(text, "Stage"))
-            if key[0] != expected_phase or key[1] not in local.STAGES or key in records:
+            if key[1] in local.STAGES and key[1] not in stages:
+                # A stage this delivery mode does not use is closed as not planned.
+                if full.get("state_reason") == "not_planned":
+                    return
+                raise Violation(f"this delivery mode does not track a {key[1]} task; "
+                                "close it as not planned")
+            if key[0] != expected_phase or key[1] not in stages or key in records:
                 raise Violation("duplicate or mismatched stage task")
             if (full.get("type") or {}).get("name") != "Task":
                 raise Violation("stage sub-issues must have type Task")
@@ -172,7 +199,7 @@ class Evidence:
                 add(child, "single")
         expected = {("single", "intent")}
         for phase in phases or ["single"]:
-            expected.update((phase, stage) for stage in local.STAGES[1:])
+            expected.update((phase, stage) for stage in stages[1:])
         if set(records) != expected:
             raise Violation("parent must have exactly one task per required stage and phase")
         if not local.field(body, "Artifact", False):
@@ -207,7 +234,7 @@ class Evidence:
             directory = root if phase == "single" else root + "/" + phase
             path = local.stage_path(stage, root, directory)
             pr = github_url(local.field(text, "Review PR"), self.repo, "pull")
-            merge, _ = self.merged(pr, base)
+            merge, _ = self.merged(pr, base, stage)
             self.predecessor_scope(pr, stage, root, directory)
             approved_url = local.field(text, "Approved artifact")
             approved = permalink(approved_url, self.repo, path)
@@ -218,6 +245,9 @@ class Evidence:
             if local.content(merge, path) != local.content(base, path):
                 raise Violation("dependency artifact changed after its reviewed merge")
             self.link(approved_url, path, merge)
+            # A merged-source phase completes at its shipped tag, not its Build merge.
+            if stage == "build" and local.delivery(base, False)[0] == "merged source" and not self.shipment(root, directory, base):
+                raise Violation(f"{outcome} {phase} has no shipped tag on its merged Build")
         return dependencies
 
     def link(self, url, artifact, ref, branch=None):
@@ -249,7 +279,7 @@ class Evidence:
         if local.field(document, "Stage") != stage or local.field(document, "Phase") != phase:
             raise Violation("artifact stage or phase is incorrect")
         parent = github_url(local.field(document, "Parent issue"), self.repo, "issues")
-        records = self.graph(parent, root)
+        records = self.graph(parent, root, head)
         # The phase list must agree with the committed intent, not just the issue graph.
         declared = set(re.findall(r"\bP[1-9][0-9]*-" + local.SLUG, local.section(local.content(head, root + "/intent.md"), "Phases")))
         actual = {p for p, s in records if p != "single"}
@@ -281,7 +311,7 @@ class Evidence:
             raise Violation("predecessor task and artifact disagree on merged PR")
         if prior.get("state") != "closed" or local.field(prior_body, "Status") != "Done":
             raise Violation("predecessor task lacks a completed handoff")
-        merge, _ = self.merged(number, base)
+        merge, _ = self.merged(number, base, predecessor)
         self.predecessor_scope(number, predecessor, root, directory)
         self.unchanged_prerequisites(stage, root, directory, merge, base)
         prior_path = local.stage_path(predecessor, root, directory)
@@ -325,7 +355,7 @@ class Evidence:
             raise Violation("invalid phase")
         directory = root if phase == "single" else root + "/" + phase
         parent = github_url(local.field(body, "Parent issue"), self.repo, "issues")
-        records = self.graph(parent, root)
+        records = self.graph(parent, root, base)
         if records.get((phase, stage), {}).get("number") != number:
             raise Violation("task is not in the declared outcome and phase")
         if task.get("state") != "open" or local.field(body, "Status") in {"Done", "Cancelled"}:
@@ -338,7 +368,7 @@ class Evidence:
         if prior["number"] not in {d["number"] for d in deps}:
             raise Violation("next stage must depend on its predecessor task")
         document = prior.get("body") or ""
-        commit, _ = self.merged(github_url(local.field(document, "Review PR"), self.repo, "pull"), base)
+        commit, _ = self.merged(github_url(local.field(document, "Review PR"), self.repo, "pull"), base, prior_stage)
         self.predecessor_scope(github_url(local.field(document, "Review PR"), self.repo, "pull"), prior_stage, root, directory)
         self.unchanged_prerequisites(stage, root, directory, commit, base)
         path = local.stage_path(prior_stage, root, directory)
@@ -388,6 +418,15 @@ class Evidence:
         report["Human review with renewed approval"] = "configured" if reviews else ("missing or inaccessible" if known else "unverifiable")
         return report
 
+    def notes(self, report):
+        """Setup facts a person must act on that no API can attest."""
+        if report.get("Human review with renewed approval") != "configured":
+            return []
+        # GitHub ignores an approval from a PR's own author, so one person
+        # needs a separate PR authoring identity to satisfy required review.
+        return ["PR authoring identity: required review ignores an approval from the PR's "
+                "author, so open every PR with an identity other than the approver."]
+
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
@@ -405,6 +444,8 @@ def main():
         report = evidence.setup()
         for name, state in report.items():
             print(f"{name}: {state}")
+        for note in evidence.notes(report):
+            print(note)
         if any(state != "configured" for state in report.values()):
             raise Violation("setup is incomplete; an administrator must review the reported policy")
         return

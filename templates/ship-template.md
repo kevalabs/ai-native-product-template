@@ -1,5 +1,10 @@
 # <Outcome> — Ship
 
+<!-- Runtime-artifact delivery only. A merged-source product ships by
+     pushing an annotated shipped/<outcome>[-<Pn-name>] tag on the
+     merged Build commit and writes no ship.md. Check the Delivery
+     setting in AGENTS.md before using this file. -->
+
 **Status:** delivered
 **Stage:** ship
 **Outcome:** <NNN-name>

@@ -105,7 +105,8 @@ feature-flag rollout order. Variance goes through the regions registry.
 ## Acceptance criteria
 
 How we know it works: the tests that must exist and pass, keyed to
-S-numbers above. Review proves the PR against this list.
+S-numbers above. Review proves the PR against this list, and the Build
+record reports a result for every S-rule naming its test.
 
 ## Out of scope
 

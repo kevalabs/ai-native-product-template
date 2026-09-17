@@ -1,8 +1,8 @@
 # SDLC workflow
 
 The template checks linked stage outcomes. Build makes the implemented
-checks available; an outcome counts as shipped only after its separate
-Proof and Ship evidence lands and its success criteria hold.
+checks available; an outcome counts as shipped only after every phase
+records its shipment evidence and its success criteria hold.
 
 ## Actors & permissions
 
@@ -17,9 +17,10 @@ Proof and Ship evidence lands and its success criteria hold.
 
 - R10 The workflow is Intent → Prototype → Spec → Plan → Build →
   Test + Review → Ship. Prototype uses owner confirmation or a justified
-  Spec skip, without a merged stage PR. The six stage PRs retain their gates.
-  A stage requires its same-phase approved predecessor on the base and
-  verified GitHub merge evidence before advancement.
+  Spec skip, without a merged stage PR. Intent, Spec, Plan, and Build
+  each retain their own reviewed PR and gate. A stage requires its
+  same-phase approved predecessor on the base and verified GitHub merge
+  evidence before advancement.
 - R11 Plan enters history approved in a Plan-only PR. Build requires
   that Plan already merged and cannot amend its approved scope.
 - R12 Local checks read the index and committed objects. Their success
@@ -38,9 +39,31 @@ Proof and Ship evidence lands and its success criteria hold.
 - R18 Completed tasks retain approved commit permalinks and merged PRs.
   New artifacts link their stage task. Branch deletion does not erase
   completion evidence; legacy missing backlinks are recorded explicitly.
-- R19 Proof covers every S-rule and names the exact merged Build. Ship
+- R19 Proof covers every S-rule and names the exact merged Build. For
+  runtime-artifact delivery it is a separate record and PR, and Ship
   requires passing proof and successful delivery of the proved version.
   Changed code or requirements invalidate old proof.
+- R34 A product declares `Delivery: merged source` or
+  `Delivery: runtime artifact` with its test paths in the Delivery
+  settings section of its conventions file. A missing or unrecognized
+  value fails the Build check and names both accepted values.
+- R35 A merged-source Build record carries one result line per Spec
+  S-rule, each naming a test that appears under the declared test
+  paths, and an Intent results line per success criterion. The check
+  fails on a missing rule, a FAIL result, an absent test name, or a
+  criterion count that does not match. The outcome's last phase cannot
+  leave a criterion OPEN.
+- R36 A Build PR merges only with a current approving review from
+  someone other than its author, whoever performs the merge. That
+  review is the Test + Review step.
+- R37 Merged-source shipment is an annotated `shipped/<outcome>` or
+  `shipped/<outcome>-<Pn-name>` tag on the merged Build commit. The
+  checks require it to reach a default-branch commit holding that
+  phase's ready Build record. The tag freezes its phase; a later change
+  starts a new intent.
+- R38 A merged-source outcome tracks Intent, Spec, Plan, and Build
+  tasks per phase. A task for a stage the mode does not track is closed
+  as not planned, and a cancelled task unlocks no dependent work.
 
 ## Lifecycle and edge cases
 
@@ -49,6 +72,10 @@ Proof and Ship evidence lands and its success criteria hold.
   identities fail with an explanation; no offline remote-gate success.
 - R22 Administrators configure required checks and human review. Setup
   reports classic protection and ruleset evidence without installing it.
+  When required review is configured, the report also states that PRs
+  need an authoring identity other than the approver, because GitHub
+  ignores an approval from a PR's author. The report cannot verify
+  which identity a repository uses.
 - R23 Stage and work status are separate. The parent stays open until
   all phases ship and success criteria hold. Cancellation does not
   unlock dependent work. Both handoff and PR checks verify every
@@ -108,7 +135,10 @@ not automated prototype validation.
 ## Region availability
 
 No region-specific behavior. Build checks are available on merge; formal
-outcome completion requires the separate Proof and Ship stages.
+outcome completion requires the shipment evidence its delivery mode
+names. This template declares `merged source`, so its own outcomes
+record Test + Review in the Build PR and ship by tag. Pushing that tag
+and closing tracking records remain manual.
 Prototype rules are manual instructions and human review checks. The
 new prototype branch lane and sandbox enforcement are not installed;
 work requires an already permitted workspace. There is no automated

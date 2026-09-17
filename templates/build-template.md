@@ -12,6 +12,24 @@
 
 <!-- Fill only with verified results. Do not claim passed/delivered while blocked. -->
 
+## Requirement results
+
+<!-- Merged-source delivery records Test + Review here. One line per
+     S-rule of the accepted Spec, naming first the test that proves it.
+     CI fails on a missing rule, a FAIL, or a test name that appears in
+     no declared test path. A runtime-artifact product records these in
+     proof.md against its immutable artifact instead. -->
+
+- S1: PASS — <test identifier> <what it asserts>
+
+## Intent results
+
+<!-- Which Intent success criteria this phase makes true, one TRUE or
+     OPEN line per criterion, in the intent's order. The outcome's last
+     phase cannot leave one OPEN. -->
+
+- TRUE — <criterion, and the evidence that it holds>
+
 ## Changes
 
 <Evidence, exact version, and any relevant limits.>
@@ -28,7 +46,11 @@ the same Markdown file. Record accepted skips or legacy scope honestly.>
 
 ## Delivery preparation
 
-<Artifact recipe and intended staging/delivery destination. Record available
-preview evidence as optional. The actual immutable artifact identity or
-digest and its originating merged Build SHA are recorded in Proof after
-merge; do not invent either here. This template delivers its merged source.>
+<For merged source: the reviewed merge of this PR is the delivery, and
+shipment is an annotated `shipped/<outcome>[-<Pn-name>]` tag on that
+merge commit whose message names this PR. Name the tag you will push;
+do not invent the future merge SHA.
+
+For a runtime artifact: the artifact recipe and intended staging
+destination. Its actual identity or digest and originating merged Build
+SHA are recorded in Proof after merge. Preview evidence is optional.>

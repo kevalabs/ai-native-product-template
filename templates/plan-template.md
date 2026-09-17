@@ -47,7 +47,10 @@ Database/data migrations, ordering, and reversibility.
 ## Test plan
 
 Tests to be written per spec acceptance criteria (S-numbers), incl.
-which are written first (bug-fix rule: failing test precedes fix).
+which are written first (bug-fix rule: failing test precedes fix). For
+merged-source delivery, list each S-rule with the test identifier that
+will prove it: the Build record repeats that mapping and CI checks that
+every named test exists under the declared test paths.
 
 When the Spec confirms a prototype, name its preserved examples file,
 case IDs, and how tests read the JSON block directly from that same file.
@@ -60,10 +63,12 @@ skip or legacy Spec, record that fact without inventing example data.
 Feature flags, region order, capability-doc update, anything needed
 at deploy time.
 
-Stage PRs target main; previews are optional. Describe how the merged
-Build produces an immutable staging artifact, how Proof records and
-tests its identity, and how Ship promotes that same artifact without
-rebuilding. For this template, use the merged source version as the
-artifact. Do not invent a future merge SHA or require environment branches.
+Stage PRs target main; previews are optional. Follow the product's
+Delivery setting. For merged source, say which tests prove which
+S-rules in the Build record and name the shipped tag this phase will
+push. For a runtime artifact, describe how the merged Build produces an
+immutable staging artifact, how Proof records and tests its identity,
+and how Ship promotes that same artifact without rebuilding. Do not
+invent a future merge SHA or require environment branches.
 
 <!-- On owner approval, add **Approved by:** with the person and actual approval source. -->

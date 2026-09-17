@@ -57,7 +57,9 @@ class EvidenceTests(unittest.TestCase):
                          "## Transition\nOlder plan has no issue backlink; actual reviewed PR retained.\n")
         self.files = {ROOT + "/build.md": self.document, ROOT + "/plan.md": "**Status:** approved\n",
                       ROOT + "/spec.md": "**Status:** accepted\n",
-                      ROOT + "/intent.md": "**Status:** accepted\n## Phases\nSingle phase\n"}
+                      ROOT + "/intent.md": "**Status:** accepted\n## Phases\nSingle phase\n",
+                      "AGENTS.md": ("## Delivery settings\n- **Delivery:** runtime artifact\n"
+                                    "- **Test paths:** tests/\n")}
         self.evidence = remote.Evidence(REPO, lambda endpoint, pages=False: copy.deepcopy(self.data[endpoint.removeprefix("repos/" + REPO)]))
         self.content = patch.object(local, "content", side_effect=lambda ref, path: self.files.get(path, ""))
         self.content.start()
@@ -255,6 +257,100 @@ class EvidenceTests(unittest.TestCase):
         with self.assertRaises(local.Violation):
             self.validate()
 
+    def reviews(self, *entries):
+        self.data["/pulls/9/reviews"] = list(entries)
+        self.evidence.cache.clear()
+
+    def approval(self, login="reviewer", commit=BASE):
+        return {"state": "APPROVED", "user": {"login": login, "type": "User"}, "commit_id": commit}
+
+    def test_build_merge_requires_non_author_approval(self):
+        """T5 (S6, S24): Test + Review is a current approval by someone else."""
+        self.reviews()
+        self.evidence.merged(9, BASE)
+        self.reviews()
+        with self.assertRaisesRegex(local.Violation, "approving review"):
+            self.evidence.merged(9, BASE, "build")
+        self.reviews(self.approval(login="author"))
+        with self.assertRaisesRegex(local.Violation, "approving review"):
+            self.evidence.merged(9, BASE, "build")
+        self.reviews(self.approval(commit="c" * 40))
+        with self.assertRaisesRegex(local.Violation, "approving review"):
+            self.evidence.merged(9, BASE, "build")
+        self.reviews(self.approval())
+        self.evidence.merged(9, BASE, "build")
+
+    def shipped(self, phase="single", commit=BASE, record="**Status:** ready\n"):
+        directory = ROOT if phase == "single" else ROOT + "/" + phase
+        self.files[directory + "/build.md"] = record
+        tag = "shipped/001-demo" + ("" if phase == "single" else "-" + phase)
+        return patch.object(remote, "tagged_commit", side_effect=lambda name: commit if name == tag else "")
+
+    def test_shipped_tag_must_be_on_merged_build(self):
+        """T6 (S7, S8, S23): the tag names a merged Build on the default branch."""
+        with self.shipped():
+            self.assertTrue(self.evidence.shipment(ROOT, ROOT, BASE))
+        with self.shipped(commit=""):
+            self.assertFalse(self.evidence.shipment(ROOT, ROOT, BASE))
+        with self.shipped(record=""):
+            with self.assertRaisesRegex(local.Violation, "Build record"):
+                self.evidence.shipment(ROOT, ROOT, BASE)
+
+    def test_moved_shipped_tag_is_rejected(self):
+        """T7 (S9): a tag pointing outside the default branch ships nothing."""
+        with self.shipped(commit="c" * 40):
+            with patch.object(remote, "ancestor", side_effect=local.Violation("not on the default branch")):
+                with self.assertRaisesRegex(local.Violation, "default branch"):
+                    self.evidence.shipment(ROOT, ROOT, BASE)
+
+    def test_dependent_handoff_requires_shipped_tag(self):
+        """T8 (S10, S11): a merged-source predecessor phase ships by tag."""
+        self.data["/issues/99"] = {
+            "number": 99, "id": 99, "state": "closed", "state_reason": "completed",
+            "body": ("**Status:** Done\n**Outcome:** 001-demo\n**Stage:** build\n"
+                     "**Phase:** P1-first\n"
+                     f"**Review PR:** {URL}/pull/31\n"
+                     f"**Approved artifact:** {URL}/blob/{BASE}/{ROOT}/P1-first/build.md\n"),
+        }
+        self.data["/issues/4/dependencies/blocked_by"].append({"number": 99})
+        self.data["/pulls/31"] = copy.deepcopy(self.pr)
+        self.data["/pulls/31/reviews"] = [self.approval()]
+        self.data["/pulls/31/files"] = [{"filename": ROOT + "/P1-first/build.md"},
+                                        {"filename": "app.py"}]
+        self.files[ROOT + "/P1-first/build.md"] = "**Status:** ready\n"
+        self.files["AGENTS.md"] = ("## Delivery settings\n- **Delivery:** merged source\n"
+                                   "- **Test paths:** tests/\n")
+        with self.shipped(phase="P1-first"):
+            self.evidence.dependencies(4, BASE)
+        with self.shipped(phase="P1-first", commit=""):
+            with self.assertRaisesRegex(local.Violation, "shipped tag"):
+                self.evidence.dependencies(4, BASE)
+
+    def merged_source(self):
+        self.files["AGENTS.md"] = ("## Delivery settings\n- **Delivery:** merged source\n"
+                                   "- **Test paths:** tests/\n")
+
+    def test_task_shape_follows_delivery_mode(self):
+        """T10 (S13, S18, S26): merged source tracks four stages, not six."""
+        self.merged_source()
+        with self.assertRaisesRegex(local.Violation, "does not track"):
+            self.evidence.graph(100, ROOT, BASE)
+        self.data["/issues/100/sub_issues"] = [{"number": n} for n in (1, 2, 3, 4)]
+        self.evidence.cache.clear()
+        self.assertEqual({stage for _, stage in self.evidence.graph(100, ROOT, BASE)},
+                         {"intent", "spec", "plan", "build"})
+        # A cancelled Proof task stays out of the graph and unlocks nothing.
+        self.data["/issues/5"]["state"] = "closed"
+        self.data["/issues/5"]["state_reason"] = "not_planned"
+        self.data["/issues/100/sub_issues"].append({"number": 5})
+        self.evidence.cache.clear()
+        self.assertEqual({stage for _, stage in self.evidence.graph(100, ROOT, BASE)},
+                         {"intent", "spec", "plan", "build"})
+        self.data["/issues/4/dependencies/blocked_by"] = [{"number": 5}]
+        self.evidence.cache.clear()
+        with self.assertRaisesRegex(local.Violation, "dependency"):
+            self.evidence.dependencies(4, BASE)
+
     def test_explicit_fallback_preserves_gates(self):
         parent = self.data["/issues/100"]
         parent["type"] = {"name": "Feature"}
@@ -282,6 +378,19 @@ class EvidenceTests(unittest.TestCase):
         self.pr["merged"] = False
         with self.assertRaises(local.Violation):
             self.evidence.handoff(4, BASE)
+
+    def test_setup_report_names_authoring_identity(self):
+        """T11 (S16): required review implies a separate PR author."""
+        self.data["/issue-types"] = [{"name": "Intent"}]
+        self.data["/rules/branches/main"] = [
+            {"type": "pull_request", "parameters": {"required_approving_review_count": 1,
+                                                    "dismiss_stale_reviews_on_push": True}}]
+        self.data["/branches/main/protection"] = {}
+        report = self.evidence.setup()
+        self.assertTrue(any("PR authoring identity" in note for note in self.evidence.notes(report)))
+        self.data["/rules/branches/main"] = []
+        self.evidence.cache.clear()
+        self.assertEqual(self.evidence.notes(self.evidence.setup()), [])
 
     def test_setup_reports_real_policy(self):
         self.data["/issue-types"] = [{"name": "Intent"}]
