@@ -7,7 +7,8 @@
 **Stage issue:** https://github.com/kevalabs/ai-native-product-template/issues/54
 **Predecessor PR:** https://github.com/kevalabs/ai-native-product-template/pull/72
 
-**Status:** draft
+**Status:** accepted
+**Accepted by:** Suraj Chhetry, who accepted the Spec and its recorded prototype skip in the working conversation on 2026-09-17.
 **Intent:** [Keep every gate, drop the paperwork the gates do not need](../intent.md)
 **Personas served:** product owner, solo developer, contributors and coding agents, reviewers; `product/personas.md` does not yet define product-specific personas
 **Capabilities affected:** `product/capabilities/sdlc-workflow.md`
