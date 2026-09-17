@@ -30,6 +30,14 @@ file is your map; read it top to bottom once.
    in branch protection. Git, Make, and Python 3.9+ run the template
    checks. Extend `make test` with the product's tests, lint, and build
    when introducing its stack. The template checks remain in place.
+5. Set up a PR authoring identity. GitHub ignores an approving review
+   from a PR's own author, so required review cannot be satisfied by
+   the person who opened the PR. Working alone, open every PR with a
+   separate identity — a GitHub App installed on the repository, or a
+   machine account — and approve and merge as yourself. `make
+   setup-check` prints this requirement whenever it finds required
+   review configured. Granting yourself a protection bypass instead is
+   a blocking review finding.
 
 ## 1. Read this first (in this order)
 
@@ -116,8 +124,14 @@ large outcomes have fixed phases in the accepted Intent.
 ```
 Intent → Prototype → Spec → Plan → Build → Test + Review → Ship
    Prototype: owner confirmation or a justified Spec skip; no merged PR.
-   The six stages: approved artifacts and a separate reviewed PR each.
+   Test + Review and Ship: inside the Build PR and a shipped tag when
+   the merged source is the delivery, or their own PRs for a runtime
+   artifact. Every step keeps its evidence and its human gate.
 ```
+
+Your product declares which delivery it uses in the `Delivery settings`
+section of `AGENTS.md`: `merged source` (this template's default) or
+`runtime artifact`.
 
 | Command | Produces | Entry gate |
 |---|---|---|
@@ -125,9 +139,9 @@ Intent → Prototype → Spec → Plan → Build → Test + Review → Ship
 | `/prototype NNN [Pn]` | Disposable demonstration, examples, and note outside main | Accepted Intent PR merged; permitted workspace |
 | `/spec NNN [Pn]` | spec.md and preserved evidence | Accepted Intent PR merged; confirmation or justified skip |
 | `/plan NNN [Pn]` | plan.md, alone in its PR | Accepted Spec PR merged |
-| `/build NNN [Pn]` | build.md, code, tests, capabilities | Approved Plan PR merged |
-| `/proof NNN [Pn]` | proof.md | Reviewed Build PR merged |
-| `/ship NNN [Pn]` | ship.md | Passing Proof PR merged |
+| `/build NNN [Pn]` | build.md with S-rule and Intent results, code, tests, capabilities | Approved Plan PR merged |
+| `/proof NNN [Pn]` | proof.md (runtime artifact only) | Reviewed Build PR merged |
+| `/ship NNN [Pn]` | shipped tag, or ship.md for a runtime artifact | Reviewed Build merged; passing Proof for a runtime artifact |
 
 Before substantive Spec drafting, demonstrate screens, rules, and outside
 services using every applicable prototype form. The owner confirms an
@@ -142,8 +156,11 @@ lane and sandbox enforcement are not installed. Use an already permitted
 workspace, or report the missing setup without bypassing existing gates.
 Adopt at work not yet at Spec; keep existing accepted Specs unchanged.
 
-The parent issue has type Intent; stage sub-issues have type Task. Each
-issue links to its governing Markdown and each new artifact links back.
+The parent issue has type Intent; stage sub-issues have type Task. A
+`merged source` product tracks Intent, Spec, Plan, and Build; a
+`runtime artifact` product also tracks Proof and Ship. A task for an
+untracked stage is closed as not planned. Each issue links to its
+governing Markdown and each new artifact links back.
 Completed tasks record approved commit permalinks and merged PRs, so
 branch deletion never removes the review record. Small implementation
 tasks cite the relevant Spec requirement or Plan section. The parent
@@ -164,18 +181,23 @@ full tracking record. The stage skills retain their owner interviews.
 Explicit conversation approval is recorded before merge, without asking
 for the same approval again. Plan is approved before its first commit.
 
-Build includes tests, lint, and build verification before merge. The
-separate Proof stage names the exact merged Build, tests every Spec
-rule, checks the Intent, and records human review and remaining findings.
-Ship requires merged passing proof and successful delivery evidence.
-All stage PRs target main; environment branches do not represent
-deployment state. Feature previews are optional. Products build an
-immutable staging artifact from the merged Build commit; Proof tests it
-and Ship promotes that same artifact without rebuilding. See
+Build includes tests, lint, and build verification before merge. Its
+record carries a result for every Spec S-rule naming the test that
+proves it, and says which Intent success criteria the phase makes true.
+CI fails when a rule has no result, a result fails, or a named test is
+absent. Every Build PR needs a current approving review from someone
+other than its author: that review is Test + Review.
+
+For `merged source`, the reviewed Build merge is the delivery and an
+annotated `shipped/NNN[-Pn-name]` tag on that merge commit is the Ship
+record. The tag never moves, and its phase is immutable afterwards. For
+`runtime artifact`, the separate Proof stage names the exact merged
+Build, tests the immutable artifact built from it, and Ship promotes
+that same artifact without rebuilding. See
 [branches and delivery](docs/agentic-sdlc.md#branches-and-delivery).
-For this template, delivery is the approved version on the default
-branch; a release tag is optional. A Build merge alone does not close
-the parent outcome. Cancelled work is never counted as shipped.
+All stage PRs target main; environment branches do not represent
+deployment state. Feature previews are optional. A Build merge alone
+does not close the parent outcome. Cancelled work is never shipped.
 
 `/capability` updates current behavior in the Build PR, stating any
 remaining release restrictions. `/feature` reports stage and the next
@@ -184,8 +206,9 @@ artifacts, links, merges, and shipment evidence. Neither report advances
 work or treats a status label as proof.
 
 Run `make setup` once per clone and `make test` before handoff. Run
-`make setup-check REPO=owner/repo` to inspect issue types and required
-remote policy. An administrator configures SDLC history, Template
+`make setup-check REPO=owner/repo` to inspect issue types, required
+remote policy, and the PR authoring identity that required review
+implies. An administrator configures SDLC history, Template
 verification, human review, and renewed approval after changes. Local
 setup does not install those settings. A recorded, owner-selected
 `intent` label fallback is available where custom types are unavailable.

@@ -14,6 +14,8 @@ ARTIFACT = re.compile(rf"artifact/([0-9]{{3,}})-({SLUG})")
 STAGES = ("intent", "spec", "plan", "build", "proof", "ship")
 STATUS = dict(intent="accepted", spec="accepted", plan="approved", build="ready", proof="passed", ship="delivered")
 SHA = r"[0-9a-f]{40}"
+CONVENTIONS = "AGENTS.md"
+MODES = ("merged source", "runtime artifact")
 
 
 class Violation(Exception):
@@ -49,6 +51,100 @@ def field(document, name, required=True):
 def section(document, name):
     match = re.search(rf"^## {re.escape(name)}[^\n]*\n(.*?)(?=^## |\Z)", document, re.M | re.S)
     return match[1].strip() if match else ""
+
+
+def delivery(ref, required=True):
+    """Read the product's delivery mode and test paths from its conventions file.
+
+    Tracking reads this tolerantly: a product that has not declared the
+    setting keeps the six-stage shape, and the Build check reports the
+    missing declaration explicitly rather than every stage failing.
+    """
+    # Settings are written as a list, like the other sections of the conventions file.
+    settings = re.sub(r"^[-*] +", "", section(content(ref, CONVENTIONS), "Delivery settings"), flags=re.M)
+    if not settings:
+        if not required:
+            return MODES[1], []
+        raise Violation(
+            f"{CONVENTIONS} needs a '## Delivery settings' section declaring "
+            "Delivery: " + " or ".join(MODES))
+    mode = field(settings, "Delivery", required)
+    if mode not in MODES:
+        if not required and not mode:
+            return MODES[1], []
+        raise Violation("Delivery must be exactly " + " or ".join(MODES) + f"; found {mode!r}")
+    return mode, [p.strip() for p in field(settings, "Test paths").split(",") if p.strip()]
+
+
+def tracked_stages(mode):
+    """Merged-source delivery records Test + Review and Ship inside Build."""
+    return STAGES[:4] if mode == "merged source" else STAGES
+
+
+def spec_rules(ref, directory):
+    return set(re.findall(r"^- (S[0-9]+)\b", content(ref, directory + "/spec.md"), re.M))
+
+
+def named_tests(ref, test_paths):
+    """Every test file's text, so a record's named test can be found literally."""
+    files = [p for p in paths(ref) if any(p == t or p.startswith(t.rstrip("/") + "/") for t in test_paths)]
+    if not files:
+        raise Violation("no files under the declared Test paths: " + ", ".join(test_paths))
+    return "\n".join(content(ref, path) for path in files)
+
+
+def requirement_results(ref, document, directory, test_paths):
+    """One passing result per Spec rule, each naming a test that exists."""
+    required = spec_rules(ref, directory)
+    results = re.findall(r"^- (S[0-9]+): (PASS|FAIL) — (.+)$", section(document, "Requirement results"), re.M)
+    missing = required - {rule for rule, _, _ in results}
+    if not required:
+        raise Violation(directory + "/spec.md has no numbered S-rules to prove")
+    if missing:
+        raise Violation("Build record has no result for " + ", ".join(sorted(missing)))
+    failed = sorted(rule for rule, verdict, _ in results if verdict != "PASS")
+    if failed:
+        raise Violation("Build record reports a failing rule: " + ", ".join(failed))
+    suite = named_tests(ref, test_paths)
+    for rule, _, evidence in results:
+        name = evidence.split()[0].strip("`,;")
+        if name not in suite:
+            raise Violation(f"{rule} names {name}, which no file under the declared Test paths contains")
+
+
+def intent_results(document, root, ref, last_phase):
+    """One line per Intent success criterion; the last phase leaves none open."""
+    criteria = re.findall(r"^- .+$", section(content(ref, root + "/intent.md"), "Success criteria"), re.M)
+    results = re.findall(r"^- (TRUE|OPEN) — .+$", section(document, "Intent results"), re.M)
+    if not criteria:
+        raise Violation(root + "/intent.md has no success criteria to report")
+    if len(results) != len(criteria):
+        raise Violation(f"Intent results needs one TRUE or OPEN line for each of the "
+                        f"{len(criteria)} success criteria; found {len(results)}")
+    if last_phase and "OPEN" in results:
+        raise Violation("the last phase cannot leave an Intent success criterion OPEN")
+
+
+def each_fact_once(document):
+    """One commit hash belongs to one field; repeats are copied bookkeeping."""
+    hashes = re.findall(rf"^\*\*[^:\n]+:\*\* *({SHA}) *$", document, re.M)
+    repeated = {value for value in hashes if hashes.count(value) > 1}
+    if repeated:
+        raise Violation("name each commit once; " + ", ".join(sorted(repeated))[:12]
+                        + " appears in more than one header field")
+
+
+def shipped_tag(root, directory):
+    """The local shipped tag for this outcome and phase, when one exists."""
+    outcome = PurePosixPath(root).name
+    phase = "" if root == directory else "-" + PurePosixPath(directory).name
+    tag = f"shipped/{outcome}{phase}"
+    return tag if git("rev-parse", "--verify", "--quiet", "--end-of-options", tag + "^{commit}", optional=True).strip() else ""
+
+
+def final_phase(ref, root, directory):
+    phases = re.findall(rf"\bP[1-9][0-9]*-{SLUG}", section(content(ref, root + "/intent.md"), "Phases"))
+    return not phases or PurePosixPath(directory).name == phases[-1]
 
 
 def status(ref, path, value):
@@ -163,6 +259,12 @@ def validate_record(stage, ref, root, directory):
         if not re.fullmatch(SHA, commit) or content(commit, directory + "/plan.md") != content(ref, directory + "/plan.md"):
             raise Violation("Build must name the exact approved Plan commit")
         field(document, "Verification")
+        mode, test_paths = delivery(ref)
+        if mode == "merged source":
+            each_fact_once(document)
+            # Test + Review evidence lands here instead of a separate Proof PR.
+            requirement_results(ref, document, directory, test_paths)
+            intent_results(document, root, ref, final_phase(ref, root, directory))
     if stage == "proof":
         commit = field(document, "Build commit")
         if not re.fullmatch(SHA, commit) or not content(commit, directory + "/build.md"):
@@ -198,6 +300,8 @@ def validate_change(branch, before, after, changes, selected=None, anchor=None):
     anchor = before if anchor is None else anchor
     if status(anchor, directory + "/ship.md", "delivered"):
         raise Violation("shipped outcomes are immutable; start a new intent")
+    if shipped_tag(root, directory):
+        raise Violation("this phase is already shipped and immutable; start a new intent")
     for path in prerequisites(stage, root, directory):
         require_status(anchor, path, STATUS[PurePosixPath(path).stem])
         if content(anchor, path) != content(after, path):

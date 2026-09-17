@@ -16,6 +16,11 @@ PLAN = f"{CHAIN}/plan.md"
 APPROVED = "**Status:** approved\n\n## Touched surface\n\n- app.py\n"
 
 
+def conventions(mode="runtime artifact", test_paths="tests/"):
+    return ("# Demo — Agent Conventions\n\n## Delivery settings\n\n"
+            f"- **Delivery:** {mode}\n- **Test paths:** {test_paths}\n")
+
+
 class WorkflowTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix="sdlc-test-")
@@ -30,12 +35,14 @@ class WorkflowTests(unittest.TestCase):
         self.git("config", "user.name", "Workflow Test")
         self.git("config", "user.email", "test@example.invalid")
         self.write("app.py", "print('before')\n")
+        self.write("AGENTS.md", conventions())
+        self.write("tests/test_demo.py", "def test_outcome():\n    assert True\n")
         self.write(f"{CHAIN}/intent.md", "**Status:** accepted\n**Kind:** change\n")
         self.write(f"{CHAIN}/spec.md", "**Status:** accepted\n- S1 A checkable outcome.\n")
         if CHECK.exists():
             self.write("scripts/check_sdlc.py", CHECK.read_text())
         self.commit("Fixture base")
-        self.base = self.git("rev-parse", "HEAD").stdout.strip()
+        self.base = self.fixture = self.git("rev-parse", "HEAD").stdout.strip()
         self.git("checkout", "-b", "feature/001-demo")
 
     def git(self, *args):
@@ -106,6 +113,140 @@ class WorkflowTests(unittest.TestCase):
             capture_output=True, text=True,
         )
         self.assertEqual(result.returncode == 0, allowed, result.stderr + result.stdout)
+
+    def staged_build(self, conventions_text):
+        """Stage a Build under the given conventions file, starting from main."""
+        self.git("checkout", "main")
+        self.git("reset", "--hard", self.fixture)
+        self.write("AGENTS.md", conventions_text)
+        self.git("add", "-A")
+        self.git("commit", "--allow-empty", "-m", "Conventions")
+        self.git("checkout", "-B", "feature/001-demo")
+        self.plan()
+        self.land_plan()
+        self.change_code()
+
+    def hook_error(self):
+        result = subprocess.run(
+            ["sh", str(HOOK)], cwd=self.repo, env=self.env,
+            capture_output=True, text=True,
+        )
+        self.assertNotEqual(result.returncode, 0, result.stdout)
+        return result.stderr
+
+    def test_delivery_setting_modes_and_errors(self):
+        """T1 (S1, S20): a declared mode is accepted; absent or misspelled fails."""
+        self.staged_build(conventions("runtime artifact"))
+        self.hook(True)
+        self.staged_build("# Demo — Agent Conventions\n\nNo settings here.\n")
+        self.assertIn("Delivery settings", self.hook_error())
+        self.staged_build(conventions("merged sources"))
+        message = self.hook_error()
+        self.assertIn("merged source", message)
+        self.assertIn("runtime artifact", message)
+
+    def merged_source_build(self, results="- S1: PASS — test_outcome\n",
+                            intent_results="- TRUE — the outcome is reachable\n",
+                            criteria="- the outcome is reachable\n", rules="- S1 A checkable outcome.\n"):
+        """Stage a merged-source Build whose record carries its evidence sections."""
+        self.git("checkout", "main")
+        self.git("reset", "--hard", self.fixture)
+        self.write("AGENTS.md", conventions("merged source"))
+        self.write(f"{CHAIN}/intent.md",
+                   "**Status:** accepted\n**Kind:** change\n\n## Success criteria\n\n" + criteria)
+        self.write(f"{CHAIN}/spec.md", "**Status:** accepted\n\n## Requirements\n\n" + rules)
+        self.commit("Merged-source conventions")
+        self.git("checkout", "-B", "feature/001-demo")
+        self.plan()
+        self.land_plan()
+        record = (self.repo / CHAIN / "build.md").read_text()
+        self.write(f"{CHAIN}/build.md", record +
+                   "\n## Requirement results\n\n" + results +
+                   "\n## Intent results\n\n" + intent_results)
+        self.git("add", f"{CHAIN}/build.md")
+        self.change_code()
+
+    def test_build_record_requires_result_per_s_rule(self):
+        """T3 (S3, S4, S21, S22): every rule needs a passing result naming a real test."""
+        self.merged_source_build()
+        self.hook(True)
+        self.merged_source_build(rules="- S1 A checkable outcome.\n- S2 A second rule.\n")
+        self.assertIn("S2", self.hook_error())
+        self.merged_source_build(results="- S1: FAIL — test_outcome\n")
+        self.assertIn("S1", self.hook_error())
+        self.merged_source_build(results="- S1: PASS — test_absent_from_the_suite\n")
+        self.assertIn("test_absent_from_the_suite", self.hook_error())
+
+    def test_last_phase_records_every_intent_criterion(self):
+        """T4 (S5, S14): the last phase reports every criterion; an open one blocks."""
+        self.merged_source_build(
+            criteria="- the outcome is reachable\n- the complaint stops\n",
+            intent_results="- TRUE — the outcome is reachable\n- TRUE — the complaint stops\n")
+        self.hook(True)
+        self.merged_source_build(
+            criteria="- the outcome is reachable\n- the complaint stops\n",
+            intent_results="- TRUE — the outcome is reachable\n")
+        self.assertIn("Intent results", self.hook_error())
+        self.merged_source_build(
+            criteria="- the outcome is reachable\n- the complaint stops\n",
+            intent_results="- TRUE — the outcome is reachable\n- OPEN — the complaint stops\n")
+        self.assertIn("OPEN", self.hook_error())
+
+    def test_runtime_artifact_path_is_unchanged(self):
+        """T2 (S2, S25): a runtime-artifact Build needs no S-rule results."""
+        self.staged_build(conventions("runtime artifact"))
+        self.hook(True)
+
+    def test_shipped_tag_freezes_the_phase(self):
+        """T8 (S11): a shipped tag makes its phase immutable, as ship.md did."""
+        self.merged_source_build()
+        self.commit("Build")
+        self.git("tag", "-a", "shipped/001-demo", "-m", "Shipped in PR #1")
+        self.git("branch", "-f", "main", "HEAD")
+        self.change_code()
+        self.assertIn("shipped", self.hook_error())
+
+    def test_records_carry_each_tracking_fact_once(self):
+        """T9 (S12): no record repeats one commit hash across header fields."""
+        self.merged_source_build()
+        self.hook(True)
+        record = (self.repo / CHAIN / "build.md").read_text()
+        plan_commit = record.split("**Plan commit:** ")[1].split("\n")[0]
+        self.write(f"{CHAIN}/build.md",
+                   record.replace("**Verification:** make test passed",
+                                  f"**Artifact source:** {plan_commit}\n**Verification:** make test passed"))
+        self.git("add", f"{CHAIN}/build.md")
+        self.assertIn("once", self.hook_error())
+
+    def test_guidance_states_one_consistent_policy(self):
+        """T12 (S15, S17, S19): one delivery policy and every human gate."""
+        conventions = (ROOT / "AGENTS.md").read_text()
+        readme = (ROOT / "README.md").read_text()
+        review = (ROOT / "REVIEW.md").read_text()
+        # S15: the solo-developer path is written down, not folklore.
+        setup = readme.split("## 1. Read this first")[0]
+        self.assertIn("authoring identity", setup)
+        self.assertIn("ignores an approving review", setup)
+        # S17: anything that still instructs Proof or Ship work says which
+        # delivery mode it belongs to.
+        guidance = ["AGENTS.md", "README.md", "REVIEW.md", "docs/agentic-sdlc.md",
+                    ".githooks/README.md", "features/README.md",
+                    "templates/proof-template.md", "templates/ship-template.md",
+                    "templates/build-template.md", "templates/plan-template.md",
+                    "product/capabilities/sdlc-workflow.md",
+                    ".agents/skills/proof/SKILL.md", ".agents/skills/ship/SKILL.md",
+                    ".agents/skills/build/SKILL.md", ".agents/skills/capability/SKILL.md",
+                    ".agents/skills/bootstrap-product/SKILL.md"]
+        for name in guidance:
+            text = (ROOT / name).read_text()
+            if "proof.md" in text or "Proof PR" in text or "ship.md" in text:
+                self.assertTrue("merged source" in text or "runtime artifact" in text
+                                or "Delivery" in text, name)
+        # S19: no human gate was dropped.
+        for gate in ("intent", "spec", "plan"):
+            self.assertIn(gate, conventions)
+        self.assertIn("approving review", conventions)
+        self.assertIn("approving review", review)
 
     def test_missing_plan_blocks_code(self):
         self.change_code()

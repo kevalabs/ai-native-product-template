@@ -3,10 +3,23 @@ name: ship
 description: Deliver a proved outcome after its Proof PR merges and record successful shipment in a separate ship.md PR.
 ---
 
-Read the Intent, accepted Spec, approved Plan, proof.md, REVIEW.md, and
-`.githooks/README.md`. Find the existing Ship Task, run make handoff,
-and start a ship/NNN[-Pn]-name worktree from the updated default branch.
-Verify the exact passing Proof PR and Build version before delivery.
+Read the Delivery setting in AGENTS.md first; it decides this stage's
+shape.
+
+For `merged source`: the reviewed Build merge is the delivery. Verify
+the Build PR merged with a current non-author approving review and that
+its record's results are complete. Then push one annotated tag on that
+exact merge commit, named `shipped/<outcome>` or
+`shipped/<outcome>-<Pn-name>`, whose message names the merged Build PR.
+Never tag another commit, never move an existing tag, and never tag work
+that has not merged. Record the tag and merge commit on the Build Task,
+then close it. There is no ship.md and no Ship PR.
+
+For `runtime artifact`: read the Intent, accepted Spec, approved Plan,
+proof.md, REVIEW.md, and `.githooks/README.md`. Find the existing Ship
+Task, run make handoff, and start a ship/NNN[-Pn]-name worktree from the
+updated default branch. Verify the exact passing Proof PR and Build
+version before delivery.
 
 Read the proved artifact identity, originating Build commit, and result
 evidence. Deliver that same artifact and compare its identity at the

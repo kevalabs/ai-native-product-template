@@ -44,15 +44,26 @@ severity. Do not review formatting or style — linters own that.
   Build tests must load the confirmed examples file unchanged; altered
   cases require renewed confirmation or an accepted Spec revision.
   Prototype code and its working note never merge into the product.
-- Stage PRs target main. For runtime delivery, check the immutable
-  artifact's identity and originating merged Build commit in Proof,
-  then require Ship to deliver that same artifact. A mismatch blocks
-  Proof; an unavailable artifact or a required rebuild prevents successful
-  Ship. Optional previews do not replace this evidence. For this
-  template, the merged Build source is the delivery artifact.
+- Read the `Delivery` setting in `AGENTS.md` before judging evidence.
+  For `merged source`, the Build record must carry a PASS for every
+  Spec S-rule naming a test that exists, and say which Intent success
+  criteria the phase makes true; judge whether each named test actually
+  proves its rule, because the check only proves the name is real.
+  Shipment is a `shipped/` tag on the merged Build commit; a moved or
+  retargeted tag is a blocking finding. For `runtime artifact`, check
+  the immutable artifact's identity and originating merged Build commit
+  in Proof, then require Ship to deliver that same artifact. A mismatch
+  blocks Proof; an unavailable artifact or a required rebuild prevents
+  successful Ship. Optional previews do not replace this evidence.
+- Every Build PR needs a current approving review from someone other
+  than its author, whoever merges it. That review is the Test + Review
+  step. A self-approved PR, or a protection bypass used in place of a
+  separate PR authoring identity, is a blocking finding.
 - Confirm each predecessor stage has its own approved, merged PR
   before the next stage starts. Plan must already be merged before
-  Build. Verify the exact phase and the approved artifact permalink.
+  Build. A dependent phase starts only after its predecessor phase is
+  shipped: a `shipped/` tag for merged source, a merged Ship PR for a
+  runtime artifact. Verify the exact phase and the approved artifact permalink.
   `SDLC history` and `Template verification` must pass. Inspect changes to the workflow, validator, and tests:
   a PR can change its own checks, so a green job is not enough.
 - For planning PRs, review only the current stage and its human gate.
@@ -61,6 +72,8 @@ severity. Do not review formatting or style — linters own that.
   again or confuse a ready-for-review PR with artifact acceptance.
 - Verify issue-to-artifact links and backlinks, exact completed
   versions, stage dependencies, and the parent staying open until Ship.
+  A merged-source outcome tracks Intent, Spec, Plan, and Build tasks;
+  an untracked stage's task is closed as not planned and unlocks nothing.
   Check every proof result and shipment evidence; generated PASS text
   and a human merge alone do not prove independent review or success.
 - Require these jobs and human review through branch protection.

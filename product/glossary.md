@@ -32,8 +32,18 @@ of that feature's PR.
   lands in a Plan-only PR before Build starts.
 - **Build** — implementation and its verification under a merged Plan.
 - **Proof** — Test + Review of the exact merged Build against the Spec
-  and Intent, recorded in its own artifact and PR.
-- **Ship** — delivery of the proved version and merged delivery evidence.
+  and Intent. For merged-source delivery it is recorded in the Build
+  record and its approving review; for a runtime artifact it has its own
+  artifact and PR.
+- **Ship** — delivery of the proved version and its recorded evidence.
+- **Delivery mode** — a product's declared `merged source` or
+  `runtime artifact` setting, which decides where Test + Review and Ship
+  evidence lands and which stage tasks exist.
+- **S-rule result** — one line in a Build record giving a Spec rule's
+  PASS or FAIL and naming the test that proves it.
+- **Shipped tag** — an annotated `shipped/<outcome>[-<Pn-name>]` tag on
+  a merged Build commit. It is the Ship record for merged-source
+  delivery, never moves, and freezes its phase.
 - **Stage task** — a Task sub-issue tracking one stage, its artifact,
   owner, dependencies, approval, and merged PR.
 - **Artifact branch** — a branch reviewing one Intent or exact-phase Spec.

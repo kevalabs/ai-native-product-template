@@ -89,14 +89,25 @@ inline `<!-- template -->` instructions, in this order:
   does not silently treat the template checks as an application build.
 - Tell the owner to require `SDLC history`, `Template verification`,
   and human review in default-branch protection. These remote settings
-  are not installed by `make setup`.
+  are not installed by `make setup`. Also tell them that GitHub ignores
+  an approving review from a PR's author, so PRs need a separate
+  authoring identity — a GitHub App or machine account — for one person
+  to approve and merge under required review.
+- Ask the owner how the product delivers and fill `## Delivery settings`
+  in `AGENTS.md`: `merged source` when the reviewed default branch is
+  the delivery, `runtime artifact` when it deploys a built artifact.
+  Set `Test paths` to the directories holding the product's tests.
+  Merged source is the template's default; a product with a deployed
+  runtime almost always wants `runtime artifact`.
 - Check for an inherited `LICENSE` file: the template's license does
   NOT apply to the product. Delete it (proprietary default) or replace
   it with the product's own license — ask the owner.
 - Tell the owner: review the `[ASSUMED]` sections, then land the
   constitution through a reviewed bootstrap PR. Each product feature
   starts its own Intent PR, then prototype confirmation or a justified
-  skip before Spec. Spec, Plan, Build, Proof, and Ship retain separate
-  PRs after each preceding merge. Bootstrap remains its own
+  skip before Spec. Spec, Plan, and Build retain separate PRs after each
+  preceding merge; a runtime-artifact product adds Proof and Ship PRs,
+  while merged source records Test + Review in the Build PR and ships by
+  tag. Bootstrap remains its own
   narrow constitution PR.
   Preserve existing feature numbers; allocate the next unused number.

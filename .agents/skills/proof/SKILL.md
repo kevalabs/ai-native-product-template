@@ -3,6 +3,12 @@ name: proof
 description: Test and review an exact merged Build against its Spec and Intent, then prepare a separate proof.md evidence PR before Ship.
 ---
 
+This stage applies to runtime-artifact delivery. First read the
+Delivery setting in AGENTS.md: for `merged source`, Test + Review
+already landed in the Build record and its approving review, there is no
+proof.md and no Proof task, and the next step is `/ship`. Say so and
+stop rather than writing a second record.
+
 Read the accepted Intent, Spec, Plan, Build record, REVIEW.md, and
 `.githooks/README.md`. Resolve the exact outcome or phase and its
 existing Test + Review Task. Run make handoff for that Task before

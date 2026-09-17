@@ -11,7 +11,7 @@ it from the current branch name (`feature/NNN[-Pn]-…`) or ask.
 
 Capabilities are units of BEING: current shipped behavior, present
 tense only, updated inside the Build PR that changes the behavior; state remaining
-release restrictions until Proof and Ship complete. This
+release restrictions until the phase ships. This
 command runs on the feature branch as part of that PR — never on
 `main` and never for unshipped speculation.
 
@@ -63,6 +63,8 @@ in `features/`, future lives in open intents.
 
 Summarize changed R-rules and any remaining release restrictions. These
 edits land with Build; they do not close the parent or claim the outcome
-has shipped. Separate Proof and Ship PRs follow their merge gates. The
-feature or phase becomes immutable only after Ship completes. New work
-then starts a new intent linking back to this history.
+has shipped. Shipment follows the product's Delivery setting: the
+shipped tag on the merged Build, or separate Proof and Ship PRs for a
+runtime artifact. The feature or phase becomes immutable only once that
+record exists. New work then starts a new intent linking back to this
+history.

@@ -10,7 +10,7 @@ is a symlink to it). Edit this file, never the pointers.
 Read `product/intent.md` for what this product is. Every feature is
 built from a committed artifact chain in `features/NNN-name/`:
 `intent.md` (why) → prototype confirmation or justified skip →
-`spec.md` (what) → `plan.md` (how) → code → proof → ship.
+`spec.md` (what) → `plan.md` (how) → code and its evidence → shipment.
 The model behind it is `docs/agentic-sdlc.md`. Do not
 write feature code without an approved `plan.md` in that feature's
 (or phase's) directory.
@@ -18,9 +18,12 @@ write feature code without an approved `plan.md` in that feature's
 ## Workflow rules (generic — keep)
 
 - Every outcome follows Intent → Prototype → Spec → Plan → Build →
-  Test + Review → Ship. Prototype uses owner confirmation or a justified
-  Spec skip; it has no merged stage PR. Commit each of the six stages'
-  artifacts, obtain human approval, and merge its PR before the next stage.
+  Test + Review → Ship. Every step keeps its evidence and its human
+  gate. Prototype uses owner confirmation or a justified Spec skip.
+  Intent, Spec, Plan, and Build each commit their artifact, obtain
+  human approval, and merge their own PR before the next step starts.
+  Where Test + Review and Ship evidence lands follows the Delivery
+  setting below.
 - Before substantive Spec drafting, follow the shared
   [prototype rules](docs/agentic-sdlc.md#prototype-before-spec). Preserve
   confirmed examples and reviewable evidence in the Spec; Build tests
@@ -30,22 +33,26 @@ write feature code without an approved `plan.md` in that feature's
 - Never commit directly to the default branch. Start every stage in
   its own worktree from the updated default branch. Artifact branches
   carry one intent or exact-phase spec; feature branches carry a
-  Plan-only PR or a Build PR with an already merged Plan. Proof and
-  Ship use their own branches and evidence PRs. No stacked-stage work.
+  Plan-only PR or a Build PR with an already merged Plan. A runtime
+  artifact product's Proof and Ship use their own branches and evidence
+  PRs. No stacked-stage work.
 - Every proposal begins with a draft intent. Owner acceptance of
   intent/spec and approval of plan are recorded before merging their
   PRs. Explicit approval in the working conversation counts: record
   it, do not ask for it again. Agents cannot invent human approval.
 - The parent GitHub issue has type Intent; stage sub-issues have type
-  Task. Every issue links to its governing Markdown artifact or section;
-  each new artifact links back. Completed tasks retain an approved
+  Task. A `merged source` product tracks Intent, Spec, Plan, and Build;
+  a `runtime artifact` product also tracks Proof and Ship. A task for a
+  stage the mode does not track is closed as not planned. Every issue
+  links to its governing Markdown artifact or section; each new artifact
+  links back. Completed tasks retain an approved
   commit permalink and merged PR. Closing an issue is not a merge gate.
 - Before stage work, fetch the default branch and run `make handoff`
   for its task. Missing or inaccessible evidence blocks that handoff.
   Local index checks are useful offline but do not establish remote
   approval. See `.githooks/README.md` for commands and evidence fields.
 - Cut work by outcome. A large intent has fixed phases and dependencies;
-  each phase follows Spec through Ship after the shared Intent merge.
+  each phase runs Spec through shipment after the shared Intent merge.
   Independent phases may run in parallel only when their prerequisites
   and shared contracts are settled. Keep PR history linear.
 - Begin Build with the accepted spec in context. The approved plan,
@@ -57,12 +64,22 @@ write feature code without an approved `plan.md` in that feature's
   Bug fixes start with a failing test; never edit an existing test just
   to make a fix pass. Behavior changes update matching capability docs
   in the Build PR, describing any remaining release restrictions.
-- Proof names the exact merged Build, results for every S-rule, intent
-  success results, and human review. Blocking findings prevent Ship.
-  Corrections need reviewed Build changes and renewed proof.
-- Ship follows merged proof. Record the delivered version and result;
-  close the parent only after all phases and success criteria pass.
-  Cancellation is not shipment. Shipped artifacts remain immutable.
+- Test + Review and Ship evidence follows the Delivery setting below.
+  For `merged source`, the Build record carries a result for every
+  S-rule naming the test that proves it, plus Intent results; the
+  reviewed Build merge is the delivery, and an annotated
+  `shipped/NNN[-Pn-name]` tag on that merge commit is the Ship record.
+  For `runtime artifact`, separate Proof and Ship PRs work as before:
+  Proof names the exact merged Build and its artifact, and Ship
+  promotes that same artifact.
+- Every Build PR needs a current approving review from someone other
+  than its author. That review is the Test + Review step, whoever
+  merges. Blocking findings prevent shipment; corrections are another
+  reviewed Build PR.
+- A shipped tag never moves, and its phase is immutable from then on.
+  Close the parent only after every phase ships and the last phase's
+  Build record shows every success criterion true. Cancellation is not
+  shipment.
 - Add new process/domain vocabulary to `product/glossary.md` in the PR
   introducing it. Keep shipped history unchanged; record legacy gaps
   honestly when adopting the next stage's gates.
@@ -76,10 +93,25 @@ write feature code without an approved `plan.md` in that feature's
 - Hooks and CI check stage scope, prerequisites, paths, history, and
   links. Human review verifies actual approval and semantic evidence
   under `REVIEW.md`. Review changes to the checks themselves.
-- Stage PRs target main. Optional feature previews precede integration;
-  products build an immutable staging artifact from the merged Build.
-  Proof tests that artifact and Ship promotes the same version without
-  rebuilding. Follow [the delivery guide](docs/agentic-sdlc.md#branches-and-delivery).
+- Stage PRs target main. Optional feature previews precede integration.
+  A `runtime artifact` product builds an immutable staging artifact from
+  the merged Build; Proof tests it and Ship promotes the same version
+  without rebuilding. Follow
+  [the delivery guide](docs/agentic-sdlc.md#branches-and-delivery).
+
+## Delivery settings
+
+- **Delivery:** merged source
+- **Test paths:** tests/
+
+Use `merged source` when the reviewed default branch is the delivery,
+and `runtime artifact` when the product deploys a built artifact. The
+mode decides whether Test + Review and Ship evidence lands in the Build
+PR and a shipped tag, or in separate Proof and Ship PRs. Test paths are
+comma-separated directories or files holding the product's tests; a
+Build record's S-rule result names a test that must appear in one of
+them. Bootstrap sets both once; changing either is a reviewed change to
+this file.
 
 ## Prototype settings
 

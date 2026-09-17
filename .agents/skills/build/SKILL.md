@@ -18,7 +18,12 @@ Read those artifacts and AGENTS.md before editing code. Read
    parent, merged Plan PR, and exact Plan commit. Record older missing
    backlinks under Transition when adopting a legacy chain, with real
    approval and merge links. Never claim historical compliance.
-4. Implement and test the approved changes. Bug fixes start with a
+4. Implement and test the approved changes. Read the Delivery setting
+   in AGENTS.md. For merged source, record one result line per Spec
+   S-rule naming the test that proves it, and an Intent results line per
+   success criterion, marking each TRUE or OPEN; the outcome's last
+   phase leaves none OPEN. CI fails on a missing rule, a FAIL, or a test
+   name absent from the declared test paths. Bug fixes start with a
    failing test. Update matching capability docs with current behavior
    and any release restrictions. New glossary terms land in this PR.
    For a Spec using prototype confirmation, make tests read its preserved
@@ -38,11 +43,17 @@ Read those artifacts and AGENTS.md before editing code. Read
    produces the immutable staging artifact; record its actual identity
    and source in Proof after merge, not an invented future SHA here.
    Follow [delivery rules](../../../docs/agentic-sdlc.md#branches-and-delivery).
-7. After human review and merge, record the approved artifact permalink
-   and merged PR on the Build Task and close it as completed. Keep the
-   parent open. Only then may `/proof` start. A Build merge is not Ship.
+7. Every Build PR needs a current approving review from a person who
+   is not its author, whoever merges it. That review is the Test +
+   Review step; do not merge without it or claim it yourself.
+8. After human review and merge, record the approved artifact permalink
+   and merged PR on the Build Task. For merged source, `/ship` pushes
+   the shipped tag and then the task closes; for a runtime artifact,
+   `/proof` starts next. Keep the parent open. A Build merge alone is
+   not shipment.
 
-Do not create Proof or Ship evidence early. If proof later identifies
-an in-scope correction, use another Build PR updating build.md, then
-repeat proof for the corrected merged version. Stop if required evidence
-is missing or remote verification is unavailable.
+Do not create Proof or Ship evidence early, and do not write proof.md or
+ship.md for a merged-source product. If review later identifies an
+in-scope correction, use another Build PR updating build.md and its
+results. Stop if required evidence is missing or remote verification is
+unavailable.
