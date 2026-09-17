@@ -52,6 +52,10 @@ Read those artifacts and AGENTS.md before editing code. Read
    `/proof` starts next. Keep the parent open. A Build merge alone is
    not shipment.
 
+If the work turns out to restore behavior a shipped rule already states,
+it is a fix, not a Build: stop and use the fix lane in `fixes/README.md`,
+which needs no intent, spec, or plan.
+
 Do not create Proof or Ship evidence early, and do not write proof.md or
 ship.md for a merged-source product. If review later identifies an
 in-scope correction, use another Build PR updating build.md and its

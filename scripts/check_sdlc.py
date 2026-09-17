@@ -11,6 +11,8 @@ import sys
 SLUG = r"[a-z0-9]+(?:-[a-z0-9]+)*"
 FEATURE = re.compile(rf"(?:feature|proof|ship)/([0-9]{{3,}})-(?:P([1-9][0-9]*)-)?({SLUG})")
 ARTIFACT = re.compile(rf"artifact/([0-9]{{3,}})-({SLUG})")
+FIX = re.compile(rf"fix/({SLUG})")
+FIX_RECORD = re.compile(rf"fixes/([0-9]{{3,}})-{SLUG}\.md")
 STAGES = ("intent", "spec", "plan", "build", "proof", "ship")
 STATUS = dict(intent="accepted", spec="accepted", plan="approved", build="ready", proof="passed", ship="delivered")
 SHA = r"[0-9a-f]{40}"
@@ -165,7 +167,10 @@ def branch_kind(branch):
         return branch.split("/")[0]
     if ARTIFACT.fullmatch(branch) or branch == "artifact/bootstrap":
         return "artifact"
-    raise Violation("use artifact/, feature/, proof/, or ship/ with NNN[-Pn]-name; unsupported branch: " + repr(branch))
+    if FIX.fullmatch(branch):
+        return "fix"
+    raise Violation("use artifact/, feature/, proof/, ship/ with NNN[-Pn]-name, or fix/short-name; "
+                    "unsupported branch: " + repr(branch))
 
 
 def artifact_allowed(branch, path):
@@ -197,10 +202,34 @@ def feature_paths(branch, ref):
     return f"{root}/intent.md", f"{directory}/spec.md", f"{directory}/plan.md"
 
 
+def validate_fix(ref, before, changes):
+    """A fix restores stated behavior: a test, its change, and one record."""
+    inside = sorted(p for p in changes if p.startswith("features/"))
+    if inside:
+        raise Violation("a fix never changes a shipped outcome; move this out of features/: "
+                        + ", ".join(inside))
+    _, test_paths = delivery(ref)
+    if not any(any(p == t or p.startswith(t.rstrip("/") + "/") for t in test_paths) for p in changes):
+        raise Violation("a fix starts from a failing test; change a file under the declared "
+                        "Test paths: " + ", ".join(test_paths))
+    records = [p for p in changes if p.startswith("fixes/") and p != "fixes/README.md"]
+    if len(records) != 1 or not FIX_RECORD.fullmatch(records[0]):
+        raise Violation("a fix carries exactly one record named fixes/NNN-short-name.md")
+    number = FIX_RECORD.fullmatch(records[0])[1]
+    taken = {FIX_RECORD.fullmatch(p)[1] for p in paths(before)
+             if FIX_RECORD.fullmatch(p) and p != records[0]}
+    if number in taken:
+        raise Violation(f"fix number {number} is already used; numbers never reuse")
+    if records[0] in paths(before):
+        raise Violation("a merged fix record is immutable; write a new fix")
+
+
 def context(branch, before, changes):
     kind = branch_kind(branch)
     if branch == "artifact/bootstrap":
         return "bootstrap", "", ""
+    if kind == "fix":
+        return "fix", "", ""
     if kind == "artifact":
         match = ARTIFACT.fullmatch(branch)
         root = f"features/{match[1]}-{match[2]}"
@@ -292,6 +321,9 @@ def validate_record(stage, ref, root, directory):
 
 def validate_change(branch, before, after, changes, selected=None, anchor=None):
     stage, root, directory = selected or context(branch, before, changes)
+    if stage == "fix":
+        validate_fix(after, before, changes)
+        return
     if stage == "bootstrap":
         if any(not artifact_allowed(branch, p) for p in changes):
             raise Violation("bootstrap carries constitution documents only")

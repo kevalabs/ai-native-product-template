@@ -21,6 +21,13 @@ Ship is an annotated tag on the merged Build commit; there is no Proof
 or Ship PR and no Proof or Ship task. With `runtime artifact`, both
 stages keep their own branches, records, PRs, and tasks.
 
+A fix to shipped behavior uses none of these rows. It lands on a
+`fix/short-name` branch in one reviewed PR carrying a changed file under
+the declared Test paths, the change, and one record at
+`fixes/NNN-short-name.md`. It touches nothing under `features/`, has no
+stage task, and needs no tag. Its only remote gate is a current
+approving review from someone other than its author.
+
 All paths live under the chain or exact phase directory. Artifact PRs
 cannot combine Intent and Spec. Bootstrap keeps its existing narrow
 constitution allowlist. Start each stage worktree from the updated

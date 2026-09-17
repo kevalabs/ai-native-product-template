@@ -248,6 +248,94 @@ class WorkflowTests(unittest.TestCase):
         self.assertIn("approving review", conventions)
         self.assertIn("approving review", review)
 
+    def staged_fix(self, branch="fix/broken-rule", record="fixes/001-broken-rule.md",
+                   test="tests/test_fix.py", code=True):
+        """Stage a fix: a changed test, the change itself, and its record."""
+        self.git("checkout", "main")
+        self.git("reset", "--hard", self.fixture)
+        self.write("AGENTS.md", conventions("merged source"))
+        self.git("add", "-A")
+        self.git("commit", "--allow-empty", "-m", "Conventions")
+        self.git("checkout", "-B", branch)
+        if test:
+            self.write(test, "def test_restores_stated_behavior():\n    assert True\n")
+            self.git("add", "--", test)
+        if record:
+            self.write(record, "# Fix\n\n**Failing test:** test_restores_stated_behavior\n"
+                               "**Corrects:** features/001-demo\n**Restores:** R1\n"
+                               "**Date:** 2026-09-17\n")
+            self.git("add", "--", record)
+        if code:
+            self.change_code()
+
+    def test_fix_branch_carries_test_change_and_record(self):
+        """T1 (S1, S2): a fix branch needs no stage artifact."""
+        self.staged_fix()
+        self.hook(True)
+        self.staged_fix(branch="chore/broken-rule")
+        self.assertIn("unsupported branch", self.hook_error())
+
+    def test_fix_requires_a_changed_test(self):
+        """T6 (S8, S15): a fix starts from a failing test."""
+        self.staged_fix(test=None)
+        self.assertIn("test", self.hook_error())
+
+    def test_fix_cannot_touch_features_or_add_stage_artifacts(self):
+        """T4 (S6, S9, S16): shipped outcomes stay immutable."""
+        self.staged_fix()
+        self.write(f"{CHAIN}/spec.md", "**Status:** accepted\n- S1 Changed.\n")
+        self.git("add", f"{CHAIN}/spec.md")
+        self.assertIn("features/", self.hook_error())
+
+    def test_fix_record_numbering_is_checked(self):
+        """T3 (S5, S17): one numbered record per fix, never reused."""
+        self.staged_fix(record=None)
+        self.assertIn("fixes/", self.hook_error())
+        self.staged_fix(record="fixes/broken-rule.md")
+        self.assertIn("fixes/", self.hook_error())
+        self.git("checkout", "main")
+        self.git("reset", "--hard", self.fixture)
+        self.write("AGENTS.md", conventions("merged source"))
+        self.write("fixes/001-earlier.md", "# Earlier fix\n")
+        self.commit("Earlier fix")
+        self.git("checkout", "-B", "fix/broken-rule")
+        self.write("tests/test_later.py", "def test_later():\n    assert True\n")
+        self.write("fixes/001-broken-rule.md", "# Fix\n")
+        self.git("add", "-A")
+        self.assertIn("001", self.hook_error())
+
+    def test_merged_fix_record_is_immutable(self):
+        """T8 (S11, S12): a merged record is final and needs no tag."""
+        self.staged_fix()
+        self.commit("Fix")
+        self.git("branch", "-f", "main", "HEAD")
+        self.git("checkout", "-B", "fix/second-try")
+        self.write("fixes/001-broken-rule.md", "# Fix\n\nEdited after merge.\n")
+        self.write("tests/test_fix.py", "def test_two():\n    assert True\n")
+        self.git("add", "-A")
+        self.assertIn("immutable", self.hook_error())
+
+    def test_review_policy_states_the_restore_only_rule(self):
+        """T2 (S3, S4, S19): the reviewer's judgement is written down."""
+        review = (ROOT / "REVIEW.md").read_text()
+        self.assertIn("restore", review.lower())
+        self.assertIn("Size never decides", review)
+        self.assertIn("new work", review)
+        self.assertIn("intent", review)
+
+    def test_guidance_describes_the_fix_lane_once(self):
+        """T10 (S14, S20): every guidance file tells the same fix story."""
+        for name in ("AGENTS.md", "README.md", "REVIEW.md", ".githooks/README.md",
+                     "docs/agentic-sdlc.md", "fixes/README.md",
+                     "product/capabilities/sdlc-workflow.md",
+                     "product/glossary.md", "templates/fix-template.md"):
+            text = (ROOT / name).read_text()
+            self.assertIn("fix", text.lower(), name)
+        for name in ("AGENTS.md", "README.md", ".githooks/README.md", "fixes/README.md"):
+            text = (ROOT / name).read_text()
+            self.assertIn("fix/", text, name)
+            self.assertIn("fixes/", text, name)
+
     def test_missing_plan_blocks_code(self):
         self.change_code()
         self.hook(False)
