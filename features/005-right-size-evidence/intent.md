@@ -98,8 +98,6 @@ under the required branch protection without a bypass.
 - A bug fix or small correction to a shipped outcome lands in one
   reviewed PR that starts with a failing test and links the outcome it
   corrects. It needs no new intent, spec, plan, proof, or ship record.
-- A product can turn stage issues off. The checks then read approval
-  and merge evidence from the artifacts and PRs alone.
 - A solo developer following the README can get a PR approved and
   merged under the required branch protection without a bypass.
 - Every existing human gate still applies: intent acceptance, spec
@@ -116,9 +114,10 @@ under the required branch protection without a bypass.
 - P2-fix-lane — a contributor ships a bug fix or small correction to a
   shipped outcome in one reviewed PR that links the outcome it corrects.
   Depends on: P1
-- P3-optional-tracking — a product chooses whether stage issues exist;
-  when they do not, the checks verify approval and merge evidence from
-  the artifacts and PRs alone. Depends on: P1 (can run alongside P2)
+- P3-optional-tracking — **cancelled on 2026-09-17, see Revision.** A
+  product chooses whether stage issues exist; when they do not, the
+  checks verify approval and merge evidence from the artifacts and PRs
+  alone. Depended on: P1 (could run alongside P2)
 
 Shared ground — settled before P2 and P3 run in parallel, and where:
 
@@ -134,6 +133,27 @@ Shared ground — settled before P2 and P3 run in parallel, and where:
 - stage automation in outcome 004 phase P3 automates whatever tracking
   remains required after P3 here; its spec starts after P3's spec is
   accepted
+
+## Revision
+
+Suraj Chhetry cancelled phase P3-optional-tracking on 2026-09-17 in the
+working conversation, after P1 shipped and he reviewed what remained.
+
+The reason is that P1 already took most of what P3 was for. Tasks per
+phase dropped from six to four when the tracked stage set started
+following the delivery mode, and outcome 004 phase P3 will automate the
+four that remain. Making stage issues optional returns little for three
+more PRs.
+
+The success criterion "a product can turn stage issues off" is withdrawn
+with the phase rather than left permanently open. Phase P1's shipped
+Build record, which reported that criterion as OPEN, stays unchanged as
+the historical record. The phase entry stays listed above so the
+tracking graph still matches this intent; its issues are closed as not
+planned. Cancellation is not shipment and unlocks no dependent work.
+
+A future owner who wants optional tracking opens a new intent citing
+this decision. Phase P2-fix-lane is unaffected and still required.
 
 ## Affected systems
 
