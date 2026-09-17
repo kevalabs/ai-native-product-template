@@ -351,6 +351,37 @@ class EvidenceTests(unittest.TestCase):
         with self.assertRaisesRegex(local.Violation, "dependency"):
             self.evidence.dependencies(4, BASE)
 
+    def test_historical_stage_tasks_still_validate(self):
+        """T9 (S13): a phase that shipped under the old rules keeps its tasks."""
+        self.merged_source()
+        # Proof and Ship tasks closed as completed record real merged PRs.
+        for number in (5, 6):
+            self.data[f"/issues/{number}"]["state"] = "closed"
+            self.data[f"/issues/{number}"]["state_reason"] = "completed"
+        self.evidence.cache.clear()
+        self.assertEqual({stage for _, stage in self.evidence.graph(100, ROOT, BASE)},
+                         {"intent", "spec", "plan", "build"})
+        # An open task for an untracked stage is still an error.
+        self.data["/issues/5"]["state"] = "open"
+        self.data["/issues/5"]["state_reason"] = None
+        self.evidence.cache.clear()
+        with self.assertRaisesRegex(local.Violation, "does not track"):
+            self.evidence.graph(100, ROOT, BASE)
+
+    def test_fix_merge_requires_non_author_approval(self):
+        """T5 (S7, S18): a fix needs a review, and no stage tracking."""
+        self.reviews()
+        with self.assertRaisesRegex(local.Violation, "approving review"):
+            self.evidence.validate(BASE, HEAD, ("fix", "", ""), 9, "fix/broken-rule")
+        self.reviews(self.approval())
+        self.evidence.validate(BASE, HEAD, ("fix", "", ""), 9, "fix/broken-rule")
+
+    def test_fix_follows_the_existing_contracts_rule(self):
+        """T7 (S10): the contracts rule is unchanged by the fix lane."""
+        conventions = (Path(__file__).resolve().parents[1] / "AGENTS.md").read_text()
+        self.assertIn("packages/", conventions)
+        self.assertIn("Kind: contracts", conventions)
+
     def test_explicit_fallback_preserves_gates(self):
         parent = self.data["/issues/100"]
         parent["type"] = {"name": "Feature"}

@@ -213,8 +213,17 @@ verification, human review, and renewed approval after changes. Local
 setup does not install those settings. A recorded, owner-selected
 `intent` label fallback is available where custom types are unavailable.
 
-Shipped feature directories are immutable. Incidents and later behavior
-changes start new intents linking back to the original outcome.
+Shipped feature directories are immutable. A change that makes the
+product promise something new starts a new intent linking back to the
+original outcome.
+
+A **fix** is different and much cheaper. When the product does not do
+what a shipped rule already says, land it in one reviewed PR on a
+`fix/short-name` branch: a test that fails without the change, the
+smallest change that passes it, and one record at
+`fixes/NNN-short-name.md`. No intent, spec, plan, or tag. The reviewer
+decides whether it restores stated behavior or is really new work, and
+size does not decide that. See `fixes/README.md`.
 
 
 ## 4. Rules you will hit on day one

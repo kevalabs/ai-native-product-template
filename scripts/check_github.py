@@ -169,8 +169,10 @@ class Evidence:
             text = full.get("body") or ""
             key = (local.field(text, "Phase"), local.field(text, "Stage"))
             if key[1] in local.STAGES and key[1] not in stages:
-                # A stage this delivery mode does not use is closed as not planned.
-                if full.get("state_reason") == "not_planned":
+                # A stage this delivery mode does not use is closed: as not
+                # planned when retired, or as completed when the phase shipped
+                # under the previous rules. Both are records, not active work.
+                if full.get("state") == "closed":
                     return
                 raise Violation(f"this delivery mode does not track a {key[1]} task; "
                                 "close it as not planned")
@@ -272,6 +274,12 @@ class Evidence:
     def validate(self, base, head, selected, current_pr=None, branch=None):
         stage, root, directory = selected
         if stage == "bootstrap":
+            return
+        if stage == "fix":
+            # A fix has no artifact chain and no tracking issue. Its one
+            # remote gate is the review that judges it a fix and not new work.
+            if current_pr:
+                self.review(current_pr, self.pull(current_pr), require_approval=True)
             return
         artifact = local.stage_path(stage, root, directory)
         document = local.content(head, artifact)

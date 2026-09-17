@@ -26,6 +26,25 @@ severity. Do not review formatting or style — linters own that.
 - **Comment-only:** improvement suggestions with working alternatives.
 - Do not raise speculative findings you cannot ground in the diff.
 
+## The fix lane (generic — keep)
+
+- A fix PR carries a test that fails without the change, the change,
+  and one numbered record under `fixes/`. It has no intent, spec, plan,
+  or tracking issue, and it merges on a current approving review from
+  someone other than its author.
+- Judge one thing above all: does this restore behavior a shipped Spec
+  rule or capability rule already states? If it adds a rule, changes a
+  rule, or makes the product promise something new, it is new work.
+  Reject it and ask for an intent. Say which rule you checked.
+- Size never decides. A one-line change that alters a promise is new
+  work; a wide change that only restores stated behavior is a fix.
+- The checks prove a test file changed, not that it failed before the
+  change. Confirm the test actually reproduces the defect.
+- A fix that touches a shipped feature directory, reuses a fix number,
+  or edits a merged record is blocking.
+- When the defect is in the checks themselves, read the change as code:
+  a fix PR can weaken the rules that judge it.
+
 ## Process checks (generic — keep)
 
 - Verify actual owner approval of intent, spec, and plan. Markdown

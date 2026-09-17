@@ -694,6 +694,26 @@ The repository commands and evidence fields are defined in
 
 ------------------------------------------------------------------------
 
+## 14b. Fixes
+
+Not every change is an outcome. When the product does not do what a
+shipped rule already says, the honest description is that it is broken,
+not that someone wants something new. Running a full Intent through Ship
+sequence for that adds ceremony without adding judgement: the decision
+was already made when the rule was accepted.
+
+A fix therefore lands in one reviewed pull request: a test that fails
+without the change, the smallest change that makes it pass, and a short
+record naming the failing test, the outcome it corrects, and the rule it
+restores. No intent, no spec, no plan, no shipment record.
+
+The gate that matters is the review, and it asks one question: does this
+restore behavior a shipped rule already states, or does it change what
+the product promises? The second is new work and needs an intent. Size
+is not the test. A one-line change that alters a promise is new work,
+and a wide mechanical change that only restores stated behavior is a
+fix. That judgement is a human's, and no check replaces it.
+
 ## 15. Relationship with Agile/user stories
 
 Intent-driven development does not require throwing away user stories.

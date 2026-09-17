@@ -62,8 +62,23 @@ records its shipment evidence and its success criteria hold.
   phase's ready Build record. The tag freezes its phase; a later change
   starts a new intent.
 - R38 A merged-source outcome tracks Intent, Spec, Plan, and Build
-  tasks per phase. A task for a stage the mode does not track is closed
-  as not planned, and a cancelled task unlocks no dependent work.
+  tasks per phase. A task for a stage the mode does not track is
+  accepted whenever it is closed, whether as not planned or as
+  completed under the previous rules, and a cancelled task unlocks no
+  dependent work. An open task for an untracked stage is an error.
+- R39 A fix to shipped behavior lands in one reviewed PR on a
+  `fix/short-name` branch. The checks require a changed file under the
+  declared test paths, exactly one record at `fixes/NNN-short-name.md`,
+  no change under `features/`, an unused fix number, and an unedited
+  record. A fix has no stage artifact and no tracking issue.
+- R40 A fix PR merges only with a current approving review from someone
+  other than its author. The reviewer judges whether the change
+  restores behavior a shipped rule already states; a change that adds
+  or alters a rule is new work and needs its own intent. Size does not
+  decide, and no check makes that judgement.
+- R41 Fix numbers never reuse and a merged fix record is immutable. A
+  fix needs no shipped tag, and the outcome it corrects keeps the tag it
+  already has.
 
 ## Lifecycle and edge cases
 

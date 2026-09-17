@@ -30,6 +30,13 @@ write feature code without an approved `plan.md` in that feature's
   load the same examples file. Never merge disposable prototype source
   or its working note. Adopt this for work not yet at Spec; do not
   back-fill existing accepted Specs or shipped chains.
+- A fix to shipped behavior skips the stages. It lands in one reviewed
+  PR on a `fix/short-name` branch carrying a test that fails without the
+  change, the change, and one numbered record under `fixes/`. A fix
+  restores what a shipped Spec or capability rule already states; adding
+  or changing a rule is new work and starts with an intent. Size never
+  decides. A fix never edits a shipped feature directory and needs no
+  tag. See `fixes/README.md`.
 - Never commit directly to the default branch. Start every stage in
   its own worktree from the updated default branch. Artifact branches
   carry one intent or exact-phase spec; feature branches carry a
@@ -61,8 +68,8 @@ write feature code without an approved `plan.md` in that feature's
 - Keep spec about behavior; implementation detail belongs in Plan.
   Artifacts use `.agents/writing-style.md` and exact glossary terms.
 - `make test` must pass before handoff, including before Build merges.
-  Bug fixes start with a failing test; never edit an existing test just
-  to make a fix pass. Behavior changes update matching capability docs
+  Bug fixes start with a failing test, in the fix lane or in a Build;
+  never edit an existing test just to make a fix pass. Behavior changes update matching capability docs
   in the Build PR, describing any remaining release restrictions.
 - Test + Review and Ship evidence follows the Delivery setting below.
   For `merged source`, the Build record carries a result for every
