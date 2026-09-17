@@ -89,12 +89,6 @@ nothing to show.
   exact accepted version, or says in one line why there is none.
 - The Build's tests for that work load the same examples file the
   owner confirmed.
-- A team can try an idea on a prototype branch without writing an
-  intent, spec, plan, proof, or ship record. The checks reject any
-  change outside the product's declared sandbox and the prototype note.
-  Its worktree lives alongside the team's other worktrees. Owner
-  approval allows that branch to become feature work with its code
-  retained; Spec and Plan approval still precede further feature work.
 - Starting a stage, creating the tracking issues for a merged intent,
   and recording a merged stage on its task each take one command or
   happen on merge, and never create duplicate issues.
@@ -109,8 +103,8 @@ nothing to show.
   step, in one of its three forms, between Intent and Spec; the spec
   freezes the accepted prototype; the plan and review use its examples
   as test data. Docs, skills, and templates only. Depends on: —
-- P2-proto-lane — a team can work on a prototype branch that needs no
-  stage artifacts, and the checks keep it inside the product's declared
+- P2-proto-lane — **cancelled on 2026-09-17, see the second Revision.**
+  A team can work on a prototype branch that needs no stage artifacts, and the checks keep it inside the product's declared
   sandbox. Its worktree uses the normal worktree location. Owner
   approval allows the branch and code to become feature work, followed
   by the existing Spec-through-Ship gates. P2 updates the delivered
@@ -232,6 +226,35 @@ skills, capability rules, and checks consistently. Exact-version owner
 confirmation, retained examples, human stage approvals, and immutable
 shipped records continue to apply. P3 uses the settled promotion
 contract for its automation rather than defining another one.
+
+## Revision, 2026-09-17: P2 cancelled
+
+Suraj Chhetry cancelled phase P2-proto-lane on 2026-09-17 in the working
+conversation, after reviewing the work left across both open intents.
+
+The reason is evidence, not doubt about the idea. The prototype step
+shipped in P1 and has not been used once since. Every spec written after
+it recorded a justified skip, including this template's own. Building a
+sandbox lane, branch enforcement, and promotion machinery for a step
+nobody has exercised is speculative, and the design will be easier to
+get right after someone actually prototypes something.
+
+The success criterion about trying an idea on a prototype branch without
+stage artifacts is withdrawn with the phase, rather than left
+permanently open. P1's shipped artifacts stay unchanged as the
+historical record, and the prototype step itself remains in the
+workflow: an owner can still confirm a prototype before a Spec, using a
+workspace the product already permits.
+
+This also supersedes the promotion decision recorded in the first
+Revision above. Nothing implements prototype-to-feature promotion, and
+no guidance claims it does. The phase entry stays listed under Phases so
+the tracking graph still matches this intent; its issues are closed as
+not planned. Cancellation is not shipment and unlocks no dependent work.
+
+Phase P3-stage-automation is unaffected and still required. With P2
+cancelled it has no promotion contract to consume, so its Spec covers
+stage tracking only.
 
 ## Open questions
 
